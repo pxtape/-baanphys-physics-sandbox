@@ -4,9 +4,30 @@ Updated: 2026-11-17.
 
 ## Current state
 
-**M0.5 technical validation complete. M1 readiness: READY for the scoped basic editor/S0 work after user approval. M1 implementation has not started.** No full editor, production adapter, server, publishing or deployment was created.
+**M1-01 Tooling and boundaries COMPLETE — awaiting user review.** This was the first incomplete S0 task and the only task implemented under the current approval. M1-02 and later tasks are NOT STARTED. No scene editor, production physics adapter, persistence, server, publication or deployment was implemented.
 
-## Completed
+## M1-01 completed — 2026-11-17
+
+- React 19.3.1 + TypeScript 5.9.3 strict + Vite 8.3.8 root application, with a minimal honest foundation page. Planck 1.5.1 is pinned but not imported or constructed by the app.
+- Exact dependency versions, root lockfile, Node 24+ requirement, `.nvmrc`, reproducible npm scripts and `.npmrc` save-exact policy.
+- Reserved domain/schema/physics/adapter/renderer/editor/measurements/persistence/player/integration modules. No speculative scene model or production adapter was introduced.
+- Automated ESLint import rules and 23 boundary tests: reject Planck/type leaks, PoC dependencies, runtime/UI imports in the domain/schema, renderer coupling and player writes. Five intended import paths also pass.
+- Ran clean offline lockfile install, typecheck, lint, 23 Vitest checks and production build successfully. Reran 25 M0 structural fixtures and 13 PoC verification tests successfully. No previous test was removed or weakened; no benchmark trajectory or threshold was changed.
+- Opened the dev application in shared Chrome, inspected the rendered page and reloaded it successfully. Started the production preview and checked its HTML/asset responses. Browser preview is smoke evidence only, not Safari/iPad certification.
+- Added root README with exact run/check/manual-review commands; updated M1_TASKS status. The approved future physics profile remains logical 1/120 s, 4 substeps (1/480 s), 12/12 Planck iterations and zero restitution threshold; this task does not activate it.
+
+Scene values/IDs, scene validation, SI/screen transforms and engine stepping are not implemented yet. No scene mutations or ID generation exist in this task. Those requirements remain with M1-02 through M1-05 rather than being bypassed by a temporary model.
+
+## Changed files for M1-01
+
+- App/tooling: `package.json`, `package-lock.json`, `.npmrc`, `.nvmrc`, `tsconfig.json`, `vite.config.ts`, `eslint.config.mjs`, `index.html`, `.gitignore`.
+- Application: `src/main.tsx`, `src/app/App.tsx`, `src/app/styles.css`, `src/README.md` and `.gitkeep` files reserving the ten architecture directories (including physics/adapters).
+- Verification: `tooling/architecture-rule.mjs`, `tests/tooling/architecture.test.ts`.
+- Documentation: `README.md`, `M1_TASKS.md`, `PROGRESS.md`.
+
+M0/M0.5 baseline commits and architecture decisions are retained. The existing scene schema/example, AGENTS.md, PoC sources/lockfile/results, BENCHMARKS.md and DECISIONS.md are unchanged. No remote was added and nothing was pushed/deployed.
+
+## Completed M0.5 (historical record)
 
 - Preserved all supplied M0 documents/schema/example/checks in Git baseline `65dfde9` (`docs: preserve M0 planning baseline`).
 - Initialized a working `main` repository. Checked remotes before setup and after initialization: none configured. Retained existing author identity; no external repository created, remote invented or push attempted.
@@ -19,7 +40,7 @@ Updated: 2026-11-17.
 
 ## Not completed or claimed
 
-No actual browser/Safari/iPad compatibility/performance measurement, cross-browser replay, production typecheck/build, repository/embedding integration tests, production Scene semantic validator or M1 application exists. Rolling fails the executed common-friction feasibility variant; the original distinct-static/dynamic B6 case is not certified. Atwood, pulley/gear/motor behavior, slack-to-taut rope impacts, contact-force instrumentation and long-run stress qualification are not tested.
+No actual Safari/iPad compatibility/performance measurement, cross-browser replay, repository/embedding integration tests or production Scene semantic validator exists. M1-01 now has a typechecked/built foundation application and a shared-Chrome launch/reload smoke check only. Rolling fails the executed common-friction feasibility variant; the original distinct-static/dynamic B6 case is not certified. Atwood, pulley/gear/motor behavior, slack-to-taut rope impacts, contact-force instrumentation and long-run stress qualification are not tested.
 
 ## Git and changed artifacts
 
@@ -31,4 +52,4 @@ Updated: ENGINE_FEASIBILITY.md, ARCHITECTURE.md, ROADMAP.md, SPEC.md, TEST_PLAN.
 
 ## Next action
 
-Await approval to begin M1. Follow M1_TASKS.md; keep rolling/unsupported material models gated and preserve the save/reload/pinned-player vertical slice. Critical technical blockers to starting basic M1: none. Outstanding compatibility and advanced-physics gates are explicitly listed in that backlog.
+Stop for review of M1-01. Await separate approval before M1-02 (Domain and validation), the next incomplete task. No critical blocker to this foundation task remains. Safari/iPad testing, production physics, supported material/geometry envelopes, scene validation, storage and the pinned-player integration remain explicit later gates. Rolling and advanced mechanisms remain unimplemented/unqualified.

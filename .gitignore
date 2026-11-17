@@ -9,3 +9,7 @@ shared/
 node_modules/
 *.log
 __pycache__/
+# Application build and test output
+/dist/
+/coverage/
+*.tsbuildinfo
