@@ -1,6 +1,6 @@
 # Architecture
 
-Status: proposed M0 baseline. No runtime modules exist yet. Requirements are in SPEC.md; engine findings in ENGINE_FEASIBILITY.md. Save/reload/embed belongs in the first end-to-end slice, ahead of full M5 integration.
+Status: M0 design updated by M0.5 validation. Isolated PoC code exists; no production runtime/editor modules exist yet. Requirements are in SPEC.md; engine findings in ENGINE_FEASIBILITY.md. Save/reload/embed belongs in the first end-to-end slice, ahead of full M5 integration.
 
 ## Module boundaries
 
@@ -105,3 +105,13 @@ Student controls refer to typed body initial mass, velocity components or gravit
 | iPad SVG/performance/input uncertainty | Named-device profiling and pointer tests before renderer/Worker changes. |
 | Future schema/engine migration changes answers | Preserve original revision/profile; explicit migrations and replay reports. |
 | Contact forces unavailable | Label impulse/averages correctly; defer reaction-force meters until validated. |
+
+## M0.5 engine selection and M1 boundary update
+
+Planck.js 1.5.1 is selected for the future production adapter (DECISIONS.md ADR-001); measured evidence and failed cases are in BENCHMARKS.md. Keep the adapter replaceable, but ship one interacting-world solver. The comparison at `poc/engine-comparison` is excluded from production imports/bundles and remains a qualification tool, not an application package.
+
+The initial production profile is planned as `planck-1.5.1-si-v1`, with timestepSeconds=1/120, substeps=4 (h=1/480), position/velocity=12/12. The required Scene `constraint` budget must equal 12 in this profile and maps to the shared joint solver; there is no separate third Planck iteration control. Reject incompatible settings instead of ignoring them. Set global restitution velocityThreshold=0 once before worlds; retain and document native skin/slop/translation/rotation limits. Predict/detect out-of-envelope motion rather than allow invisible engine clamps. No production profile is registered by this documentation alone.
+
+Initial supported materials require staticFriction=friction because Planck exposes one Coulomb coefficient. Reject unequal values for execution and preserve them for inspection/export; never silently change source data. This is a capability restriction on Scene v1, not a schema rewrite. Existing unqualified Matter examples stay unchanged and do not acquire a fallback engine. Planck convex fixture vertex limit=8; support convex 3–8 vertices initially and block larger schema-valid polygons until compound decomposition is qualified.
+
+PoC feasibility for revolute/distance/rope and custom Hooke forces is positive, but M3 features still require production acceptance tests. Rolling is not accuracy-certified: maximum slip and contact penetration failed. Actual Safari/iPad, UI/render performance, persisted replay and cross-browser reproducibility are untested M1/release gates. No finding changes immutable authored revisions, pinned local player isolation or M5 server-publication requirements.

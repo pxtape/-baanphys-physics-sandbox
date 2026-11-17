@@ -57,4 +57,4 @@ for filename in ['SPEC.md','ARCHITECTURE.md','ROADMAP.md','AGENTS.md','TEST_PLAN
 print('Draft 2020-12 schema self-check passed')
 print(str(len(checks))+' positive/negative structural fixtures passed')
 print('7 required/supporting documents and relative links checked')
-print('Semantic, physics, browser and performance tests NOT executed; no runtime exists')
+print('M0 structural checks only; this script does not evaluate PoC physics, semantics or browser behavior')

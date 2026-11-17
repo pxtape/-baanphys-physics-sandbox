@@ -1,4 +1,19 @@
-# Engine feasibility and research record
+# Engine feasibility and engine decision
+
+
+## M0.5 decision update — 2026-11-17
+
+**Recommend Planck.js 1.5.1 for M1**, based on executed headless tests, not API availability alone. See [BENCHMARKS.md](BENCHMARKS.md) for every case's references, measured metrics, solver settings, stability, limitations and raw data; [DECISIONS.md](DECISIONS.md) contains the priority-ordered tradeoffs and capability policy.
+
+93 configurations executed: 59 PASS, 34 FAIL across both candidates, three integration steps and supplemental masses. Three Matter rope entries are unsupported and unexecuted, never counted as passes. At h=1/480 s Planck passes the basic mechanics and pendulum/spring/rope probes. Matter's elastic collision, point pendulum accuracy, offset pin stability and rolling profiles fail. Both fail the rolling feasibility variant. Four additional boundary probes, 21 replay comparisons, two CPU load probes and 13 verification tests also ran; M0 schema checks were rerun. No browser/iPad or production tests were run.
+
+Use a planned Planck profile with logical dt=1/120 s, 4 substeps, velocity/position iterations=12/12, sleeping/drag off, continuous physics on and restitution velocity threshold explicitly zero. Springs tested here use a custom SI Hooke force law in both engines; they are not native soft-constraint accuracy claims. Planck's single friction coefficient means unequal static/dynamic authored coefficients remain blocked for execution in the initial profile. Rolling and advanced mechanisms are not certified. Production must reimplement/test the adapter and detect native motion clamps; the PoC is isolated from production.
+
+M1 is technically READY for the basic editor/S0 scope, **pending user approval**. Native pulley/gear/motor APIs, cross-browser reproducibility and iPad performance still require their own validation. Neither engine is a guarantee of scientific accuracy.
+
+## Historical M0 research baseline
+
+The source-review assessment below is retained as historical context. Its “not executed” and “selection pending” statements describe M0, not the completed M0.5 results above.
 
 Research date: 2026-11-17. Scope: official documentation/source review, not an executed solver comparison. Matter references describe version 0.20.0; pin exact installed versions during the spike. No numerical accuracy, performance or determinism claim has been verified in this workspace.
 

@@ -63,3 +63,9 @@ A same-origin parent harness must embed the local player successfully in the sam
 4. Confirm whether future ideal strings/pulleys should be constrained rigid-body models or a separately validated educational solver. Never mix solvers within one interacting world without a coupling design.
 5. Confirm whether students need live forces/dragging later; initial MVP interaction is playback and allowed initial-parameter controls only.
 6. Decide hosting/backend at M5. Repository interface does not prescribe a vendor.
+
+## M0.5 status update
+
+The repository inspection and “no benchmarks” statements at the start of this M0 baseline describe the original inspection. A working local Git repository now preserves that baseline, and isolated engine tests have executed. Planck.js 1.5.1 is selected for the future M1 adapter; see DECISIONS.md and BENCHMARKS.md. No application or visual editor exists yet.
+
+Engine selection (open decision 1) is resolved for basic M1: logical dt=1/120 s, 4 substeps. Basic Planck mechanics meet defined fixtures; rolling is unqualified and native APIs do not establish advanced-mechanism accuracy. The initial capability profile only supports equal static/dynamic friction values and convex fixtures of 3–8 vertices; other schema-valid data may be inspected but must be blocked for execution with actionable diagnostics. No schema data is silently approximated. Device baselines, BaanPhys integration and later physical-model decisions remain open. M1 work and acceptance are defined in M1_TASKS.md and await user approval.

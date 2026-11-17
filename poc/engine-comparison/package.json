@@ -1,0 +1,15 @@
+{
+  "name": "baanphys-m05-engine-comparison",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "benchmark": "node benchmark.mjs",
+    "test": "node --test --test-isolation=none verification.test.mjs",
+    "stress": "node stress.mjs"
+  },
+  "dependencies": {
+    "matter-js": "0.20.0",
+    "planck": "1.5.1"
+  }
+}

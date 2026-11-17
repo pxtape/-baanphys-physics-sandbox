@@ -1,6 +1,6 @@
 # Roadmap
 
-Status: planning only. Milestones are gated by evidence, not calendar dates. The user must authorize starting implementation; completion of these documents does not authorize M1.
+Status: M0.5 numerical qualification completed; M1 remains planning only. Milestones are gated by evidence, not calendar dates. The user must authorize starting implementation; completion of these documents does not authorize M1.
 
 ## Delivery order and dependencies
 
@@ -26,3 +26,11 @@ A feature has requirements traceability, typed contracts, actionable validation/
 ## Deferred scope
 
 No arbitrary formulas/scripts, cloud collaboration, assessment grading, user-uploaded assets, concave decomposition, motors/pulleys/gears or scientific reaction-force meters in S0. A new need must extend the schema and capability profile explicitly. Backend vendor, host origins, device baselines and final solver remain open decisions recorded in SPEC.md and ARCHITECTURE.md.
+
+## M0.5 completed gate and next work
+
+Executed evidence: BENCHMARKS.md and `poc/engine-comparison/results`. Planck.js 1.5.1 selected in DECISIONS.md; four fixed substeps at logical 1/120 s are required for the strict projectile endpoint gate. The h=1/240 candidate baseline fails that metric; no tolerance was widened. Core translation/collision/torque and tested mechanics pass at selected settings. Rolling remains failed/unqualified, and browser/iPad/persistence qualification is not claimed complete.
+
+M1 readiness: **READY for basic editor/S0 implementation after user approval**. See M1_TASKS.md for ordered tasks and acceptance. The earlier M0 qualification row is now complete for engine selection; its broader iPad/SVG/device work moves explicitly into early M1 acceptance because no editor or physical iPad was available. Persistence replay belongs to the implemented S0 exit gate, not this engine-only comparison. Atwood was not in this focused M0.5 execution and remains an M7 gate.
+
+Do not start M1 during this validation turn. M3/advanced capability qualification and release are still blocked by their unimplemented/failed/untested gates. No remote URL is configured; it does not block local work but must be agreed before collaboration/backup via push.

@@ -1,0 +1,11 @@
+# Environment-owned directories (never project source)
+.agents/
+.aws/
+.codex/
+library-files/
+scratch/
+shared/
+# Dependencies and transient runtime output
+node_modules/
+*.log
+__pycache__/

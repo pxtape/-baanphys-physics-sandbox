@@ -73,3 +73,13 @@ Damped extension: c=0.2 N·s/m, same initial conditions. Let alpha=c/(2m)=0.1, w
 ## Automation and release gates
 
 Proposed tooling after authorization: Vitest for pure domain/adapter/repository tests, Ajv 2020 with formats for imports, Playwright for browser flows, and a dedicated headless numerical report job. Use a real Safari/iPad pass for touch/storage/fullscreen behavior; WebKit automation alone is insufficient. CI runs schema/type checks, unit/physics tests, production build and browser smoke tests; full convergence/stress/device matrix runs before capability releases or engine upgrades. Expected failures and skipped benchmarks cannot certify a capability.
+
+## M0.5 execution record and deviations
+
+The initial “proposed/not measured” status above describes M0. Executed M0.5 evidence now appears in BENCHMARKS.md and the isolated `poc/engine-comparison/results` JSON/CSV. The PoC uses the intended SI boundary rather than an existing production adapter (none exists); M1 must port the independent fixtures to the production adapter. Reference RK4 was checked by halving its approximately 1e-5 s step.
+
+B1/B2/B3/B4/B7, rigid rectangle/disk torque and common-friction rolling feasibility ran for both engines at h=1/120,1/240,1/480. B4 remains the point-mass/centre-distance pendulum; an additional physical revolute pendulum includes disk Icom in its analytic/reference model. The rolling variant uses common mu=0.4 rather than B6 separate 0.5/0.4 because Planck's default fixture exposes only one coefficient; its ideal no-slip solution is unchanged, but it is not certification of the original full B6 material case. Both engines fail that variant's complete gates. B5 Atwood did not run. Rope evidence is taut hanging plus slack inward free motion, not a slack-to-taut impact or a rope network.
+
+Recommended basic profile uses logical dt=1/120 and h=1/480, 12/12 Planck iterations, explicitly zero restitution threshold. At h=1/240, B2 vertical-displacement relative error is 1.866%, failing the original ≤1% gate; h=1/480 yields 0.9332%. Frozen tolerances were retained. Native motion/contact settings and failures are documented, not corrected by prescribed motion.
+
+13 verification tests and the 25 existing M0 structural fixtures pass. 21 recorded same-runtime replay comparisons agree exactly; selected-step replay is additionally checked by verification tests. Browser/iPad, production adapter/importer, persisted replay, actual embedding, 10-minute performance and cross-browser comparisons remain unexecuted requirements, not passed or skipped-as-passed tests.
