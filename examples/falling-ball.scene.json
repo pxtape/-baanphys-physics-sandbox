@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "identity": {
+    "state": "saved",
+    "simulationId": "6f4792c1-e37b-4bf0-b0a1-64a7f92f6382",
+    "revisionId": "bd902677-3a63-42e9-a71b-885da4f40835",
+    "revisionNumber": 1,
+    "parentRevisionId": null,
+    "createdAt": "2026-11-17T00:00:00Z",
+    "savedAt": "2026-11-17T00:00:00Z"
+  },
+  "title": "Falling ball \u2014 planning example",
+  "description": "Initial conditions only. Engine profile is unqualified; not a benchmark result.",
+  "units": "SI",
+  "world": {
+    "gravity": {
+      "x": 0,
+      "y": -9.81
+    }
+  },
+  "simulation": {
+    "engine": {
+      "name": "matter-js",
+      "version": "0.20.0",
+      "adapterVersion": "0.0.0",
+      "profile": "matter-0.20.0-unqualified-v1"
+    },
+    "timestepSeconds": 0.008333333333333333,
+    "substeps": 2,
+    "solverIterations": {
+      "position": 12,
+      "velocity": 12,
+      "constraint": 8
+    },
+    "sleeping": false,
+    "seed": 1
+  },
+  "bodies": [
+    {
+      "id": "71c819c5-a092-437d-9c76-14858c2c1f21",
+      "name": "Ball",
+      "motionType": "dynamic",
+      "shape": {
+        "type": "circle",
+        "radius": 0.2
+      },
+      "position": {
+        "x": 0,
+        "y": 4
+      },
+      "angle": 0,
+      "velocity": {
+        "x": 0,
+        "y": 0
+      },
+      "angularVelocity": 0,
+      "massModel": {
+        "mode": "mass",
+        "mass": 1
+      },
+      "material": {
+        "friction": 0.2,
+        "staticFriction": 0.4,
+        "restitution": 0.5
+      }
+    },
+    {
+      "id": "0508a587-2fa5-45cc-b452-269c7505e28d",
+      "name": "Floor",
+      "motionType": "static",
+      "shape": {
+        "type": "rectangle",
+        "width": 8,
+        "height": 0.2
+      },
+      "position": {
+        "x": 0,
+        "y": -0.1
+      },
+      "angle": 0,
+      "velocity": {
+        "x": 0,
+        "y": 0
+      },
+      "angularVelocity": 0,
+      "massModel": {
+        "mode": "mass",
+        "mass": 1
+      },
+      "material": {
+        "friction": 0.2,
+        "staticFriction": 0.4,
+        "restitution": 0.5
+      }
+    }
+  ],
+  "constraints": [],
+  "forces": [],
+  "measurements": [],
+  "studentPolicy": {
+    "controls": []
+  },
+  "view": {
+    "cameraCenter": {
+      "x": 0,
+      "y": 2
+    },
+    "pixelsPerMeter": 100,
+    "vectors": {
+      "velocity": false,
+      "acceleration": false,
+      "appliedForce": false
+    }
+  }
+}

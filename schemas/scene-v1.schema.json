@@ -1,0 +1,912 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baanphys.example/schemas/scene-v1.schema.json",
+  "title": "BaanPhys Scene v1",
+  "description": "Planning contract; schema ID is a placeholder namespace, not a deployed service. SI, y-up, counterclockwise. Semantic and capability checks are mandatory.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "identity",
+    "title",
+    "units",
+    "world",
+    "simulation",
+    "bodies",
+    "constraints",
+    "forces",
+    "measurements",
+    "studentPolicy",
+    "view"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "identity": {
+      "$ref": "#/$defs/identity"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 4000
+    },
+    "units": {
+      "const": "SI"
+    },
+    "world": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "gravity": {
+          "$ref": "#/$defs/vector"
+        }
+      },
+      "required": [
+        "gravity"
+      ]
+    },
+    "simulation": {
+      "$ref": "#/$defs/simulation"
+    },
+    "bodies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/body"
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/constraint"
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "forces": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/force"
+      },
+      "minItems": 0,
+      "maxItems": 200
+    },
+    "measurements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/measurement"
+      },
+      "minItems": 0,
+      "maxItems": 20
+    },
+    "studentPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "controls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/control"
+          },
+          "minItems": 0,
+          "maxItems": 50
+        }
+      },
+      "required": [
+        "controls"
+      ]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cameraCenter": {
+          "$ref": "#/$defs/vector"
+        },
+        "pixelsPerMeter": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 2000
+        },
+        "vectors": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "velocity": {
+              "type": "boolean"
+            },
+            "acceleration": {
+              "type": "boolean"
+            },
+            "appliedForce": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "velocity",
+            "acceleration",
+            "appliedForce"
+          ]
+        }
+      },
+      "required": [
+        "cameraCenter",
+        "pixelsPerMeter",
+        "vectors"
+      ]
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "vector": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": -1000000.0,
+          "maximum": 1000000.0
+        },
+        "y": {
+          "type": "number",
+          "minimum": -1000000.0,
+          "maximum": 1000000.0
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "identity": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "state": {
+              "const": "draft"
+            }
+          },
+          "required": [
+            "state"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "state": {
+              "const": "saved"
+            },
+            "simulationId": {
+              "$ref": "#/$defs/id"
+            },
+            "revisionId": {
+              "$ref": "#/$defs/id"
+            },
+            "revisionNumber": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "parentRevisionId": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "savedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "state",
+            "simulationId",
+            "revisionId",
+            "revisionNumber",
+            "parentRevisionId",
+            "createdAt",
+            "savedAt"
+          ]
+        }
+      ]
+    },
+    "shape": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "circle"
+            },
+            "radius": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 10000.0
+            }
+          },
+          "required": [
+            "type",
+            "radius"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "rectangle"
+            },
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 10000.0
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 10000.0
+            }
+          },
+          "required": [
+            "type",
+            "width",
+            "height"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "polygon"
+            },
+            "vertices": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/vector"
+              },
+              "minItems": 3,
+              "maxItems": 128
+            }
+          },
+          "required": [
+            "type",
+            "vertices"
+          ]
+        }
+      ]
+    },
+    "massModel": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "const": "mass"
+            },
+            "mass": {
+              "type": "number",
+              "minimum": 1e-06,
+              "maximum": 1000000.0
+            }
+          },
+          "required": [
+            "mode",
+            "mass"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "const": "density"
+            },
+            "arealDensity": {
+              "type": "number",
+              "minimum": 1e-06,
+              "maximum": 1000000.0
+            }
+          },
+          "required": [
+            "mode",
+            "arealDensity"
+          ]
+        }
+      ]
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "$ref": "#/$defs/name"
+        },
+        "motionType": {
+          "enum": [
+            "dynamic",
+            "static"
+          ]
+        },
+        "shape": {
+          "$ref": "#/$defs/shape"
+        },
+        "position": {
+          "$ref": "#/$defs/vector"
+        },
+        "angle": {
+          "type": "number",
+          "minimum": -10000.0,
+          "maximum": 10000.0
+        },
+        "velocity": {
+          "$ref": "#/$defs/vector"
+        },
+        "angularVelocity": {
+          "type": "number",
+          "minimum": -10000.0,
+          "maximum": 10000.0
+        },
+        "massModel": {
+          "$ref": "#/$defs/massModel"
+        },
+        "material": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "friction": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2
+            },
+            "staticFriction": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2
+            },
+            "restitution": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "friction",
+            "staticFriction",
+            "restitution"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "motionType",
+        "shape",
+        "position",
+        "angle",
+        "velocity",
+        "angularVelocity",
+        "massModel",
+        "material"
+      ]
+    },
+    "anchor": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "world"
+            },
+            "point": {
+              "$ref": "#/$defs/vector"
+            }
+          },
+          "required": [
+            "type",
+            "point"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "body"
+            },
+            "bodyId": {
+              "$ref": "#/$defs/id"
+            },
+            "localPoint": {
+              "$ref": "#/$defs/vector"
+            }
+          },
+          "required": [
+            "type",
+            "bodyId",
+            "localPoint"
+          ]
+        }
+      ]
+    },
+    "constraint": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/id"
+            },
+            "name": {
+              "$ref": "#/$defs/name"
+            },
+            "anchorA": {
+              "$ref": "#/$defs/anchor"
+            },
+            "anchorB": {
+              "$ref": "#/$defs/anchor"
+            },
+            "collideConnected": {
+              "type": "boolean"
+            },
+            "type": {
+              "const": "hinge"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "anchorA",
+            "anchorB",
+            "collideConnected",
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/id"
+            },
+            "name": {
+              "$ref": "#/$defs/name"
+            },
+            "anchorA": {
+              "$ref": "#/$defs/anchor"
+            },
+            "anchorB": {
+              "$ref": "#/$defs/anchor"
+            },
+            "collideConnected": {
+              "type": "boolean"
+            },
+            "type": {
+              "const": "rod"
+            },
+            "length": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 10000.0
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "anchorA",
+            "anchorB",
+            "collideConnected",
+            "type",
+            "length"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/id"
+            },
+            "name": {
+              "$ref": "#/$defs/name"
+            },
+            "anchorA": {
+              "$ref": "#/$defs/anchor"
+            },
+            "anchorB": {
+              "$ref": "#/$defs/anchor"
+            },
+            "collideConnected": {
+              "type": "boolean"
+            },
+            "type": {
+              "const": "rope"
+            },
+            "maxLength": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 10000.0
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "anchorA",
+            "anchorB",
+            "collideConnected",
+            "type",
+            "maxLength"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/id"
+            },
+            "name": {
+              "$ref": "#/$defs/name"
+            },
+            "anchorA": {
+              "$ref": "#/$defs/anchor"
+            },
+            "anchorB": {
+              "$ref": "#/$defs/anchor"
+            },
+            "collideConnected": {
+              "type": "boolean"
+            },
+            "type": {
+              "const": "spring"
+            },
+            "restLength": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 10000.0
+            },
+            "springConstant": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1000000.0
+            },
+            "dampingCoefficient": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000000.0
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "anchorA",
+            "anchorB",
+            "collideConnected",
+            "type",
+            "restLength",
+            "springConstant",
+            "dampingCoefficient"
+          ]
+        }
+      ]
+    },
+    "force": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "const": "constantForce"
+        },
+        "bodyId": {
+          "$ref": "#/$defs/id"
+        },
+        "vector": {
+          "$ref": "#/$defs/vector"
+        },
+        "localPoint": {
+          "$ref": "#/$defs/vector"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "bodyId",
+        "vector",
+        "localPoint"
+      ]
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "bodyId": {
+          "$ref": "#/$defs/id"
+        },
+        "quantity": {
+          "enum": [
+            "positionX",
+            "positionY",
+            "velocityX",
+            "velocityY",
+            "accelerationX",
+            "accelerationY",
+            "angularVelocity",
+            "kineticEnergy"
+          ]
+        },
+        "display": {
+          "enum": [
+            "meter",
+            "graph",
+            "both"
+          ]
+        },
+        "sampleEveryTicks": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1200
+        },
+        "maxSamples": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 72000
+        }
+      },
+      "required": [
+        "id",
+        "bodyId",
+        "quantity",
+        "display",
+        "sampleEveryTicks",
+        "maxSamples"
+      ]
+    },
+    "control": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/id"
+            },
+            "label": {
+              "$ref": "#/$defs/name"
+            },
+            "min": {
+              "type": "number",
+              "minimum": -1000000.0,
+              "maximum": 1000000.0
+            },
+            "max": {
+              "type": "number",
+              "minimum": -1000000.0,
+              "maximum": 1000000.0
+            },
+            "step": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1000000.0
+            },
+            "target": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "const": "body"
+                },
+                "bodyId": {
+                  "$ref": "#/$defs/id"
+                },
+                "parameter": {
+                  "enum": [
+                    "mass",
+                    "velocityX",
+                    "velocityY"
+                  ]
+                }
+              },
+              "required": [
+                "type",
+                "bodyId",
+                "parameter"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "min",
+            "max",
+            "step",
+            "target"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/id"
+            },
+            "label": {
+              "$ref": "#/$defs/name"
+            },
+            "min": {
+              "type": "number",
+              "minimum": -1000000.0,
+              "maximum": 1000000.0
+            },
+            "max": {
+              "type": "number",
+              "minimum": -1000000.0,
+              "maximum": 1000000.0
+            },
+            "step": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1000000.0
+            },
+            "target": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "const": "world"
+                },
+                "parameter": {
+                  "enum": [
+                    "gravityX",
+                    "gravityY"
+                  ]
+                }
+              },
+              "required": [
+                "type",
+                "parameter"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "min",
+            "max",
+            "step",
+            "target"
+          ]
+        }
+      ]
+    },
+    "simulation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "engine": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "enum": [
+                "matter-js",
+                "planck"
+              ]
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$",
+              "maxLength": 40
+            },
+            "adapterVersion": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$",
+              "maxLength": 40
+            },
+            "profile": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9.-]{0,79}$"
+            }
+          },
+          "required": [
+            "name",
+            "version",
+            "adapterVersion",
+            "profile"
+          ]
+        },
+        "timestepSeconds": {
+          "enum": [
+            0.016666666666666666,
+            0.008333333333333333,
+            0.004166666666666667
+          ]
+        },
+        "substeps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "solverIterations": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "position": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "velocity": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "constraint": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "required": [
+            "position",
+            "velocity",
+            "constraint"
+          ]
+        },
+        "sleeping": {
+          "const": false
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        }
+      },
+      "required": [
+        "engine",
+        "timestepSeconds",
+        "substeps",
+        "solverIterations",
+        "sleeping",
+        "seed"
+      ]
+    }
+  }
+}
