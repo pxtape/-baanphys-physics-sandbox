@@ -1,6 +1,6 @@
 # Roadmap
 
-Status: M0.5 numerical qualification completed; M1 remains planning only. Milestones are gated by evidence, not calendar dates. The user must authorize starting implementation; completion of these documents does not authorize M1.
+Status: M0.5 and M1-01 completed. M1-01.5 deployment configuration is ready; publication is blocked by GitHub integration permissions. M1-02 remains unstarted. Milestones are gated by evidence, not calendar dates. The user must authorize starting implementation; completion of these documents does not authorize M1.
 
 ## Delivery order and dependencies
 
@@ -34,3 +34,27 @@ Executed evidence: BENCHMARKS.md and `poc/engine-comparison/results`. Planck.js 
 M1 readiness: **READY for basic editor/S0 implementation after user approval**. See M1_TASKS.md for ordered tasks and acceptance. The earlier M0 qualification row is now complete for engine selection; its broader iPad/SVG/device work moves explicitly into early M1 acceptance because no editor or physical iPad was available. Persistence replay belongs to the implemented S0 exit gate, not this engine-only comparison. Atwood was not in this focused M0.5 execution and remains an M7 gate.
 
 Do not start M1 during this validation turn. M3/advanced capability qualification and release are still blocked by their unimplemented/failed/untested gates. No remote URL is configured; it does not block local work but must be agreed before collaboration/backup via push.
+
+## M1-01.5 — GitHub repository and continuous deployment
+
+Inserted after M1-01 and before M1-02 by user authorization. Deliver a public
+`baanphys-physics-sandbox` repository preserving all local commits, separate
+stable/development branches, Node 24 CI with npm ci and all existing checks,
+correct project base, gated Pages artifact deployment and a verified public
+preview (index, JS/CSS and refresh). No M1-02 feature is in scope.
+
+Configuration and local verification are complete. **External acceptance is
+BLOCKED**: GitHub authentication works as pxtape, but repository creation was
+denied (`Resource not accessible by integration`). No repository push, remote
+Actions success or public Pages verification is claimed. Required manual
+repository/access/Pages setup and exact resume commands are in DEPLOYMENT.md.
+M1-02 now depends on completing this publication gate and separate approval.
+
+## Publication resumed — 2026-11-18
+
+The owner-created public repository was found as `pxtape/-baanphys-physics-sandbox`.
+The original 404 was due to its leading hyphen. Access and workflow-based Pages
+are now confirmed. The integration cannot rename the repository (HTTP 403), so
+its existing name and `/-baanphys-physics-sandbox/` Vite base are retained. Local
+checks pass and publication is in progress. Earlier BLOCKED status is historical;
+remote Actions/live checks are pending. M1-02 remains NOT STARTED.

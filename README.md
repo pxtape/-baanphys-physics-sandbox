@@ -15,7 +15,7 @@ npm ci
 npm run dev
 ```
 
-Open **http://localhost:5173/**. The strict port option reports a conflict rather
+Open **http://localhost:5173/-baanphys-physics-sandbox/**. The strict port option reports a conflict rather
 than silently choosing another port. To use a different port:
 
 ```sh
@@ -37,7 +37,7 @@ npm run build
 npm run preview
 ```
 
-The production preview is **http://localhost:4173/**. `build` typechecks before
+The production preview is **http://localhost:4173/-baanphys-physics-sandbox/**. `build` typechecks before
 Vite emits `dist/`. `npm run test:watch` runs Vitest in watch mode. The root test
 suite is intentionally distinct from the archived PoC; it checks application
 architecture boundaries, including type-only/dynamic imports.
@@ -87,3 +87,24 @@ Rolling and advanced mechanisms remain unqualified and unimplemented.
 
 See [M1_TASKS.md](M1_TASKS.md), [PROGRESS.md](PROGRESS.md) and
 [DECISIONS.md](DECISIONS.md) for task status, review gates and engine decisions.
+
+## GitHub Pages deployment (M1-01.5)
+
+`.github/workflows/deploy.yml` checks every push and PR with Node **24**, `npm ci`,
+typecheck, lint, application tests, existing M0/physics verification, build and
+`npm run test:pages`. Only successful **main** runs deploy the verified `dist/`
+artifact; feature branches and PRs run checks only. No custom deployment secret
+is needed: deployment uses GitHub's Pages/OIDC permissions. Use development
+branches and PRs for subsequent work.
+
+Vite's base is `/-baanphys-physics-sandbox/` in local and deployed previews. The
+local URLs above include that path. After building, `npm run test:pages` checks
+that the project index, JavaScript, CSS and index refresh work (temporary local
+port 4175). Future history-based player routes need a separate Pages routing
+decision; this task does not add a router.
+
+Repository access is available at `pxtape/-baanphys-physics-sandbox`. The leading
+hyphen is part of the owner-created name and is retained; the integration cannot
+rename it. Pages is configured for GitHub Actions. Publication and remote checks
+are in progress. See [DEPLOYMENT.md](DEPLOYMENT.md) for the deployment runbook.
+M1-02 remains unstarted.
