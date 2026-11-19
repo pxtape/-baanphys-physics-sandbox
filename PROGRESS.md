@@ -546,3 +546,12 @@ main run 44589820342 and Pages passed. Live collision editor verified; public
 playback remains disabled. Next: teacher force vectors/local anchors, visible
 applied torque, world-force couples and a force/torque example. Existing native
 force stepping is reused without changing profile/settings or qualification.
+
+Forces PR #10 merged as ee4cea50d3cbbaffa809dc7cde1928ef6c6d6013; main/Pages
+run 44591225846 passed and live force controls were verified with playback disabled.
+Experimental hinges/rigid rods/unilateral ropes now use native joints in a separate
+teacher-only construction path. Certified policy/construction still reject them.
+Joint anchors render from solver snapshots; authoring moves world pivots coherently.
+442 tests and essential checks pass, including native slack-rope behavior and
+construction cleanup. Browser verified hinge swing, slack indication and pivot edits.
+Pulley is not approximated: Scene v1 has no pulley contract. No qualification claim.

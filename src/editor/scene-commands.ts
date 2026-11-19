@@ -1,3 +1,5 @@
+import { anchorPosition } from "../domain/anchors";
+import { checkExperimentalScene } from "../physics/experimental-policy";
 import example from "../../examples/falling-ball.scene.json";
 import type { SceneV1, Body } from "../domain/scene-v1.generated";
 import type { SceneDocument } from "../domain/scene";
@@ -55,7 +57,9 @@ export function validateDraft(
       ok: false,
       message: `${v.diagnostics[0]!.message} (${v.diagnostics[0]!.path || "/"})`,
     };
-  const policy = checkPlanckCapabilities(v.scene);
+  const policy = v.scene.constraints.length
+    ? checkExperimentalScene(v.scene)
+    : checkPlanckCapabilities(v.scene);
   if (!policy.policyCompatible)
     return {
       ok: false,
@@ -69,7 +73,9 @@ export function newScene(
     | "projectile"
     | "collision"
     | "sliding"
-    | "forces" = "free-fall",
+    | "forces"
+    | "pendulum"
+    | "rope" = "free-fall",
 ): SceneDocument {
   const s = structuredClone(example) as SceneV1;
   s.identity = { state: "draft" };
@@ -138,6 +144,36 @@ export function newScene(
     ];
   }
   s.constraints = [];
+  if (preset === "pendulum" || preset === "rope") {
+    const b = makeBody(preset === "pendulum" ? "rectangle" : "circle");
+    s.title = preset === "pendulum" ? "Hinged pendulum" : "Rope pendulum";
+    s.world.gravity = { x: 0, y: -9.81 };
+    b.position = {
+      x: Math.sin(0.5) * (preset === "pendulum" ? 1 : 2),
+      y: 5 - Math.cos(0.5) * (preset === "pendulum" ? 1 : 2),
+    };
+    if (preset === "pendulum") {
+      b.shape = { type: "rectangle", width: 0.3, height: 2 };
+      b.angle = 0.5;
+    }
+    s.bodies = [b, makeBody("floor")];
+    const shared = {
+      id: objectId(),
+      name: preset === "pendulum" ? "Pivot" : "Rope",
+      anchorA: {
+        type: "body" as const,
+        bodyId: b.id,
+        localPoint: { x: 0, y: preset === "pendulum" ? 1 : 0 },
+      },
+      anchorB: { type: "world" as const, point: { x: 0, y: 5 } },
+      collideConnected: false,
+    };
+    s.constraints = [
+      preset === "pendulum"
+        ? { ...shared, type: "hinge" }
+        : { ...shared, type: "rope", maxLength: 2 },
+    ];
+  }
   s.measurements = [];
   s.studentPolicy.controls = [];
   s.view.cameraCenter = { x: 0, y: 3 };
@@ -152,5 +188,41 @@ export function editScene(
 ) {
   const draft = structuredClone(scene) as SceneV1;
   change(draft);
+  // Authoring movement carries an attached world pivot with its body. Native
+  // runtime state never feeds back into these initial conditions.
+  for (const c of draft.constraints) {
+    const old = scene.constraints.find((q) => q.id === c.id);
+    if (!old) continue;
+    if (
+      (c.type === "rod" && old.type === "rod" && c.length !== old.length) ||
+      (c.type === "rope" &&
+        old.type === "rope" &&
+        c.maxLength !== old.maxLength)
+    )
+      continue;
+    for (const [key, other] of [
+      ["anchorA", "anchorB"],
+      ["anchorB", "anchorA"],
+    ] as const) {
+      const a = c[key],
+        b = c[other],
+        oldA = old[key],
+        oldB = old[other];
+      if (
+        a.type !== "body" ||
+        b.type !== "world" ||
+        oldA.type !== "body" ||
+        oldB.type !== "world" ||
+        b.point.x !== oldB.point.x ||
+        b.point.y !== oldB.point.y
+      )
+        continue;
+      if (!draft.bodies.some((q) => q.id === a.bodyId)) continue;
+      const before = anchorPosition(scene, oldA),
+        after = anchorPosition(draft, a);
+      b.point.x += after.x - before.x;
+      b.point.y += after.y - before.y;
+    }
+  }
   return validateDraft(draft);
 }

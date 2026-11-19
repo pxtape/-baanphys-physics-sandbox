@@ -1,3 +1,4 @@
+import { anchorPosition } from "../domain/anchors";
 import { useRef } from "react";
 import type { SceneDocument } from "../domain/scene";
 export const CAMERA = {
@@ -135,6 +136,51 @@ export function SceneCanvas({
       <text x="513" y="27" className="axis-title">
         y ↑
       </text>
+      {scene.constraints.map((c) => {
+        const aw = anchorPosition(scene, c.anchorA, poses),
+          bw = anchorPosition(scene, c.anchorB, poses),
+          a = toScreen(aw),
+          b = toScreen(bw),
+          slack =
+            c.type === "rope" &&
+            Math.hypot(aw.x - bw.x, aw.y - bw.y) < c.maxLength - 0.005;
+        return (
+          <g key={c.id} className="joint-indicator" pointerEvents="none">
+            <line
+              x1={a.x}
+              y1={a.y}
+              x2={b.x}
+              y2={b.y}
+              stroke={c.type === "rope" ? "#ad873d" : "#576fbd"}
+              strokeWidth="3"
+              strokeDasharray={c.type === "rope" ? "6 4" : undefined}
+            />
+            <circle
+              cx={b.x}
+              cy={b.y}
+              r={c.type === "hinge" ? 7 : 4}
+              fill="white"
+              stroke="#576fbd"
+              strokeWidth="2"
+            />
+            <circle cx={a.x} cy={a.y} r="3" fill="#576fbd" />
+            <text
+              x={(a.x + b.x) / 2 + 9}
+              y={(a.y + b.y) / 2 - 9}
+              fontSize="11"
+              fill="#6f7c93"
+            >
+              {c.type === "rope"
+                ? slack
+                  ? "Slack rope"
+                  : "Taut rope"
+                : c.type === "rod"
+                  ? "Rod"
+                  : "Hinge"}
+            </text>
+          </g>
+        );
+      })}
       {scene.bodies.map((body) => {
         const pose = poses.get(body.id) ?? body,
           p = toScreen(pose.position),
