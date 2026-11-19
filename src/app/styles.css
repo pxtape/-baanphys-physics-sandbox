@@ -950,3 +950,16 @@ h3 {
     margin-left: 0;
   }
 }
+
+.force-handle {
+  fill: #fff7e8;
+  stroke: #b77914;
+  stroke-width: 1.5;
+  cursor: grab;
+}
+.force-handle:hover {
+  fill: #f6d79c;
+}
+.force-handle:active {
+  cursor: grabbing;
+}

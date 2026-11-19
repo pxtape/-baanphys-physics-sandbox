@@ -666,6 +666,12 @@ export function App() {
               refreshHistory((n) => n + 1);
             }}
             onSelect={setSelected}
+            onForce={(id, value) =>
+              updateForce(id, (f) => {
+                if ("vector" in value) f.vector = { ...value.vector };
+                else f.localPoint = { ...value.localPoint };
+              })
+            }
             onTransform={(id, value) => {
               change((draft) => {
                 const target = draft.bodies.find((b) => b.id === id);

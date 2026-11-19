@@ -34,3 +34,25 @@ it("derives circle radius geometrically and rejects nonfinite input", () => {
     pointerTransform(circle, "resize", { x: 0, y: 0 }, { x: NaN, y: 7 }),
   ).toBeNull();
 });
+it("force dragging converts screen-equivalent displacement to Newtons and body-local points", async () => {
+  const { forcePointerTransform } = await import("./manipulation");
+  const force = { vector: { x: 0, y: 2 }, localPoint: { x: 0.5, y: 0 } };
+  const moved = forcePointerTransform(
+    rect,
+    force,
+    "point",
+    { x: 0, y: 0 },
+    { x: 0, y: 1 },
+  );
+  expect(moved).toEqual({ localPoint: { x: 1.5, y: expect.closeTo(0, 12) } });
+  expect(
+    forcePointerTransform(
+      rect,
+      force,
+      "vector",
+      { x: 0, y: 0 },
+      { x: 18 / 64, y: 0 },
+    ),
+  ).toEqual({ vector: { x: 1, y: 2 } });
+  expect(force.localPoint).toEqual({ x: 0.5, y: 0 });
+});
