@@ -35,6 +35,7 @@ function NumberField({
   step?: number;
 }) {
   const [draft, setDraft] = useState(String(value));
+  const cancelBlur = useRef(false);
   useEffect(() => setDraft(String(Number(value.toFixed(5)))), [value]);
   return (
     <label className="number-field">
@@ -51,11 +52,18 @@ function NumberField({
         onKeyDown={(e) => {
           if (e.key === "Enter") e.currentTarget.blur();
           if (e.key === "Escape") {
+            e.preventDefault();
+            cancelBlur.current = true;
             setDraft(String(value));
             e.currentTarget.blur();
           }
         }}
         onBlur={() => {
+          if (cancelBlur.current) {
+            cancelBlur.current = false;
+            setDraft(String(value));
+            return;
+          }
           const n = draft.trim() ? Number(draft) : NaN;
           if (!Number.isFinite(n) || !onCommit(n)) setDraft(String(value));
         }}
@@ -80,6 +88,7 @@ export function App() {
   const [fixedPivots, setFixedPivots] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const sceneRef = useRef(scene);
+  const inspectorRef = useRef<HTMLElement>(null);
   const [frame, setFrame] = useState<SimulationSnapshot | null>(null),
     [mode, setMode] = useState<"edit" | "running" | "paused" | "stopped">(
       "edit",
@@ -89,6 +98,9 @@ export function App() {
   const [collisionMode, setCollisionMode] = useState(true);
   const runtime = useRef<PhysicsRuntime | null>(null),
     locked = frame !== null;
+  useEffect(() => {
+    inspectorRef.current?.scrollTo({ top: 0 });
+  }, [selected, locked]);
   const body = scene.bodies.find((b) => b.id === selected),
     live = frame?.bodies.find((b) => b.id === selected);
   const poses = useMemo(
@@ -814,13 +826,57 @@ export function App() {
               : "Drag to position · Select an object to edit · Arrow keys move by 0.1 m (Shift: 0.5 m)"}
           </p>
         </section>
-        <aside className="inspector">
+        <aside className="inspector" ref={inspectorRef}>
           <div className="panel-heading">
             <h2>Inspector</h2>
             <span className="inspector-tag">SI UNITS</span>
           </div>
           {body ? (
             <>
+              <section className="live-readout">
+                <h3>{live ? "Live measurements" : "Initial measurements"}</h3>
+                <p className="live-rotation">
+                  Angle:{" "}
+                  {(((live?.angle ?? body.angle) * 180) / Math.PI).toFixed(1)}°
+                  · ω:{" "}
+                  {(live?.angularVelocity ?? body.angularVelocity).toFixed(2)}{" "}
+                  rad/s
+                </p>
+                <dl>
+                  <div>
+                    <dt>x</dt>
+                    <dd>
+                      {(live?.position.x ?? body.position.x).toFixed(3)}{" "}
+                      <small>m</small>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>y</dt>
+                    <dd>
+                      {(live?.position.y ?? body.position.y).toFixed(3)}{" "}
+                      <small>m</small>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>
+                      v<sub>x</sub>
+                    </dt>
+                    <dd>
+                      {(live?.velocity.x ?? body.velocity.x).toFixed(3)}{" "}
+                      <small>m/s</small>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>
+                      v<sub>y</sub>
+                    </dt>
+                    <dd>
+                      {(live?.velocity.y ?? body.velocity.y).toFixed(3)}{" "}
+                      <small>m/s</small>
+                    </dd>
+                  </div>
+                </dl>
+              </section>
               <label className="name-field">
                 Object name
                 <input
@@ -1317,50 +1373,7 @@ export function App() {
                 the floor’s restitution to 0 to control bounce with the body.
                 Reset before editing.
               </p>
-              <section className="live-readout">
-                <h3>Live measurements</h3>
-                <p className="live-rotation">
-                  Angle:{" "}
-                  {(((live?.angle ?? body.angle) * 180) / Math.PI).toFixed(1)}°
-                  · ω:{" "}
-                  {(live?.angularVelocity ?? body.angularVelocity).toFixed(2)}{" "}
-                  rad/s
-                </p>
-                <dl>
-                  <div>
-                    <dt>x</dt>
-                    <dd>
-                      {(live?.position.x ?? body.position.x).toFixed(3)}{" "}
-                      <small>m</small>
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>y</dt>
-                    <dd>
-                      {(live?.position.y ?? body.position.y).toFixed(3)}{" "}
-                      <small>m</small>
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>
-                      v<sub>x</sub>
-                    </dt>
-                    <dd>
-                      {(live?.velocity.x ?? body.velocity.x).toFixed(3)}{" "}
-                      <small>m/s</small>
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>
-                      v<sub>y</sub>
-                    </dt>
-                    <dd>
-                      {(live?.velocity.y ?? body.velocity.y).toFixed(3)}{" "}
-                      <small>m/s</small>
-                    </dd>
-                  </div>
-                </dl>
-              </section>
+
               <button
                 className="delete-button"
                 disabled={locked}

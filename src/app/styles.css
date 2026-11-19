@@ -977,3 +977,15 @@ h3 {
 .pivot-tool circle:hover {
   fill: #d8ddfc;
 }
+
+@media (min-width: 801px) {
+  .inspector {
+    max-height: max(280px, calc(100dvh - 300px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .stage-panel {
+    position: sticky;
+    top: 12px;
+  }
+}
