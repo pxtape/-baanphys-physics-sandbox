@@ -117,7 +117,7 @@ describe('strict atomic next-tick batches and permissions', () => {
     expect(Object.isFrozen(next.bodies[0]!.velocity)).toBe(true); expect(Reflect.set(next.bodies[0]!.position, 'x', 90)).toBe(false);
   });
   it.each(['stale', 'future', 'fractional', 'duplicate', 'negative sequence', 'unsafe sequence', 'missing', 'static', 'extra', 'kind', 'nonfinite', 'sparse', 'oversized', 'host', 'cycle', 'getter'])("rejects %s atomically before any native mutation", kind => {
-    const s = scene(); s.bodies.push({ ...structuredClone(s.bodies[0]!), id: id(5), motionType: 'static' });
+    const s = scene(); s.bodies.push({ ...structuredClone(s.bodies[0]!), id: id(5), motionType: 'static', position: { x: 10, y: 20 } });
     const r = open(s, true), before = snap(r), apply = vi.spyOn(Body.prototype, 'applyForce'), native = vi.spyOn(World.prototype, 'step');
     let batch: unknown = [input(s)]; const event = (batch as TickInput[])[0]!; const getter = vi.fn(() => 1);
     if (kind === 'stale') Reflect.set(event, 'tick', 0);
@@ -275,4 +275,10 @@ it('release exceptions cannot leak native errors or revive a disposed runtime', 
   vi.spyOn(World.prototype, 'destroyBody').mockImplementation(() => { throw Object.assign(new Error('native release'), { secretNativeHandle: {} }); });
   expect(() => r.dispose()).not.toThrow(); expect(() => r.dispose()).not.toThrow();
   expect(r.step([]).ok).toBe(false); expect(r.snapshot().ok).toBe(false);
+});
+
+
+it('preserves inclusive speed limits despite coordinate-subtraction roundoff', () => {
+  const s = scene(); s.bodies[0]!.velocity.x = 100; s.bodies[0]!.angularVelocity = 100; s.bodies[0]!.angle = 10000;
+  const r = open(s); const next = step(r); expect(next.bodies[0]!.velocity.x).toBe(100); expect(next.bodies[0]!.angularVelocity).toBe(100);
 });

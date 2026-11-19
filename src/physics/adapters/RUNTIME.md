@@ -55,7 +55,10 @@ ceilings and motion outside policy reject before successful frame publication.
 Observed per-substep displacement/h and rotation/h are also bounded by the same
 100 m/s and 100 rad/s policy ceilings, even if a suspect final native velocity
 was zeroed. This is a conservative numerical guard: large contact position
-corrections may reject; it is not a measured velocity/force observable.
+corrections may reject; it is not a measured velocity/force observable. Coordinate
+subtraction at the inclusive limit uses the existing 1e-12 scaled boundary
+comparison tolerance; instantaneous speed ceilings and numerical benchmark gates
+are unchanged.
 Contact impulses are not predictably bounded by authored initial values alone;
 post-check failure is a terminal rejection, not a claim that a native clamp never
 occurred internally. Post-state guards cannot prove the absence of every transient

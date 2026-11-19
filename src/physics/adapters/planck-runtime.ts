@@ -27,7 +27,7 @@ export function createSteppingSession(world: World | undefined, scene: SceneDocu
   const physical = new Map(properties.map(p => [p.source.id.toLowerCase(), p]));
   let tick = 0, disposed = false, terminal = false, busy = false;
   world!.setAutoClearForces(true);
-  const failure = (code: PhysicsDiagnosticCode, message: string): PhysicsResult<never> => freezeJson({ ok: false as const, diagnostics: [physicsDiagnostic(code, '', message, 'Native failure is terminal; construct a fresh validated world!. Global settings are never repaired automatically.')] });
+  const failure = (code: PhysicsDiagnosticCode, message: string): PhysicsResult<never> => freezeJson({ ok: false as const, diagnostics: [physicsDiagnostic(code, '', message, 'Native failure is terminal; construct a fresh validated world. Global settings are never repaired automatically.')] });
   const dispose = () => { if (disposed) return; disposed = true; try { release(); } catch { terminal = true; } finally { targets.clear(); world = undefined; } };
   const stop = (code: PhysicsDiagnosticCode, message: string): PhysicsResult<never> => {
     terminal = true; try { dispose(); } catch { /* Retain terminal status even if a native release throws. */ }
@@ -112,7 +112,7 @@ export function createSteppingSession(world: World | undefined, scene: SceneDocu
             const old = previous[i]!;
             const translation = Math.hypot(state.position.x - old.position.x, state.position.y - old.position.y);
             const rotation = Math.abs(state.angle - old.angle);
-            if (translation >= N.maxTranslation || rotation >= N.maxRotation || translation / h > L.maxSpeed || rotation / h > L.maxAngularSpeed) throw new Unsafe('NUMERICAL_UNSAFE');
+            if (translation >= N.maxTranslation || rotation >= N.maxRotation || translation > h * L.maxSpeed && !close(translation, h * L.maxSpeed) || rotation > h * L.maxAngularSpeed && !close(rotation, h * L.maxAngularSpeed)) throw new Unsafe('NUMERICAL_UNSAFE');
           });
           settings();
         }

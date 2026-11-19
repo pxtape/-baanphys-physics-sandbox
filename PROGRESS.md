@@ -466,7 +466,7 @@ couple separately follows an independent nonlinear ODE reference. Fresh engines
 with 120 ordered force-input ticks agree with max absolute SI error 0 (<=1e-10).
 This is not M1-03E full production benchmark qualification.
 
-Verification: 49 new runtime/input/lifecycle tests plus 372 existing tests (421)
+Verification: 50 new runtime/input/lifecycle tests plus 372 existing tests (422)
 pass; generated consistency/typecheck, lint, 25 M0 fixtures, 13 PoC verification
 tests and production build pass. Existing architecture warning remains non-failing.
 Exact commands/results and all limitations: src/physics/adapters/RUNTIME.md.

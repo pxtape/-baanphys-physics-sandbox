@@ -305,7 +305,7 @@ Saved world-fixed couple also checked against independent nonlinear ODE referenc
 These are D smoke tests, not E full benchmark qualification. No stepping through
 PoC or predetermined motion. Settings/geometry/mass/forces never silently repaired.
 
-49 new tests plus all 372 prior tests pass (421 total), generated consistency/
+50 new tests plus all 372 prior tests pass (422 total), generated consistency/
 typecheck, lint, 25 M0 fixtures, 13 existing PoC checks and build pass. Scene v1,
 profile identity/numerical settings, benchmark files and tolerances unchanged.
 Locked native exceptions detach the private JS graph for GC rather than spin on
