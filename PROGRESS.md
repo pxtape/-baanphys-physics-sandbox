@@ -4,11 +4,29 @@ Updated: 2026-11-19.
 
 ## Current state
 
-**M1-01 and M1-01.5 COMPLETE. M1-02 NOT STARTED — awaiting separate approval.**
+**M1-02 COMPLETE ON TASK BRANCH — awaiting acceptance/merge approval.** Branch: feat/m1-02-domain-validation. Main remains abf556e; GitHub Pages is unchanged. M1-03 and later tasks are NOT STARTED.
 
 - Repository: https://github.com/pxtape/-baanphys-physics-sandbox
 - Live foundation preview: https://pxtape.github.io/-baanphys-physics-sandbox/
 - Successful first main deployment: https://github.com/pxtape/-baanphys-physics-sandbox/actions/runs/44270951839
+
+## M1-02 implemented — 2026-11-19
+
+- Kept Scene v1 schema/example byte-for-byte unchanged. Added schema-generated TypeScript types and a single deep-readonly SceneDocument projection in domain; no alternate runtime representation, UI state or native-engine handles.
+- Added precompiled Draft 2020-12 validation with UUID/full date-time assertions, no coercion/default filling/field removal. A trusted development-only generator emits types/static ESM; check:generated runs before typecheck/build to reject drift. Runtime imports no Ajv compiler and cannot resolve input-selected schemas or URLs.
+- Added bounded JSON parsing (2 MiB UTF-8, depth 32, decoded duplicate keys), safe object snapshotting, canonical collection limits, finite-number checks and bounded structured diagnostics with JSON pointers and fixes. No rejected result contains a partial scene.
+- Added global UUID uniqueness and body references; constraint/force/control target rules; static velocity/material ordering; finite positive lamina properties; simple/CCW/strict-convex polygon area/edge/centroid checks; control ranges/defaults/mass mode; revision metadata and exact UTC timestamp ordering.
+- Successful data is detached from caller objects and deeply frozen, preserving IDs/settings/values. executionReady remains false until M1-03 trusted profile qualification; saved metadata warns that M1-07 must verify ownership/lineage/expected head.
+- Ran clean npm ci, generated consistency/typecheck, lint, 137 Vitest tests, existing 25 M0 fixtures, existing 13 PoC verification tests production build and Pages artifact/path/refresh smoke check successfully. Validation tests include no-compilation CSP-style execution and a complete browser-target bundle smoke test. No numerical benchmark was rerun or threshold weakened.
+- Added domain/schema modules, generated artifacts, validation/browser-bundle tests and codegen tool; updated package/lockfile, generated-code lint exclusion, README, src/README, src/schema/README, M1_TASKS and this progress record. Canonical schema, existing fixtures/tests, UI, workflow, Vite base, physics/benchmark sources and approved timing are unchanged.
+
+There is no visual feature to test in this task: the app and published foundation
+page remain unchanged. A browser-target ESM validation bundle was built and run,
+but real Safari/iPad was not tested. Engine profiles/envelopes and repository
+history checks remain later-task risks, not falsely certified capabilities.
+M1-02 is committed/pushed for PR review; see the completion report/Git history for
+its exact SHA and PR URL. No main push, merge or Pages deployment is authorized
+by this task. Stop before M1-03.
 
 ## M1-01.5 completed — 2026-11-19
 
@@ -74,7 +92,7 @@ Historical M1-01 scope: M0/M0.5 baseline commits and architecture decisions are 
 
 ## Not completed or claimed
 
-No actual Safari/iPad compatibility/performance measurement, cross-browser replay, repository/embedding integration tests or production Scene semantic validator exists. M1-01 now has a typechecked/built foundation application and a shared-Chrome launch/reload smoke check only. Rolling fails the executed common-friction feasibility variant; the original distinct-static/dynamic B6 case is not certified. Atwood, pulley/gear/motor behavior, slack-to-taut rope impacts, contact-force instrumentation and long-run stress qualification are not tested.
+No actual Safari/iPad compatibility/performance measurement, cross-browser replay or repository/embedding integration tests exist. M1-02 domain/schema/semantic validation is implemented on the review branch only; production physics and repository qualification remain deferred. M1-01 now has a typechecked/built foundation application and a shared-Chrome launch/reload smoke check only. Rolling fails the executed common-friction feasibility variant; the original distinct-static/dynamic B6 case is not certified. Atwood, pulley/gear/motor behavior, slack-to-taut rope impacts, contact-force instrumentation and long-run stress qualification are not tested.
 
 ## Git and deployment artifacts
 
@@ -87,7 +105,37 @@ schema and architecture tests/reports are intact.
 
 ## Next action
 
-Review the live foundation preview and this completion summary. M1-02 (Domain
-and validation) is NOT STARTED. Wait for separate user approval before proceeding.
-No blocker remains for M1-01.5. Physical iPad/Safari validation, production scene
-validation/physics, storage and embedded player remain later gates.
+Review the M1-02 pull request and acceptance evidence. Do not merge it or begin
+M1-03 without separate approval. The published foundation preview and main are
+stable. Remaining work includes trusted engine/profile/range qualification,
+repository lineage/ownership, UI/file flows and actual Safari/iPad validation.
+
+
+## M1-02 timestamp blocker resolution — 2026-11-19
+
+Final review of PR #1 at 383e090 found that tab-separated createdAt could bypass
+savedAt ordering. Fixed only UTC ordering: parse numeric calendar components,
+ignore the validated single separator, and compare exact decimal fraction digits.
+Canonical schema/generated artifacts and accepted formats are unchanged; no Date
+rounding, data rewriting, physics settings or threshold changes. Repository-wide
+search found no other production timestamp comparisons.
+
+Added 58 regression cases: exact reproduction, all 27 accepted separators against
+each other (729 pairs, forward/reverse/equivalent instants), equal timestamps,
+unequal-length/sub-millisecond fractions, day/leap-day/year/year-0000 boundaries,
+accepted leap seconds, invalid calendar/time/separator/zone cases and unchanged
+uppercase-Z requirement. Each case exercises both public validation entry points
+and checks authored timestamp preservation. Compatibility details are recorded
+in src/schema/README.md.
+
+Verification: targeted 58-case suite, full 195-test suite, generated consistency
+and typecheck, lint, 25 M0 fixtures/schema checks, 13 existing PoC verification
+tests and production build passed on Node 24.22.1. PoC verification reruns adapter probes/replay and checks archived
+evidence; no new benchmark qualification or changed tolerances is claimed.
+
+Blocker fix is submitted for review on feat/m1-02-domain-validation / PR #1;
+final acceptance remains pending review of the new commit. No merge, deployment
+or M1-03 implementation. Historical completion counts above describe the original
+383e090 submission. Remaining risks: pinned format-library compatibility (including
+permissive leap-second dates), future repository lineage checks and untested real
+Safari/iPad behavior. All successful documents still have executionReady=false.

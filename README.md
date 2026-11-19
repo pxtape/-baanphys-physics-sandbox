@@ -113,3 +113,21 @@ The public index, JavaScript, CSS and refresh returned 200; shared Chrome render
 and reloaded the page. Physical iPad/Safari testing remains outstanding.
 [DEPLOYMENT.md](DEPLOYMENT.md) records evidence and deployment commands. M1-01.5 is
 complete; M1-02 remains unstarted. The current website is a foundation preview.
+
+## M1-02 review branch — domain and validation
+
+The task branch adds strongly typed, schema-derived Scene v1 documents and
+`parseSceneJson` / `validateScene` in `src/schema/index.ts`. They validate input,
+structure/formats, references, geometry, resources, controls and identity; return
+structured diagnostics; and detach/freeze successful authored data. The existing
+schema and scene JSON format are unchanged. [API and limits](src/schema/README.md).
+
+Run `npm run generate:scene` after an intentional schema change;
+`npm run check:generated` (also part of typecheck/build) detects generated drift.
+Runtime validation is precompiled: no untrusted schema selection, network
+resolution, eval or runtime Ajv compiler. Successful validation is **inspection
+only**, always executionReady=false until a trusted production adapter qualifies
+it in M1-03. Saved identity also needs future repository lineage/ownership checks.
+
+This branch adds no UI/editor/physics adapter or domain-state store. The current
+Pages deployment and main remain unchanged until this PR is accepted and merged.

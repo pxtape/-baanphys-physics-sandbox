@@ -1,12 +1,12 @@
 # M1 implementation backlog and acceptance
 
-Status: **M1-01 and M1-01.5 COMPLETE**. GitHub Pages is live and verified; M1-02 and later tasks remain NOT STARTED. See DECISIONS.md and BENCHMARKS.md for the unchanged engine decision and numerical limitations.
+Status: **M1-02 implemented on feat/m1-02-domain-validation — awaiting review/merge approval**. Main and GitHub Pages remain unchanged. M1-03 and later tasks are NOT STARTED. See DECISIONS.md and BENCHMARKS.md for the unchanged engine decision and numerical limitations.
 
 | Task | Dependencies | Acceptance criteria | Status |
 | --- | --- | --- | --- |
 | M1-01 Tooling and boundaries | User approval | React/TypeScript strict/Vite project, pinned Planck 1.5.1 and lockfile, Node 24+ documented; tests/typecheck/build scripts; domain/physics/renderer/editor/persistence/player separation. `poc` has no production imports. Keep M0 baseline/history. | COMPLETE — awaiting review |
 | M1-01.5 GitHub repository and continuous deployment | M1-01; repository creation/write and Pages permissions | Preserve history in owner-created pxtape/-baanphys-physics-sandbox; feature/main separation; Node 24 npm ci, typecheck/lint/application/M0/PoC tests and build gates; correct Vite project base; deploy verified dist via GitHub Actions only from main; verify successful Actions, public index, JS/CSS and refresh. | COMPLETE — live deployment verified |
-| M1-02 Domain and validation | M1-01 and M1-01.5 | Typed Scene v1, bundled schema+format assertions, semantic/reference/geometry/resource validation and diagnostics. Immutable authored state distinct from UI/runtime. No eval or schema-selected network fetching. Existing invalid fixtures and all shape branches covered. | NOT STARTED |
+| M1-02 Domain and validation | M1-01 and M1-01.5 | Typed Scene v1, bundled schema+format assertions, semantic/reference/geometry/resource validation and diagnostics. Immutable authored state distinct from UI/runtime. No eval or schema-selected network fetching. Existing invalid fixtures and all shape branches covered. | COMPLETE — task branch, pending acceptance/merge |
 | M1-03 Production Planck adapter | M1-02 | Explicit mass/density/inertia, y-up SI and seconds, fixed dt=1/120 with 4 substeps, 12/12 solver mapping, zero restitution threshold, documented equal-friction profile and native contact/clamp envelope. Reject unsupported profile/materials/features. Production adapter reruns B1/B2/B3 and torque within unchanged tolerances; fresh-engine replay≤1e-10 in same runtime. | NOT STARTED |
 | M1-04 Shared renderer/viewport | M1-02 | SVG scene and camera separate from physics; inverse transforms at zoom/DPR; accessible object list and units. Pointer and keyboard selection; screen transforms cannot change solver states. Select named desktop/iPad baselines and check Safari rendering/input early. | NOT STARTED |
 | M1-05 S0 scene authoring | M1-03/04 | Circle, rectangle, finite static floor palette; select/drag; dimensions, position, mass/velocity inspector with validation; duplicate/delete. One gesture is one undo command; undo/redo survives repeated previews without authored-state leakage. | NOT STARTED |
@@ -19,13 +19,13 @@ Status: **M1-01 and M1-01.5 COMPLETE**. GitHub Pages is live and verified; M1-02
 ## Critical blockers versus later gates
 
 - **Critical technical blockers to start basic M1: none identified.** Local Git works; dependencies and executable evidence are available; Planck passes the defined basic mechanics at the chosen fixed settings.
-- **Workflow gate: M1-01.5 is complete.** Review the live preview and obtain separate approval before M1-02, which remains NOT STARTED.
+- **Workflow gate: M1-02 is implemented on its task branch.** Review the PR; do not merge or start M1-03 without separate approval.
 - Repository and live Pages preview are available under pxtape/-baanphys-physics-sandbox (leading hyphen retained). Origin and feature/main branches are configured; see DEPLOYMENT.md for verified deployment evidence.
 - Safari/real iPad access and named hardware must be arranged for compatibility/performance acceptance. No claim that these were tested in M0.5; lack of evidence blocks that acceptance/release, not headless/editor construction.
 - Rolling/no-slip fidelity, distinct static/dynamic friction, advanced rope transients, full 10-minute scene budget, Atwood/pulleys/gears/motors and cross-browser determinism remain separate gates. They cannot be exposed as certified capabilities based on this report.
 - BaanPhys host origins/auth/problem contract and server publication are unresolved M5 dependencies. Local player tests do not establish cross-device embedding.
 
-M1-01 and M1-01.5 are implemented and verified. Do not start M1-02 until separately instructed. Completion of the foundation does not imply that scene validation, authoring, simulation or embedding already works.
+M1-01 and M1-01.5 are accepted. M1-02 is implemented for review; do not merge it or start M1-03 until separately instructed. Completion of the foundation does not imply that scene validation, authoring, simulation or embedding already works.
 
 ## M1-01 completion evidence — 2026-11-17
 
@@ -66,3 +66,61 @@ Physical iPad/Safari compatibility remains untested, and future player deep-link
 refresh needs an explicit Pages routing design. The deployed page is the M1-01
 foundation, not an editor. No deployment blocker remains. Stop here; M1-02 is
 NOT STARTED and awaits separate approval.
+
+## M1-02 completion evidence — 2026-11-19 (task branch only)
+
+| Acceptance criterion | Result | Evidence |
+| --- | --- | --- |
+| Strongly typed Scene v1 | PASS | Types generated from the unchanged canonical schema; deep-readonly SceneDocument projection; compile-time discriminant/readonly tests. No alternate runtime scene model. |
+| Bundled schema + format assertions | PASS | Draft 2020-12 standalone validator, full calendar-aware date-time and UUID assertions; malformed UUID/date/unknown-field/version and Unicode-length tests; deterministic check:generated runs before typecheck/build. |
+| Semantic/reference/geometry/resource checks | PASS | UUID collisions/typed references, all constraint-data branches, static/material/physical checks, control/identity rules, simple CCW convex polygons and centroid/area/edge limits; exact and over-limit resource cases. |
+| Structured actionable diagnostics | PASS | Stable codes, RFC6901 pointers, stage/severity/message/suggestion; input/schema/semantic failure tests, pointer escaping and bounded/truncated reports; no partial scene on rejection. |
+| Immutable authored data | PASS | Deep freeze, detached caller data, readonly type guards, unchanged IDs/JSON round-trip. No UI/runtime store or engine handles introduced. |
+| Invalid fixtures and every supported shape | PASS | Existing 25 M0 structural fixtures preserved; additional invalid cases; circles, rectangles/static floors and convex 3/8/128-vertex polygons, mass/density and shape-boundary tests. |
+| Safe rejection/no eval or schema-selected network | PASS | Bounded duplicate-aware JSON parser, nonfinite/cycle/getter/class/sparse/prototype tests, fetch spy, static validator with dynamic compilation disabled, complete browser-target bundle execution test. |
+
+Local results: 137 Vitest tests (113 validation cases + 23 existing architecture
+cases + 1 browser-target bundle test), 25 M0 fixtures and 13 existing PoC tests
+pass. Typecheck (including generated-artifact consistency), lint and production
+build and Pages artifact/path/refresh smoke check pass; build retains the existing foundation UI assets. No benchmark or
+schema format/threshold was changed. Commands/API/limits: src/schema/README.md.
+
+All successful documents remain executionReady=false: M1-03 must independently
+gate trusted profiles, numerical envelopes, material/geometry support and all
+student ranges. Saved documents warn that ownership/lineage/expected head need
+M1-07. No physics adapter/profile registry, canvas, editor store, file UI,
+persistence or migrations were implemented. Physical iPad/Safari remains untested.
+
+Main remains abf556e and Pages is not deployed from this task branch. Commit/PR
+identity is supplied in the completion report and Git history. Stop after review
+submission; merging and M1-03 require separate approval.
+
+
+## M1-02 timestamp blocker resolution — 2026-11-19
+
+Final review of PR #1 at 383e090 found that tab-separated createdAt could bypass
+savedAt ordering. Fixed only UTC ordering: parse numeric calendar components,
+ignore the validated single separator, and compare exact decimal fraction digits.
+Canonical schema/generated artifacts and accepted formats are unchanged; no Date
+rounding, data rewriting, physics settings or threshold changes. Repository-wide
+search found no other production timestamp comparisons.
+
+Added 58 regression cases: exact reproduction, all 27 accepted separators against
+each other (729 pairs, forward/reverse/equivalent instants), equal timestamps,
+unequal-length/sub-millisecond fractions, day/leap-day/year/year-0000 boundaries,
+accepted leap seconds, invalid calendar/time/separator/zone cases and unchanged
+uppercase-Z requirement. Each case exercises both public validation entry points
+and checks authored timestamp preservation. Compatibility details are recorded
+in src/schema/README.md.
+
+Verification: targeted 58-case suite, full 195-test suite, generated consistency
+and typecheck, lint, 25 M0 fixtures/schema checks, 13 existing PoC verification
+tests and production build passed on Node 24.22.1. PoC verification reruns adapter probes/replay and checks archived
+evidence; no new benchmark qualification or changed tolerances is claimed.
+
+Blocker fix is submitted for review on feat/m1-02-domain-validation / PR #1;
+final acceptance remains pending review of the new commit. No merge, deployment
+or M1-03 implementation. Historical completion counts above describe the original
+383e090 submission. Remaining risks: pinned format-library compatibility (including
+permissive leap-second dates), future repository lineage checks and untested real
+Safari/iPad behavior. All successful documents still have executionReady=false.

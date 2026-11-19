@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 5173 --strictPort",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "npm run check:generated && tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -16,9 +16,12 @@
     "preview": "vite preview --host 0.0.0.0 --port 4173 --strictPort",
     "test:m0": "python tests/check_m0.py",
     "test:poc": "npm --prefix poc/engine-comparison test",
-    "test:pages": "node tooling/verify-pages.mjs"
+    "test:pages": "node tooling/verify-pages.mjs",
+    "generate:scene": "node tooling/generate-scene.mjs",
+    "check:generated": "node tooling/generate-scene.mjs --check"
   },
   "dependencies": {
+    "ajv-formats": "3.0.1",
     "planck": "1.5.1",
     "react": "19.3.1",
     "react-dom": "19.3.1"
@@ -29,7 +32,9 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.3.0",
+    "ajv": "8.17.1",
     "eslint": "10.15.0",
+    "json-schema-to-typescript": "15.0.4",
     "typescript": "5.9.3",
     "typescript-eslint": "8.73.0",
     "vite": "8.3.8",
