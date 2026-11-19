@@ -50,3 +50,14 @@ engine body/fixture/world/contact objects, opaque handles or writable authored
 references. Existing lint boundaries plus public declaration-emission and exact
 key/type tests guard native leakage. Numerical correctness and actual runtime
 isolation/replay remain later gates, not passes inferred from these contracts.
+
+## M1-03B capability-policy layer
+
+See [CAPABILITY_LIMITS.md](CAPABILITY_LIMITS.md) for the current API, provisional
+bounds, evidence, mixing semantics and mandatory future runtime checks. The
+historical M1-03A description above defines the contracts; B now implements pure
+policy checks, not a runtime. `checkPlanckContract` remains identity/settings-only;
+`checkPlanckCapabilities` and the facade revalidate a detached scene, reject
+unsupported requirements and return explicit `policyCompatible` separately from
+`profileCompatible`. Both retain `executionReady=false`; initialize always fails.
+No native Planck module is imported and no authored model/schema changes.

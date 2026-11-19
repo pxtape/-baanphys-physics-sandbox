@@ -4,7 +4,7 @@ Updated: 2026-11-19.
 
 ## Current state
 
-**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B is planned only and B–E implementation remains unstarted. Historical records below describe their original checkpoints.
+**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B capability policy is implemented on feat/m1-03b-capability-validation for review; C–E remain unstarted. Historical records below describe their original checkpoints.
 
 - Repository: https://github.com/pxtape/-baanphys-physics-sandbox
 - Live foundation preview: https://pxtape.github.io/-baanphys-physics-sandbox/
@@ -233,3 +233,44 @@ features, structured bounded diagnostics and all-or-nothing qualification. It
 lists boundary/negative/isolation tests, expected affected files and explicit
 acceptance. Policy success alone cannot certify execution before C/D/E evidence.
 No B production code was implemented. Stop and await user approval.
+
+
+## M1-03B capability-policy review submission — 2026-11-19
+
+Started feat/m1-03b-capability-validation from latest accepted main
+61f78a0743a95668a3b6052e865d632cfb87a438. Pure, native-free checks reuse canonical
+SceneDocument and M1-02 bounded structural/semantic validation on a detached copy.
+Exact Planck 1.5.1 / adapter 1.0.0 / profile/settings are retained. New explicit
+policyCompatible is separate from profileCompatible; executionReady remains false.
+The facade delegates to the full policy and always rejects initialization without
+partial native construction. No world/fixtures/solver/UI are implemented.
+
+Checks include circle/rectangle/static floors, centred simple strict-convex CCW
+3–8 vertex polygons, equal authored friction, initial occupied extent, mass/density
+and lamina inertia bounds, vector norms, summed force/torque, conservative linear
+and angular acceleration, initial prospective native clamp ceilings and pairwise
+dynamic mass ratios. Entire simultaneous mass/velocity/gravity control intervals
+are evaluated, including cross-body combinations and worst mass/inertia.
+All constraints and requested measurements reject policy. Constant-force data is
+policy-eligible for planned C/D, still unimplemented/execution-blocked. Diagnostics
+are deterministic, actionable JSON pointers capped at 100 with truncation.
+
+All continuous envelope bounds are labelled provisional, not inferred accuracy
+certificates. Sources/native constants/mixing semantics and limitations are in
+src/physics/CAPABILITY_LIMITS.md. Contact impulses, long-run state, permissions,
+resource-bounded dynamic input snapshots and aggregate pre-substep checks remain
+future C/D obligations; no live-force controls are exposed.
+
+Verification: 46 new capability tests plus all 224 existing tests pass (270 total),
+generated consistency/typecheck, lint, 25 M0 fixtures, 13 existing PoC verification
+tests and production build pass. Existing TSImportType deprecation warning remains
+non-failing. No tests/thresholds/schema/dependencies/PoC sources were changed.
+Tests cover shape and material boundaries, norms/forces/torque, mass ratios,
+interacting ranges, all four constraints, requested measurements, mixed failures,
+bounded deterministic diagnostics, immutability and no partial runtime.
+
+Changed files are the capability checker/tests/limits documentation/constants,
+separate contract facade, narrow diagnostic/result exports, profile gate wording,
+physics README, M1_TASKS.md and this record. Main/Pages remain unchanged. Await
+acceptance before any merge or C/D/E work; runtime and numerical qualification,
+real Safari/iPad and long-duration stress remain unexecuted risks.
