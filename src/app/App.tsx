@@ -14,6 +14,7 @@ import {
   positionBody,
   setBodyMotion,
   setMassMode,
+  moveWorldPivot,
 } from "../editor/scene-commands";
 import type { ObjectKind } from "../editor/scene-commands";
 import { SceneCanvas } from "../renderer/SceneCanvas";
@@ -544,6 +545,16 @@ export function App() {
         >
           Velocity vectors
         </button>
+        {(["hinge", "rod", "rope"] as const).map((type) => (
+          <button
+            key={type}
+            disabled={locked || body?.motionType !== "dynamic"}
+            onClick={() => addJoint(type)}
+            title="Attach selected body to a world anchor"
+          >
+            + {type[0]!.toUpperCase() + type.slice(1)}
+          </button>
+        ))}
         <span>
           Ctrl/⌘ Z · Ctrl/⌘ D · arrows · vectors display-scaled/capped
         </span>
@@ -666,6 +677,10 @@ export function App() {
               refreshHistory((n) => n + 1);
             }}
             onSelect={setSelected}
+            onPivot={(id, point) => {
+              if (!locked)
+                acceptScene(moveWorldPivot(sceneRef.current, id, point));
+            }}
             onForce={(id, value) =>
               updateForce(id, (f) => {
                 if ("vector" in value) f.vector = { ...value.vector };

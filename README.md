@@ -193,3 +193,8 @@ With a force-bearing body selected, drag the amber square to edit force directio
 and magnitude; drag the amber circle to move its body-local application point.
 The display scale is capped; numeric Newton components remain authoritative.
 Force handles edit initial conditions and are locked during preview.
+
+Quick + Hinge / + Rod / + Rope buttons attach the selected dynamic body to a
+world anchor. Drag its blue crosshair to move the anchor and body together;
+Fixed-pivot drag instead moves a body around the anchor. Numeric joint fields
+remain available. All these mechanisms are experimental, not numerically certified.

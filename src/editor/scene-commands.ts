@@ -431,3 +431,33 @@ export function setMassMode(
         : { mode, arealDensity: p.value.arealDensity };
   });
 }
+
+/** Move a fixed pivot and its attached body together; validate the entire mechanism. */
+export function moveWorldPivot(
+  scene: SceneDocument,
+  id: string,
+  point: { x: number; y: number },
+) {
+  if (!scene.constraints.some((c) => c.id === id))
+    return { ok: false as const, message: "Select an existing joint." };
+  return editScene(scene, (s) => {
+    const c = s.constraints.find((c) => c.id === id)!;
+    const a =
+        c.anchorA.type === "world"
+          ? c.anchorA
+          : c.anchorB.type === "world"
+            ? c.anchorB
+            : null,
+      b =
+        c.anchorA.type === "body"
+          ? c.anchorA
+          : c.anchorB.type === "body"
+            ? c.anchorB
+            : null;
+    if (!a || !b) return;
+    const body = s.bodies.find((q) => q.id === b.bodyId)!;
+    body.position.x += point.x - a.point.x;
+    body.position.y += point.y - a.point.y;
+    a.point = { ...point };
+  });
+}
