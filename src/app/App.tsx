@@ -649,6 +649,14 @@ export function App() {
               refreshHistory((n) => n + 1);
             }}
             onSelect={setSelected}
+            onTransform={(id, value) => {
+              change((draft) => {
+                const target = draft.bodies.find((b) => b.id === id);
+                if (!target) return;
+                if ("angle" in value) target.angle = value.angle;
+                else target.shape = value.shape;
+              });
+            }}
             onMove={(id, x, y) => {
               if (!locked)
                 acceptScene(

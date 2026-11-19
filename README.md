@@ -175,3 +175,7 @@ it in M1-03. Saved identity also needs future repository lineage/ownership check
 
 That earlier task added no UI/editor/physics adapter or domain-state store. The
 MVP branch described above now builds on the accepted domain and runtime.
+
+Select an object to reveal canvas handles: drag the circular handle to rotate,
+or the square handle to resize about its centre. Undo reverses a complete drag.
+Numeric property fields remain available for precise and keyboard-based edits.

@@ -891,3 +891,20 @@ h3 {
     min-height: 36px;
   }
 }
+
+.transform-handles circle,
+.transform-handles rect {
+  fill: #fff;
+  stroke: #2d7a86;
+  stroke-width: 2;
+}
+.transform-handles .rotate-handle {
+  cursor: grab;
+}
+.transform-handles .resize-handle {
+  cursor: nwse-resize;
+}
+.transform-handles circle:hover,
+.transform-handles rect:hover {
+  fill: #c7e8e5;
+}
