@@ -571,3 +571,12 @@ centre/IDs are preserved and each gesture is undoable. 448 tests plus typecheck,
 lint, M0/PoC, build/Pages and editor/collision browser checks pass. Browser also
 verified rotated resizing, one-gesture undo and handles hidden during simulation.
 No schema, native settings, qualification thresholds or public execution changes.
+
+Canvas handles PR #13 merged as 642cb9b20ae3e9aba1bb41dab47bb15bfdea1a3d;
+main/Pages 44598918409 passed; live handles and public lockout verified.
+Added explicit fixed/movable switching (never deletes forces/joints), mass/density
+controls using existing SI physical properties, an inclined-plane example and
+quarter/half-speed scheduling. Solver dt/substeps/iterations unchanged. 450 tests,
+typecheck/generated consistency, lint, build and Pages checks passed; Chromium
+verified density/motion edits, inclined sliding (vx=0.428 m/s in smoke run), and
+Step still advancing 1/120 s at quarter speed. No numerical certification claim.

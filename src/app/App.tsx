@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { physicalProperties } from "../physics/physical-properties";
 import { anchorPosition, localPoint } from "../domain/anchors";
 import { SceneHistory } from "../editor/history";
 import type { SceneV1 } from "../domain/scene-v1.generated";
@@ -11,6 +12,8 @@ import {
   objectId,
   duplicateBody,
   positionBody,
+  setBodyMotion,
+  setMassMode,
 } from "../editor/scene-commands";
 import type { ObjectKind } from "../editor/scene-commands";
 import { SceneCanvas } from "../renderer/SceneCanvas";
@@ -74,6 +77,7 @@ export function App() {
   const [, refreshHistory] = useState(0);
   const [showVelocity, setShowVelocity] = useState(false);
   const [fixedPivots, setFixedPivots] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
   const sceneRef = useRef(scene);
   const [frame, setFrame] = useState<SimulationSnapshot | null>(null),
     [mode, setMode] = useState<"edit" | "running" | "paused" | "stopped">(
@@ -122,7 +126,7 @@ export function App() {
         );
         return;
       }
-      accumulator += delta;
+      accumulator += delta * playbackRate;
       let count = 0;
       while (accumulator >= 1 / 120 && count < 8) {
         if (!stepOnce()) return;
@@ -147,7 +151,7 @@ export function App() {
       cancelAnimationFrame(handle);
       document.removeEventListener("visibilitychange", visibility);
     };
-  }, [mode, stepOnce]);
+  }, [mode, stepOnce, playbackRate]);
   function change(edit: (draft: SceneV1) => void) {
     if (locked) return false;
     return acceptScene(editScene(sceneRef.current, edit));
@@ -417,7 +421,8 @@ export function App() {
       | "sliding"
       | "forces"
       | "pendulum"
-      | "rope",
+      | "rope"
+      | "incline",
   ) {
     if (locked) return;
     const s = newScene(name);
@@ -461,19 +466,21 @@ export function App() {
             aria-label="Scene example"
             disabled={locked}
             value={
-              scene.title === "Projectile motion"
-                ? "projectile"
-                : scene.title === "Body collision"
-                  ? "collision"
-                  : scene.title === "Hinged pendulum"
-                    ? "pendulum"
-                    : scene.title === "Rope pendulum"
-                      ? "rope"
-                      : scene.title === "Force and torque"
-                        ? "forces"
-                        : scene.title === "Sliding block"
-                          ? "sliding"
-                          : "free-fall"
+              scene.title === "Inclined plane"
+                ? "incline"
+                : scene.title === "Projectile motion"
+                  ? "projectile"
+                  : scene.title === "Body collision"
+                    ? "collision"
+                    : scene.title === "Hinged pendulum"
+                      ? "pendulum"
+                      : scene.title === "Rope pendulum"
+                        ? "rope"
+                        : scene.title === "Force and torque"
+                          ? "forces"
+                          : scene.title === "Sliding block"
+                            ? "sliding"
+                            : "free-fall"
             }
             onChange={(e) =>
               preset(
@@ -484,7 +491,8 @@ export function App() {
                   | "sliding"
                   | "forces"
                   | "pendulum"
-                  | "rope",
+                  | "rope"
+                  | "incline",
               )
             }
           >
@@ -492,6 +500,7 @@ export function App() {
             <option value="projectile">Projectile motion</option>
             <option value="collision">Body collision</option>
             <option value="sliding">Sliding block</option>
+            <option value="incline">Inclined plane</option>
             <option value="forces">Force and torque</option>
             <option value="pendulum">Hinged pendulum</option>
             <option value="rope">Rope pendulum</option>
@@ -702,6 +711,18 @@ export function App() {
                 ↺ Reset
               </button>
             </div>
+            <label className="playback-rate">
+              Speed
+              <select
+                aria-label="Playback speed"
+                value={playbackRate}
+                onChange={(e) => setPlaybackRate(Number(e.target.value))}
+              >
+                <option value="1">1×</option>
+                <option value="0.5">½×</option>
+                <option value="0.25">¼×</option>
+              </select>
+            </label>
             <output className="clock" aria-label="Elapsed simulation time">
               {(frame?.timeSeconds ?? 0).toFixed(3)} <small>s</small>
             </output>
@@ -796,6 +817,30 @@ export function App() {
                   ? "STATIC SURFACE"
                   : "DYNAMIC BODY"}
               </p>
+              <label className="name-field">
+                Motion
+                <select
+                  aria-label="Body motion"
+                  disabled={locked}
+                  value={body.motionType}
+                  onChange={(e) => {
+                    acceptScene(
+                      setBodyMotion(
+                        sceneRef.current,
+                        body.id,
+                        e.target.value as "static" | "dynamic",
+                      ),
+                    );
+                  }}
+                >
+                  <option value="dynamic">Movable body</option>
+                  <option value="static">Fixed surface</option>
+                </select>
+              </label>
+              <p className="property-hint">
+                Fixing a body sets its initial linear and angular velocity to
+                zero. Mass and geometry are retained.
+              </p>
               <h3>Initial position</h3>
               <div className="field-pair">
                 <NumberField
@@ -874,19 +919,65 @@ export function App() {
               />
               {body.motionType === "dynamic" && (
                 <>
-                  <NumberField
-                    label="Mass"
-                    unit="kg"
-                    value={
-                      body.massModel.mode === "mass" ? body.massModel.mass : 0
-                    }
-                    disabled={locked}
-                    onCommit={(mass) =>
-                      updateBody((b) => {
-                        b.massModel = { mode: "mass", mass };
-                      })
-                    }
-                  />
+                  <label className="name-field">
+                    Mass model
+                    <select
+                      aria-label="Mass model"
+                      disabled={locked}
+                      value={body.massModel.mode}
+                      onChange={(e) =>
+                        acceptScene(
+                          setMassMode(
+                            sceneRef.current,
+                            body.id,
+                            e.target.value as "mass" | "density",
+                          ),
+                        )
+                      }
+                    >
+                      <option value="mass">Fixed mass</option>
+                      <option value="density">
+                        Areal density (uniform 2D)
+                      </option>
+                    </select>
+                  </label>
+                  {body.massModel.mode === "mass" ? (
+                    <NumberField
+                      label="Mass"
+                      unit="kg"
+                      value={body.massModel.mass}
+                      disabled={locked}
+                      onCommit={(mass) =>
+                        updateBody((b) => {
+                          b.massModel = { mode: "mass", mass };
+                        })
+                      }
+                    />
+                  ) : (
+                    <NumberField
+                      label="Areal density"
+                      unit="kg/m²"
+                      value={body.massModel.arealDensity}
+                      disabled={locked}
+                      onCommit={(arealDensity) =>
+                        updateBody((b) => {
+                          b.massModel = { mode: "density", arealDensity };
+                        })
+                      }
+                    />
+                  )}
+                  {(() => {
+                    const p = physicalProperties(body);
+                    return p.ok ? (
+                      <p className="property-hint">
+                        Uniform 2D body: {p.value.mass.toPrecision(4)} kg · I ={" "}
+                        {p.value.inertia.toPrecision(4)} kg·m².{" "}
+                        {body.massModel.mode === "density"
+                          ? "Resizing changes mass."
+                          : "Resizing keeps mass fixed."}
+                      </p>
+                    ) : null;
+                  })()}
                   <h3>Initial velocity</h3>
                   <div className="field-pair">
                     <NumberField

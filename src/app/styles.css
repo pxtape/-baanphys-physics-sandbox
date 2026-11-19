@@ -908,3 +908,39 @@ h3 {
 .transform-handles rect:hover {
   fill: #c7e8e5;
 }
+
+.playback-rate {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #78909c;
+  font-size: 11px;
+  margin-left: auto;
+}
+.playback-rate select {
+  padding: 7px;
+  background: white;
+  border: 1px solid #dbe3e6;
+  border-radius: 5px;
+}
+.property-hint {
+  font-size: 11px;
+  color: #7b8f9a;
+  line-height: 1.5;
+}
+.name-field select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #dbe3e6;
+  border-radius: 5px;
+  background: white;
+}
+@media (max-width: 600px) {
+  .playbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .playback-rate {
+    margin-left: 0;
+  }
+}
