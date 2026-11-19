@@ -1,5 +1,8 @@
 # M1 implementation backlog and acceptance
 
+Current priority: visible experimental collision sandbox; feature PR pending.
+M1-03E remains BLOCKED; public/certified initialization remains disabled.
+
 **Current strategy: MVP-first.** Teacher editor vertical slice is ready for review.
 M1-03E remains BLOCKED; this does not qualify the public physics adapter.
 

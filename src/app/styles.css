@@ -755,3 +755,36 @@ h3 {
     font-size: 22px;
   }
 }
+
+.preview-model {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10px;
+  margin: 10px 0 4px;
+  flex-wrap: wrap;
+}
+.preview-model select {
+  font-size: 11px;
+  padding: 7px;
+  min-height: 36px;
+  max-width: 320px;
+  background: #fffef8;
+}
+.material-hint {
+  font-size: 10px;
+  color: #7c929c;
+  line-height: 1.6;
+}
+.live-rotation {
+  font-size: 10px;
+  color: #60848b;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
+}
+.rotation-mark {
+  stroke: #117e80;
+  stroke-width: 2;
+  pointer-events: none;
+  vector-effect: non-scaling-stroke;
+}

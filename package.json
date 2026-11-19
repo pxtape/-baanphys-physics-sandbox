@@ -19,7 +19,8 @@
     "test:pages": "node tooling/verify-pages.mjs",
     "generate:scene": "node tooling/generate-scene.mjs",
     "check:generated": "node tooling/generate-scene.mjs --check",
-    "test:editor": "node tooling/verify-editor.mjs"
+    "test:editor": "node tooling/verify-editor.mjs",
+    "test:collisions": "node tooling/verify-collisions.mjs"
   },
   "dependencies": {
     "ajv-formats": "3.0.1",

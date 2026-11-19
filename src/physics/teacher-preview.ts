@@ -77,6 +77,7 @@ export function possibleContact(
 export function createTeacherPreview(
   input: SceneDocument,
   teacherOptIn: boolean,
+  options: { collisions?: boolean } = {},
 ): PhysicsResult<PhysicsRuntime> {
   if (
     (!import.meta.env.DEV &&
@@ -93,26 +94,33 @@ export function createTeacherPreview(
       "Invalid authored scene. Correct the scene before previewing.",
     );
   const scene = v.scene;
+  // Explicit teacher UI choice, never an authored profile/qualification flag.
+  const collisions = options.collisions === true;
+  const duration = collisions ? 30 : 5;
   if (
     scene.forces.length ||
     scene.constraints.length ||
     scene.measurements.length ||
     scene.studentPolicy.controls.length ||
     scene.bodies.some(
-      (b) => b.shape.type === "polygon" || b.angularVelocity !== 0,
+      (b) =>
+        b.shape.type === "polygon" ||
+        (collisions
+          ? Math.abs(b.angularVelocity) > 20
+          : b.angularVelocity !== 0),
     ) ||
     Math.hypot(scene.world.gravity.x, scene.world.gravity.y) > 20 ||
     scene.bodies.some((b) => Math.hypot(b.velocity.x, b.velocity.y) > 20)
   )
     return blocked(
-      "This preview supports circles and rectangles in free flight, gravity ≤20 m/s² and initial speed ≤20 m/s. Rotation, applied forces, mechanisms and student controls are unavailable.",
+      "This preview supports circles/rectangles, gravity ≤20 m/s², initial speed ≤20 m/s and, in collision mode, initial spin ≤20 rad/s. Applied forces, mechanisms and student controls are unavailable.",
     );
   const made = constructSteppingRuntime(scene);
   if (!made.ok) return made;
   const runtime = made.value;
   let disposed = false;
   const first = runtime.snapshot();
-  if (!first.ok || possibleContact(scene, first.value)) {
+  if (!first.ok || (!collisions && possibleContact(scene, first.value))) {
     runtime.dispose();
     return blocked(
       "Objects are too close for a collision-free preview. Move them apart.",
@@ -135,11 +143,14 @@ export function createTeacherPreview(
         this.dispose();
         return frame;
       }
-      if (frame.value.timeSeconds >= 5 || possibleContact(scene, frame.value)) {
+      if (
+        frame.value.timeSeconds >= duration ||
+        (!collisions && possibleContact(scene, frame.value))
+      ) {
         this.dispose();
         return blocked(
-          frame.value.timeSeconds >= 5
-            ? "Five-second experimental preview limit reached."
+          frame.value.timeSeconds >= duration
+            ? `${duration}-second experimental preview limit reached.`
             : "Stopped before possible contact. Collision simulation is not qualified.",
         );
       }

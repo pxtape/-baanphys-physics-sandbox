@@ -520,3 +520,23 @@ e91732815ffa0946c720a8d47baa93e2a1e379c7 on local branch
 investigation/m1-03e-collision-diagnostics. MVP branch includes all accepted tests;
 it neither removes nor converts E qualification failures into passes.
 Submit one feature PR; do not merge or deploy automatically.
+
+## Core-physics priority: experimental collisions — 2026-11-19
+
+Feature branch from accepted main, excluding the separate Save/Load PR. Teacher
+UI now defaults to explicit uncertified collision mode: real native body/floor
+contacts, friction/restitution, visible spin and existing size/angle editing.
+Added body-collision/sliding examples; free-flight mode and its original contact
+stop remain available. Collision runs are bounded to 30 s. Certified/public
+initialization stays blocked; default public build execution stays disabled.
+No engine settings, Scene v1, thresholds or qualification failures were changed.
+Three focused functional solver regressions and a browser walkthrough cover
+rebound, body exchange and friction. These are not numerical qualification.
+No forces/joints/ropes, Save/Load, auth, cloud or embed implementation is included.
+Verification: typecheck/generated consistency, lint, all 435 tests (432 existing
+plus 3 focused contact regressions), 25 M0 fixtures, 13 existing PoC checks,
+build and Pages smoke pass. Chromium verified visible bounce, body collisions,
+sliding, material/size/spin edits and unchanged authored state. Original free-flight,
+editing/touch and default-production lockout browser checks also passed.
+No Safari/iPad hardware or numerical certification is claimed. Screenshot:
+docs/preview/experimental-collisions.png. Submit one PR; no merge/deployment.
