@@ -4,7 +4,7 @@ Updated: 2026-11-19.
 
 ## Current state
 
-**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B capability policy is ACCEPTED and merged (PR #3, 1250efd); C is ACCEPTED and merged (PR #4, 68d856e); D is planned only and D/E remain unstarted. Historical records below describe their original checkpoints.
+**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B capability policy is ACCEPTED and merged (PR #3, 1250efd); C is ACCEPTED and merged (PR #4, 68d856e); D is implemented on feat/m1-03d-fixed-stepping for review; E remains unstarted. Historical records below describe their original checkpoints.
 
 - Repository: https://github.com/pxtape/-baanphys-physics-sandbox
 - Live foundation preview: https://pxtape.github.io/-baanphys-physics-sandbox/
@@ -429,3 +429,47 @@ world isolation and deterministic replay. Policy/input rejection leaves a usable
 unchanged run; unsafe native mutation requires terminal failure and fresh-world
 recovery. No D/E implementation, schema/settings/threshold/benchmark change.
 Stop for approval before implementing D.
+
+
+## M1-03D fixed stepping and forces — 2026-11-19 (task branch)
+
+Started from latest accepted main 0918bf672b15e6d6e259200727bd1452538bc896.
+Extended private construction with an internal step/snapshot/dispose runtime;
+public initialization and executionReady remain blocked. Exactly four h=1/480
+native calls with velocity/position iterations 12/12 per dt=1/120 tick. Gravity,
+saved world-fixed Newton forces and rotating local application points are applied
+with correct torque and substep force persistence. Stable UUID/sequence ordering,
+authored immutability and detached frozen snapshots/time are preserved.
+
+Added strict plain-data batch validation: <=200 inputs, existing 2 MiB/depth32
+budgets, exact field/kind/vector types, no getters/cycles/host objects/unknown
+fields/nonfinite data, exact next safe-integer tick, unique sequences, dynamic
+UUID resolution and trusted default-deny permission. Copied/frozen loads combine
+with saved loads for current-state force/torque/acceleration/motion envelope checks.
+Invalid batches never mutate native state/tick/forces and keep the run usable.
+
+Settings/world/geometry/mass/material/type and finite/motion checks surround native
+force and step boundaries and snapshot publication. Native exceptions or unsafe
+state are terminal; no fake rollback, successful partial frame or time increment.
+Old snapshots remain immutable. Cleanup destroys unlocked bodies; for a native
+exception leaving World locked, private references are released for GC without
+spinning, unlocking to resume, leaking handles or changing another world's state.
+Native cleanup exceptions are contained and all ownership references detached.
+Shared Settings cannot be isolated per world; foreign drift is not repaired.
+
+Production runtime smoke (1 s, independent references): gravity y=15.084781250000004,
+vy=-9.809999999999963; 4 N/2 kg x=1.002083333333331,vx=1.9999999999999942;
+tick-oriented 1 Nm couple omega=1.1999956309556095,angle=.6012489133781379.
+Position/angle errors ~.2083%, below unchanged 1% preliminary gates. Couple force
+directions update once per logical tick, not per substep; saved constant-world
+couple separately follows an independent nonlinear ODE reference. Fresh engines
+with 120 ordered force-input ticks agree with max absolute SI error 0 (<=1e-10).
+This is not M1-03E full production benchmark qualification.
+
+Verification: 49 new runtime/input/lifecycle tests plus 372 existing tests (421)
+pass; generated consistency/typecheck, lint, 25 M0 fixtures, 13 PoC verification
+tests and production build pass. Existing architecture warning remains non-failing.
+Exact commands/results and all limitations: src/physics/adapters/RUNTIME.md.
+No schema, benchmark source/result/threshold, dependency or approved setting change.
+Main/Pages unchanged; no UI/editor/persistence, scheduler, mechanisms or E work.
+Stop for final review before merge/deployment or further milestone implementation.
