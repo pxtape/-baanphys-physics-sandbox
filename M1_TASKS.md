@@ -1,16 +1,16 @@
 # M1 implementation backlog and acceptance
 
-Status: **M1-02 ACCEPTED AND MERGED** (PR #1, 00fe21a; exact reviewed head dfdaa65). Main CI and Pages passed. Historical records below retain their original checkpoint context. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); M1-03B is ACCEPTED and merged (PR #3, 1250efd); C is implemented on a task branch for review; D/E are NOT STARTED. See DECISIONS.md and BENCHMARKS.md for the unchanged engine decision and numerical limitations.
+Status: **M1-02 ACCEPTED AND MERGED** (PR #1, 00fe21a; exact reviewed head dfdaa65). Main CI and Pages passed. Historical records below retain their original checkpoint context. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); M1-03B is ACCEPTED and merged (PR #3, 1250efd); M1-03C is ACCEPTED and merged (PR #4, 68d856e); D is planned only and D/E implementation is NOT STARTED. See DECISIONS.md and BENCHMARKS.md for the unchanged engine decision and numerical limitations.
 
 | Task | Dependencies | Acceptance criteria | Status |
 | --- | --- | --- | --- |
 | M1-01 Tooling and boundaries | User approval | React/TypeScript strict/Vite project, pinned Planck 1.5.1 and lockfile, Node 24+ documented; tests/typecheck/build scripts; domain/physics/renderer/editor/persistence/player separation. `poc` has no production imports. Keep M0 baseline/history. | COMPLETE — awaiting review |
 | M1-01.5 GitHub repository and continuous deployment | M1-01; repository creation/write and Pages permissions | Preserve history in owner-created pxtape/-baanphys-physics-sandbox; feature/main separation; Node 24 npm ci, typecheck/lint/application/M0/PoC tests and build gates; correct Vite project base; deploy verified dist via GitHub Actions only from main; verify successful Actions, public index, JS/CSS and refresh. | COMPLETE — live deployment verified |
 | M1-02 Domain and validation | M1-01 and M1-01.5 | Typed Scene v1, bundled schema+format assertions, semantic/reference/geometry/resource validation and diagnostics. Immutable authored state distinct from UI/runtime. No eval or schema-selected network fetching. Existing invalid fixtures and all shape branches covered. | ACCEPTED — PR #1 merged as 00fe21a |
-| M1-03 Production Planck adapter | M1-02 | Explicit mass/density/inertia, y-up SI and seconds, fixed dt=1/120 with 4 substeps, 12/12 solver mapping, zero restitution threshold, documented equal-friction profile and native contact/clamp envelope. Reject unsupported profile/materials/features. Production adapter reruns B1/B2/B3 and torque within unchanged tolerances; fresh-engine replay≤1e-10 in same runtime. | A/B ACCEPTED; C REVIEW; D/E NOT STARTED |
+| M1-03 Production Planck adapter | M1-02 | Explicit mass/density/inertia, y-up SI and seconds, fixed dt=1/120 with 4 substeps, 12/12 solver mapping, zero restitution threshold, documented equal-friction profile and native contact/clamp envelope. Reject unsupported profile/materials/features. Production adapter reruns B1/B2/B3 and torque within unchanged tolerances; fresh-engine replay≤1e-10 in same runtime. | A/B/C ACCEPTED; D/E NOT STARTED |
 | M1-03A Adapter contracts | Accepted M1-02 | Engine-independent initialization/step/disposal interfaces; ordered tick inputs and SI snapshots; structured diagnostics; exact Planck 1.5.1 / adapter 1.0.0 / profile identity; mismatches reject, all scenes stay non-executable; immutable authored data and no native type leakage. No world construction or solver. | ACCEPTED — PR #2 merged as 15a8f48 |
 | M1-03B Capability validation | Accepted M1-03A | Pure policy with exact identity/settings; supported geometry, equal-friction material, explicit provisional numerical bounds and full interacting student ranges; unsupported constraints/measurements reject; bounded deterministic diagnostics; immutable source; executionReady=false and no native construction. | ACCEPTED — PR #3 merged as 1250efd |
-| M1-03C SI properties/private construction | Accepted M1-03B | Explicit uniform-lamina area/mass/density/COM inertia; private deterministic Planck body/fixture construction after complete preflight; exact geometry preservation, SI initial state, atomic cleanup and snapshot/dispose-only harness. Public execution remains blocked. | IMPLEMENTED — task branch, awaiting review |
+| M1-03C SI properties/private construction | Accepted M1-03B | Explicit uniform-lamina area/mass/density/COM inertia; private deterministic Planck body/fixture construction after complete preflight; exact geometry preservation, SI initial state, atomic cleanup and snapshot/dispose-only harness. Public execution remains blocked. | ACCEPTED — PR #4 merged as 68d856e |
 | M1-04 Shared renderer/viewport | M1-02 | SVG scene and camera separate from physics; inverse transforms at zoom/DPR; accessible object list and units. Pointer and keyboard selection; screen transforms cannot change solver states. Select named desktop/iPad baselines and check Safari rendering/input early. | NOT STARTED |
 | M1-05 S0 scene authoring | M1-03/04 | Circle, rectangle, finite static floor palette; select/drag; dimensions, position, mass/velocity inspector with validation; duplicate/delete. One gesture is one undo command; undo/redo survives repeated previews without authored-state leakage. | NOT STARTED |
 | M1-06 Preview controls | M1-03/05 | Play/Pause/Reset/Step, visible simulation time; Step advances one logical dt, no variable integration step; hidden-tab/backlog policy. Save/reset use authored initial values. Slow motion may follow as M2 completion but cannot alter h. | NOT STARTED |
@@ -264,3 +264,25 @@ src/physics/adapters/CONSTRUCTION.md. Test teardown alone restores injected drif
 
 Fix submitted on the existing PR #4 branch; final acceptance remains pending.
 No merge, deployment, schema/threshold/settings change or M1-03D implementation.
+
+
+## M1-03C final acceptance — 2026-11-19
+
+PASS at exact head a57e1a072fe14ea467aff6d6344734abcde791de. Push/PR CI runs
+44512430119/44512438037 succeeded; no unresolved review threads. CRITICAL=0,
+MAJOR=0; MINOR: pre-existing non-failing architecture tooling deprecation warning.
+Original drift reproduction, 80 settings regressions, all 372 automated tests,
+typecheck/generated consistency, lint, 25 M0 fixtures, 13 PoC checks and build pass.
+Five additional temporary adversarial probes passed: final audit settings drift,
+SettingsInternal inconsistency, drift during cleanup/repeated construction,
+circle-radius corruption and post-construction/disposal isolation. No confirmed
+remaining C defect required production changes or new regression commits.
+
+Normal merge 68d856ed99506890b3903301980607be3636b01e, main CI/Pages run
+44513487864 passed and deployment API confirmed that SHA. Public index/JS/CSS and
+refresh returned HTTP 200/correct MIME; code assets match local build. This is an
+HTTP artifact check, not Safari/iPad qualification. M1-03C is ACCEPTED; all public
+executionReady values remain false. Shared post-construction settings monitoring
+is explicitly a D obligation, not a per-world isolation guarantee supplied by C.
+
+Next plan: [M1-03D_PLAN.md](M1-03D_PLAN.md). No D implementation. Await approval.

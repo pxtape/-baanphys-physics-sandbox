@@ -4,7 +4,7 @@ Updated: 2026-11-19.
 
 ## Current state
 
-**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B capability policy is ACCEPTED and merged (PR #3, 1250efd); C is implemented on feat/m1-03c-world-construction for review; D/E remain unstarted. Historical records below describe their original checkpoints.
+**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B capability policy is ACCEPTED and merged (PR #3, 1250efd); C is ACCEPTED and merged (PR #4, 68d856e); D is planned only and D/E remain unstarted. Historical records below describe their original checkpoints.
 
 - Repository: https://github.com/pxtape/-baanphys-physics-sandbox
 - Live foundation preview: https://pxtape.github.io/-baanphys-physics-sandbox/
@@ -383,3 +383,49 @@ src/physics/adapters/CONSTRUCTION.md. Test teardown alone restores injected drif
 
 Fix submitted on the existing PR #4 branch; final acceptance remains pending.
 No merge, deployment, schema/threshold/settings change or M1-03D implementation.
+
+
+## M1-03C final independent acceptance — 2026-11-19
+
+Reviewed exact PR #4 head a57e1a072fe14ea467aff6d6344734abcde791de. Required
+push/PR runs 44512430119/44512438037 passed; no unresolved review threads. No
+CRITICAL/MAJOR findings remain. The only MINOR maintenance warning is the existing
+non-failing TSImportType argument deprecation in architecture tooling.
+
+Mandatory C checks PASS: original linearSlop reproduction now rejects; complete
+22 native/27 derived settings guard; pre-allocation and construction/publication
+checks; vertex/skin preservation; no partial session; atomic cleanup and prior
+session preservation; no production settings restoration; immutable source/stable
+IDs/frozen detached SI snapshots; public executionReady=false. Explicit mass and
+COM inertia/native setup remain at the unchanged analytical tolerances.
+
+Executed typecheck/generated sync, lint, all 372 automated tests (including the
+80 settings regressions), 25 M0 fixtures, 13 PoC verification tests and build.
+Also ran 5 temporary adapter-local adversarial probes with all passing: drift
+inside final fixture audit, derived SettingsInternal inconsistency there, settings
+drift during cleanup and rejection on repeated construction, circle radius change
+without vertices, and post-construction global interference/snapshot isolation/
+use-after-disposal. Temporary probe source preserved in /tmp for this environment;
+not counted as a committed regression suite. No remaining defect needed a fix.
+
+Post-construction shared settings changes can affect future simulation but do not
+alter the private tick-zero snapshot data observed in C; D must guard actual
+stepping and reject untrustworthy frames. Checkpoints are not isolation against
+hostile transient mutation between observations. This documented D risk does not
+permit public execution in C. Failed cleanup-path construction still rejects,
+leaves foreign globals untouched and does not destroy prior world bodies.
+
+PR #4 normal merge SHA: 68d856ed99506890b3903301980607be3636b01e.
+Main CI and Pages run 44513487864 succeeded at that SHA; deployment API confirmed
+it. Public HTML/JS/CSS returned 200/correct MIME, assets matched local build and
+repeat index refresh was identical. No visual/device qualification was claimed.
+Documentation follow-up commits have separate CI/deployed SHA records in Actions;
+retain the reviewed-code merge evidence above.
+
+Created M1-03D_PLAN.md only: exact four-substep stepping/12-12 mapping, persistent
+and off-centre forces, strict bounded atomic input validation/permissions,
+snapshots/time, settings/envelope guards, terminal numerical failures, disposal,
+world isolation and deterministic replay. Policy/input rejection leaves a usable
+unchanged run; unsafe native mutation requires terminal failure and fresh-world
+recovery. No D/E implementation, schema/settings/threshold/benchmark change.
+Stop for approval before implementing D.
