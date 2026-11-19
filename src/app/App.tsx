@@ -67,6 +67,7 @@ export function App() {
     );
   const [optIn, setOptIn] = useState(false),
     [notice, setNotice] = useState("");
+  const [collisionMode, setCollisionMode] = useState(true);
   const runtime = useRef<PhysicsRuntime | null>(null),
     locked = frame !== null;
   const body = scene.bodies.find((b) => b.id === selected),
@@ -177,7 +178,9 @@ export function App() {
       return;
     }
     if (!runtime.current) {
-      const created = createTeacherPreview(scene, optIn);
+      const created = createTeacherPreview(scene, optIn, {
+        collisions: collisionMode,
+      });
       if (!created.ok) {
         setNotice(created.diagnostics[0]!.message);
         return;
@@ -190,7 +193,7 @@ export function App() {
     setMode(single ? "paused" : "running");
     if (single) stepOnce();
   }
-  function preset(name: "free-fall" | "projectile") {
+  function preset(name: "free-fall" | "projectile" | "collision" | "sliding") {
     if (locked) return;
     const s = newScene(name);
     setScene(s);
@@ -231,14 +234,28 @@ export function App() {
             aria-label="Scene example"
             disabled={locked}
             value={
-              scene.title === "Projectile motion" ? "projectile" : "free-fall"
+              scene.title === "Projectile motion"
+                ? "projectile"
+                : scene.title === "Body collision"
+                  ? "collision"
+                  : scene.title === "Sliding block"
+                    ? "sliding"
+                    : "free-fall"
             }
             onChange={(e) =>
-              preset(e.target.value as "free-fall" | "projectile")
+              preset(
+                e.target.value as
+                  | "free-fall"
+                  | "projectile"
+                  | "collision"
+                  | "sliding",
+              )
             }
           >
             <option value="free-fall">Free fall</option>
             <option value="projectile">Projectile motion</option>
+            <option value="collision">Body collision</option>
+            <option value="sliding">Sliding block</option>
           </select>
         </label>
       </div>
@@ -394,11 +411,32 @@ export function App() {
           <div className="preview-notice">
             <span className="experiment-icon">!</span>
             <div>
-              <strong>Experimental teacher preview · free flight only</strong>
+              <strong>
+                Experimental physics · collision accuracy is NOT certified
+              </strong>
               <p>
-                Stops before possible contact. Collisions, rolling and
-                mechanisms are not qualified.
+                {collisionMode
+                  ? "Real solver contacts and bouncing; overlap, tunnelling and numerical errors are possible. Rolling and mechanisms are not certified."
+                  : "Free flight stops before possible contact. Collision accuracy remains unqualified."}
               </p>
+              <label className="preview-model">
+                Preview model
+                <select
+                  aria-label="Preview model"
+                  value={collisionMode ? "collisions" : "free-flight"}
+                  disabled={locked}
+                  onChange={(e) =>
+                    setCollisionMode(e.target.value === "collisions")
+                  }
+                >
+                  <option value="collisions">
+                    Experimental collisions · 30 s
+                  </option>
+                  <option value="free-flight">
+                    Free flight only · stop before contact
+                  </option>
+                </select>
+              </label>
               {teacherEnabled ? (
                 <label className="opt-in">
                   <input
@@ -578,8 +616,61 @@ export function App() {
                   </div>
                 </>
               )}
+              {body.motionType === "dynamic" && (
+                <NumberField
+                  label="Angular velocity"
+                  unit="rad/s"
+                  value={body.angularVelocity}
+                  disabled={locked}
+                  onCommit={(angularVelocity) =>
+                    updateBody((b) => {
+                      b.angularVelocity = angularVelocity;
+                    })
+                  }
+                />
+              )}
+              <h3>Contact material</h3>
+              <div className="field-pair">
+                <NumberField
+                  label="Friction"
+                  unit="μ"
+                  value={body.material.friction}
+                  step={0.05}
+                  disabled={locked}
+                  onCommit={(friction) =>
+                    updateBody((b) => {
+                      b.material.friction = friction;
+                      b.material.staticFriction = friction;
+                    })
+                  }
+                />
+                <NumberField
+                  label="Restitution"
+                  unit="0–1"
+                  value={body.material.restitution}
+                  step={0.05}
+                  disabled={locked}
+                  onCommit={(restitution) =>
+                    updateBody((b) => {
+                      b.material.restitution = restitution;
+                    })
+                  }
+                />
+              </div>
+              <p className="material-hint">
+                Pairs use geometric-mean friction and maximum restitution. Set
+                the floor’s restitution to 0 to control bounce with the body.
+                Reset before editing.
+              </p>
               <section className="live-readout">
                 <h3>Live measurements</h3>
+                <p className="live-rotation">
+                  Angle:{" "}
+                  {(((live?.angle ?? body.angle) * 180) / Math.PI).toFixed(1)}°
+                  · ω:{" "}
+                  {(live?.angularVelocity ?? body.angularVelocity).toFixed(2)}{" "}
+                  rad/s
+                </p>
                 <dl>
                   <div>
                     <dt>x</dt>

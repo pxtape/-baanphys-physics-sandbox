@@ -49,6 +49,9 @@ try {
     const play = page.getByRole("button", { name: "Play simulation" }),
       step = page.getByRole("button", { name: "Step simulation" }),
       clock = page.getByLabel("Elapsed simulation time");
+    await page
+      .getByLabel("Preview model", { exact: true })
+      .selectOption("free-flight");
     assert(await play.isDisabled(), "Preview must require opt-in");
     await page
       .getByRole("button", { name: "Circle", exact: false })

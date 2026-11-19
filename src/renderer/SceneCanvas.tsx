@@ -188,6 +188,15 @@ export function SceneCanvas({
             )}
             {body.motionType === "dynamic" && (
               <>
+                {shape.type === "circle" && (
+                  <line
+                    className="rotation-mark"
+                    x1="0"
+                    y1="0"
+                    x2={shape.radius * 64 * 0.75}
+                    y2="0"
+                  />
+                )}
                 <circle className="centre-dot" r="3" />
                 <text
                   className="object-label"

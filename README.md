@@ -5,8 +5,8 @@ dragging, SI property editing, gravity, velocity and live measurements. Uses the
 accepted Scene v1 domain and Planck.js **1.5.1** runtime.
 
 **Experimental preview only:** M1-03E remains blocked. Local teacher preview
-supports free flight, stops before possible contact, and never enables the public
-adapter. No certified collision, rolling, rope or pulley behavior is offered.
+offers explicitly labelled, uncertified collisions through the real Planck solver.
+The certified/public adapter remains blocked. No certified collision, rolling, rope or pulley behavior is offered.
 
 ## Run locally
 
@@ -32,16 +32,21 @@ development does not require special sandbox permissions.
 
 ## Try the teacher MVP
 
-1. Open the local URL above. Choose Free fall or Projectile motion, or add objects.
+1. Open the local URL above. Choose Free fall, Projectile motion, Body collision or Sliding block, or add objects.
 2. Select an object in the scene/list. Drag it, use arrow keys (Shift: 0.5 m), or
    edit SI fields; blur/Enter commits a field. Invalid values leave the scene intact.
 3. Check **Enable experimental preview**, then Play/Pause, Step (1/120 s), or Reset.
-   Reset restores authored conditions and unlocks editing. Possible contact stops
-   before stepping; move objects apart to continue a different experiment.
+   Reset restores authored conditions and unlocks editing. Set Friction and
+   Restitution on both bodies and the floor; resize/rotate before running.
 
-Scenes are in-memory drafts: reload loses edits. Preview supports circles/rectangles,
-no spin/forces/mechanisms, gravity and initial speed <=20 SI, and at most 5 seconds.
-Conservative swept bounds include polygon skin; near objects may stop early.
+Scenes are in-memory drafts: reload loses edits. Experimental collisions run for
+up to 30 s with actual contacts, bounce, friction and angular motion. Gravity and
+initial linear/angular speed are limited to 20 SI; existing runtime envelope and
+native-settings checks still apply. Pairs use geometric-mean friction and maximum
+restitution; the floor defaults to restitution 0. Free-flight mode retains its
+original pre-contact stop and 5 s limit. Overlap, tunnelling, jitter and numerical
+errors remain possible; no collision/rolling accuracy is certified. Applied-force
+controls, joints and ropes are not included in this change.
 
 Default `npm run build` provides authoring with preview **disabled**. Development
 builds enable the explicit teacher opt-in; an intentionally controlled teacher build
@@ -50,6 +55,8 @@ Pages. This is a workspace/build boundary, not authenticated roles; no backend a
 is implemented. Embedded/student surfaces reject execution, and the public adapter
 still reports executionReady=false. Main/Pages are unchanged until acceptance.
 
+`npm run test:collisions` checks visible rebound, body collisions, sliding and
+material/rotation controls against the dev server.
 `npm run test:editor` runs Chromium integration checks against the running dev
 server (override `EDITOR_TEST_URL` / `BAANPHYS_CHROMIUM_PATH` if needed). Install
 Playwright Chromium with `npx playwright install chromium` and point the latter

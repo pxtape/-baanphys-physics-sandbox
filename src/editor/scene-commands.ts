@@ -39,7 +39,11 @@ export function makeBody(kind: ObjectKind, id = objectId(), offset = 0): Body {
     velocity: { x: 0, y: 0 },
     angularVelocity: 0,
     massModel: { mode: "mass", mass: 1 },
-    material: { friction: 0, staticFriction: 0, restitution: 1 },
+    material: {
+      friction: 0.4,
+      staticFriction: 0.4,
+      restitution: kind === "floor" ? 0 : 0.75,
+    },
   };
 }
 export function validateDraft(
@@ -60,13 +64,20 @@ export function validateDraft(
   return { ok: true, scene: v.scene };
 }
 export function newScene(
-  preset: "free-fall" | "projectile" = "free-fall",
+  preset: "free-fall" | "projectile" | "collision" | "sliding" = "free-fall",
 ): SceneDocument {
   const s = structuredClone(example) as SceneV1;
   s.identity = { state: "draft" };
-  s.title = preset === "projectile" ? "Projectile motion" : "Free fall";
+  s.title =
+    preset === "projectile"
+      ? "Projectile motion"
+      : preset === "collision"
+        ? "Body collision"
+        : preset === "sliding"
+          ? "Sliding block"
+          : "Free fall";
   s.description =
-    "Teacher-authored initial conditions. Experimental free-flight preview only.";
+    "Teacher-authored initial conditions. Experimental teacher simulation; collision accuracy is not certified.";
   s.simulation = {
     ...structuredClone(PLANCK_SETTINGS),
     engine: { ...PLANCK_IDENTITY },
@@ -77,6 +88,29 @@ export function newScene(
   if (preset === "projectile") {
     s.bodies[0]!.position = { x: -3, y: 2.5 };
     s.bodies[0]!.velocity = { x: 4, y: 5 };
+  }
+  if (preset === "collision") {
+    const a = makeBody("circle"),
+      b = makeBody("circle");
+    a.name = "Circle A";
+    b.name = "Circle B";
+    a.position = { x: -2, y: 2 };
+    b.position = { x: 1, y: 2 };
+    a.velocity.x = 3;
+    b.velocity.x = -1;
+    a.material.restitution = 0.9;
+    b.material.restitution = 0.9;
+    s.bodies = [a, b, makeBody("floor")];
+    s.world.gravity = { x: 0, y: 0 };
+  }
+  if (preset === "sliding") {
+    const block = makeBody("rectangle");
+    block.position = { x: -3, y: 0.41 };
+    block.velocity.x = 4;
+    block.material = { friction: 0.6, staticFriction: 0.6, restitution: 0 };
+    const floor = makeBody("floor");
+    floor.material = { ...block.material };
+    s.bodies = [block, floor];
   }
   s.forces = [];
   s.constraints = [];

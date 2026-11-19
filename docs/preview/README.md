@@ -10,3 +10,7 @@ play/pause/reset/step, stable IDs, contact stop and student/iframe lockout.
 A separate run against `npm run preview` with `EDITOR_TEST_URL` and
 `--public-build` verified that the default production build disables execution.
 This is browser verification, not Safari/iPad hardware or physics qualification.
+
+Experimental contacts: [collision editor screenshot](experimental-collisions.png).
+`npm run test:collisions` checks visible native bouncing, body contact, friction
+and rotation controls. These functional checks do not qualify numerical accuracy.
