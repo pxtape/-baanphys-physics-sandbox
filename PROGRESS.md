@@ -490,3 +490,33 @@ bytes. No actual Safari/iPad test is implied by that HTTP smoke verification.
 M1-03E implementation is now explicitly authorized separately. Public
 executionReady remains false and public initialization remains blocked pending
 independent E acceptance. No UI/editor/persistence/scheduler feature is authorized.
+
+## MVP-first teacher vertical slice — 2026-11-19
+
+Built from accepted main cc8b9ac on feat/teacher-editor-mvp. Working responsive SVG
+editor: circles/rectangles/static floors; selection and mouse/touch/keyboard
+positioning; validated immutable Scene v1 edits; geometry, mass, gravity and initial
+velocity; fixed-step Play/Pause/Reset/Step, live positions/velocities and time.
+
+Experimental teacher preview is explicit opt-in, development/teacher-build only;
+default production builds disable it, and student/iframe surfaces block execution.
+It uses the internal D runtime with unchanged 1/120, four 1/480 substeps and 12/12.
+Conservative swept bounds stop BEFORE possible contact (including polygon skin).
+No spin, applied forces, mechanisms or student controls; five-second limit.
+No numerical qualification or authenticated role enforcement is claimed.
+Public executionReady stays false; source scene never becomes preview state.
+
+Verification: 432 tests pass (422 accepted regressions +10 integration tests),
+typecheck/generated consistency, lint, 25 M0 fixtures, 13 PoC verification, build
+and Pages smoke pass. Chromium browser checks cover the full editing/playback
+flow, contact stop, immutable reset/IDs, default-build disablement, student/iframe
+lockout and tablet touch emulation. Screenshots: docs/preview/. Real Safari/iPad
+is not tested. Existing non-failing architecture-tool deprecation and build chunk
+size warnings remain. Drafts are memory-only; no save/undo/embed implementation.
+
+No E work was deleted or accepted: draft PR #6 remains at 1256487 with its failing
+assertions/evidence. In-progress collision diagnostics are preserved separately at
+e91732815ffa0946c720a8d47baa93e2a1e379c7 on local branch
+investigation/m1-03e-collision-diagnostics. MVP branch includes all accepted tests;
+it neither removes nor converts E qualification failures into passes.
+Submit one feature PR; do not merge or deploy automatically.

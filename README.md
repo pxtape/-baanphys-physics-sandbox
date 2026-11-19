@@ -1,9 +1,12 @@
 # BaanPhys Physics Sandbox
 
-M1-01: React + strict TypeScript + Vite foundation and module boundaries.
-Planck.js **1.5.1** is pinned for the future adapter. This task provides a runnable
-foundation page, not a scene editor or simulation. No scene data is constructed,
-mutated or reinterpreted, and the existing Scene v1 schema/example are unchanged.
+A working teacher editor for circles, rectangles and static floors, with selection,
+dragging, SI property editing, gravity, velocity and live measurements. Uses the
+accepted Scene v1 domain and Planck.js **1.5.1** runtime.
+
+**Experimental preview only:** M1-03E remains blocked. Local teacher preview
+supports free flight, stops before possible contact, and never enables the public
+adapter. No certified collision, rolling, rope or pulley behavior is offered.
 
 ## Run locally
 
@@ -26,6 +29,32 @@ The server binds to `0.0.0.0` for shared-workspace previews; it is a development
 server, not a production deployment. In a restricted execution environment,
 binding a port may require the environment's network permission. Normal local
 development does not require special sandbox permissions.
+
+## Try the teacher MVP
+
+1. Open the local URL above. Choose Free fall or Projectile motion, or add objects.
+2. Select an object in the scene/list. Drag it, use arrow keys (Shift: 0.5 m), or
+   edit SI fields; blur/Enter commits a field. Invalid values leave the scene intact.
+3. Check **Enable experimental preview**, then Play/Pause, Step (1/120 s), or Reset.
+   Reset restores authored conditions and unlocks editing. Possible contact stops
+   before stepping; move objects apart to continue a different experiment.
+
+Scenes are in-memory drafts: reload loses edits. Preview supports circles/rectangles,
+no spin/forces/mechanisms, gravity and initial speed <=20 SI, and at most 5 seconds.
+Conservative swept bounds include polygon skin; near objects may stop early.
+
+Default `npm run build` provides authoring with preview **disabled**. Development
+builds enable the explicit teacher opt-in; an intentionally controlled teacher build
+can set `VITE_ENABLE_TEACHER_PREVIEW=true`. Do not publish an enabled build to public
+Pages. This is a workspace/build boundary, not authenticated roles; no backend auth
+is implemented. Embedded/student surfaces reject execution, and the public adapter
+still reports executionReady=false. Main/Pages are unchanged until acceptance.
+
+`npm run test:editor` runs Chromium integration checks against the running dev
+server (override `EDITOR_TEST_URL` / `BAANPHYS_CHROMIUM_PATH` if needed). Install
+Playwright Chromium with `npx playwright install chromium` and point the latter
+variable to that executable if `/usr/bin/chromium` is absent. Screenshots are in
+[docs/preview](docs/preview). Tablet touch emulation is not real Safari/iPad testing.
 
 ## Check and build
 
@@ -112,11 +141,11 @@ main deployment [completed successfully](https://github.com/pxtape/-baanphys-phy
 The public index, JavaScript, CSS and refresh returned 200; shared Chrome rendered
 and reloaded the page. Physical iPad/Safari testing remains outstanding.
 [DEPLOYMENT.md](DEPLOYMENT.md) records evidence and deployment commands. M1-01.5 is
-complete; M1-02 remains unstarted. The current website is a foundation preview.
+complete; this paragraph records its original foundation deployment.
 
-## M1-02 review branch — domain and validation
+## Historical M1-02 review branch — domain and validation
 
-The task branch adds strongly typed, schema-derived Scene v1 documents and
+The earlier task branch added strongly typed, schema-derived Scene v1 documents and
 `parseSceneJson` / `validateScene` in `src/schema/index.ts`. They validate input,
 structure/formats, references, geometry, resources, controls and identity; return
 structured diagnostics; and detach/freeze successful authored data. The existing
@@ -129,5 +158,5 @@ resolution, eval or runtime Ajv compiler. Successful validation is **inspection
 only**, always executionReady=false until a trusted production adapter qualifies
 it in M1-03. Saved identity also needs future repository lineage/ownership checks.
 
-This branch adds no UI/editor/physics adapter or domain-state store. The current
-Pages deployment and main remain unchanged until this PR is accepted and merged.
+That earlier task added no UI/editor/physics adapter or domain-state store. The
+MVP branch described above now builds on the accepted domain and runtime.
