@@ -86,6 +86,17 @@ export function SceneCanvas({
       }}
     >
       <defs>
+        <marker
+          id="force-head"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto-start-reverse"
+        >
+          <path d="M0 0L10 5L0 10z" fill="#b77914" />
+        </marker>
         <pattern
           id="grid"
           width="64"
@@ -207,6 +218,41 @@ export function SceneCanvas({
                 </text>
               </>
             )}
+          </g>
+        );
+      })}
+      {scene.forces.map((f) => {
+        const b = scene.bodies.find((b) => b.id === f.bodyId);
+        if (!b) return null;
+        const pose = poses.get(b.id) ?? b,
+          c = Math.cos(pose.angle),
+          sn = Math.sin(pose.angle),
+          start = toScreen({
+            x: pose.position.x + c * f.localPoint.x - sn * f.localPoint.y,
+            y: pose.position.y + sn * f.localPoint.x + c * f.localPoint.y,
+          });
+        const m = Math.hypot(f.vector.x, f.vector.y),
+          scale = m ? Math.min(18, 100 / m) : 18;
+        return (
+          <g key={f.id} pointerEvents="none" className="force-arrow">
+            <line
+              x1={start.x}
+              y1={start.y}
+              x2={start.x + f.vector.x * scale}
+              y2={start.y - f.vector.y * scale}
+              stroke="#b77914"
+              strokeWidth="2.5"
+              markerEnd="url(#force-head)"
+            />
+            <circle cx={start.x} cy={start.y} r="3" fill="#b77914" />
+            <text
+              x={start.x + f.vector.x * scale + 7}
+              y={start.y - f.vector.y * scale - 7}
+              fontSize="12"
+              fill="#98620b"
+            >
+              {m.toFixed(1)} N
+            </text>
           </g>
         );
       })}

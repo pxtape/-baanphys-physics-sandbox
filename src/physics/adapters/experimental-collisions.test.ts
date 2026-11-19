@@ -98,3 +98,28 @@ it("contact friction slows a sliding rectangle compared with a frictionless surf
   expect(speeds[0]).toBeGreaterThan(2.9);
   expect(speeds[1]).toBeLessThan(0.1);
 });
+it("experimental saved off-centre forces accelerate and rotate the body without changing authored conditions", () => {
+  const s = scene(),
+    a = s.bodies[0]!;
+  s.world.gravity = { x: 0, y: 0 };
+  a.shape = { type: "rectangle", width: 2, height: 1 };
+  a.massModel = { mode: "mass", mass: 2 };
+  a.position = { x: 0, y: 3 };
+  s.forces = [
+    {
+      id: "00000000-0000-4000-8000-000000000010",
+      type: "constantForce",
+      bodyId: a.id,
+      vector: { x: 0, y: 2 },
+      localPoint: { x: 0.5, y: 0 },
+    },
+  ];
+  const original = JSON.stringify(s),
+    r = open(s);
+  let frame = step(r);
+  for (let i = 1; i < 120; i++) frame = step(r);
+  const b = frame.bodies.find((b) => b.id === a.id)!;
+  expect(b.position.y).toBeGreaterThan(3.4);
+  expect(b.angularVelocity).toBeGreaterThan(0.9);
+  expect(JSON.stringify(s)).toBe(original);
+});

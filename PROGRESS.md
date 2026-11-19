@@ -540,3 +540,9 @@ sliding, material/size/spin edits and unchanged authored state. Original free-fl
 editing/touch and default-production lockout browser checks also passed.
 No Safari/iPad hardware or numerical certification is claimed. Screenshot:
 docs/preview/experimental-collisions.png. Submit one PR; no merge/deployment.
+
+Continuous delivery: PR #9 merged as 118d8baf13b8960df7fb1a0ce4956e7be7a47985;
+main run 44589820342 and Pages passed. Live collision editor verified; public
+playback remains disabled. Next: teacher force vectors/local anchors, visible
+applied torque, world-force couples and a force/torque example. Existing native
+force stepping is reused without changing profile/settings or qualification.
