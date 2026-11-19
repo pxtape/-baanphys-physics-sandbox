@@ -60,11 +60,12 @@ export function validateDraft(
   const policy = v.scene.constraints.length
     ? checkExperimentalScene(v.scene)
     : checkPlanckCapabilities(v.scene);
-  if (!policy.policyCompatible)
-    return {
-      ok: false,
-      message: `${policy.diagnostics[0]!.message} (${policy.diagnostics[0]!.path || "/"})`,
-    };
+  if (!policy.policyCompatible) {
+    const issue =
+      policy.diagnostics.find((d) => d.code !== "FEATURE_NOT_QUALIFIED") ??
+      policy.diagnostics[0]!;
+    return { ok: false, message: `${issue.message} (${issue.path || "/"})` };
+  }
   return { ok: true, scene: v.scene };
 }
 export function newScene(
@@ -185,12 +186,13 @@ export function newScene(
 export function editScene(
   scene: SceneDocument,
   change: (draft: SceneV1) => void,
+  carryWorldAnchors = true,
 ) {
   const draft = structuredClone(scene) as SceneV1;
   change(draft);
   // Authoring movement carries an attached world pivot with its body. Native
   // runtime state never feeds back into these initial conditions.
-  for (const c of draft.constraints) {
+  for (const c of carryWorldAnchors ? draft.constraints : []) {
     const old = scene.constraints.find((q) => q.id === c.id);
     if (!old) continue;
     if (
@@ -225,4 +227,105 @@ export function editScene(
     }
   }
   return validateDraft(draft);
+}
+
+/** Copies one authored body and its force definitions; joints remain on originals. */
+export function duplicateBody(scene: SceneDocument, id: string) {
+  const source = scene.bodies.find((b) => b.id === id);
+  if (!source) return { ok: false as const, message: "Select a body first." };
+  const copy = structuredClone(source) as Body;
+  copy.id = objectId();
+  copy.name = Array.from(copy.name).slice(0, 115).join("") + " copy";
+  const radius =
+    source.shape.type === "circle"
+      ? source.shape.radius
+      : source.shape.type === "rectangle"
+        ? Math.hypot(source.shape.width, source.shape.height) / 2
+        : Math.max(...source.shape.vertices.map((p) => Math.hypot(p.x, p.y)));
+  if (source.motionType === "static") copy.position.y += 2 * radius + 0.3;
+  else copy.position.x += 2 * radius + 0.3;
+  const result = editScene(scene, (s) => {
+    s.bodies.push(copy);
+    s.forces.push(
+      ...scene.forces
+        .filter((f) => f.bodyId === id)
+        .map((f) => ({
+          ...structuredClone(f),
+          id: objectId(),
+          bodyId: copy.id,
+        })),
+    );
+  });
+  return result.ok ? { ...result, bodyId: copy.id } : result;
+}
+
+/** Authoring-only constrained positioning, never a correction to runtime physics. */
+export function positionBody(
+  scene: SceneDocument,
+  id: string,
+  target: { x: number; y: number },
+  fixedPivots = false,
+) {
+  return editScene(
+    scene,
+    (s) => {
+      const b = s.bodies.find((b) => b.id === id);
+      if (!b) return;
+      b.position = { ...target };
+      if (!fixedPivots) return;
+      const joint = scene.constraints.find(
+        (c) =>
+          (c.anchorA.type === "body" && c.anchorA.bodyId === id) ||
+          (c.anchorB.type === "body" && c.anchorB.bodyId === id),
+      );
+      if (!joint || joint.type === "spring") return;
+      const a =
+        joint.anchorA.type === "body" && joint.anchorA.bodyId === id
+          ? joint.anchorA
+          : joint.anchorB;
+      const other = a === joint.anchorA ? joint.anchorB : joint.anchorA;
+      if (a.type !== "body") return;
+      const p = anchorPosition(scene, other);
+      if (joint.type === "hinge") {
+        const radius = Math.hypot(a.localPoint.x, a.localPoint.y),
+          dx = target.x - p.x,
+          dy = target.y - p.y,
+          d = Math.hypot(dx, dy);
+        if (radius === 0) {
+          b.position = { ...p };
+          return;
+        }
+        if (d < 1e-12) {
+          b.position = { ...scene.bodies.find((q) => q.id === id)!.position };
+          return;
+        }
+        b.position = { x: p.x + (dx * radius) / d, y: p.y + (dy * radius) / d };
+        b.angle =
+          Math.atan2(p.y - b.position.y, p.x - b.position.x) -
+          Math.atan2(a.localPoint.y, a.localPoint.x);
+      } else {
+        const c = Math.cos(b.angle),
+          sn = Math.sin(b.angle),
+          offset = {
+            x: c * a.localPoint.x - sn * a.localPoint.y,
+            y: sn * a.localPoint.x + c * a.localPoint.y,
+          };
+        const dx = target.x + offset.x - p.x,
+          dy = target.y + offset.y - p.y,
+          d = Math.hypot(dx, dy),
+          length = joint.type === "rod" ? joint.length : joint.maxLength;
+        if (joint.type === "rod" || d > length) {
+          if (d < 1e-12) {
+            b.position = { ...scene.bodies.find((q) => q.id === id)!.position };
+            return;
+          }
+          b.position = {
+            x: p.x + (dx * length) / d - offset.x,
+            y: p.y + (dy * length) / d - offset.y,
+          };
+        }
+      }
+    },
+    !fixedPivots,
+  );
 }
