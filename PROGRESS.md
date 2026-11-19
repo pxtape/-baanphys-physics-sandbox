@@ -563,3 +563,11 @@ keyboard commands, fixed-pivot dragging, zoom/pan and velocity vectors. Renderin
 backlog remains bounded without pausing for one brief delayed frame; native fixed
 steps/iteration settings are unchanged. 445 tests and essential checks pass;
 browser verified duplication/undo/redo, zoomed dragging and vector display.
+
+Editing PR #12 merged as 431b103f753fc30d060a97638118ab7b4a54dc3f; main/Pages
+44598222891 passed. Live toolbar and page refresh verified; public playback off.
+Direct canvas rotation/resize handles now update validated authored geometry;
+centre/IDs are preserved and each gesture is undoable. 448 tests plus typecheck,
+lint, M0/PoC, build/Pages and editor/collision browser checks pass. Browser also
+verified rotated resizing, one-gesture undo and handles hidden during simulation.
+No schema, native settings, qualification thresholds or public execution changes.

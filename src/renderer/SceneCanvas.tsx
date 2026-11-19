@@ -1,3 +1,6 @@
+import { pointerTransform } from "./manipulation";
+import type { BodyTransform, Point } from "./manipulation";
+import type { Body } from "../domain/scene-v1.generated";
 import { anchorPosition } from "../domain/anchors";
 import { useRef, useState } from "react";
 import type { SceneDocument } from "../domain/scene";
@@ -31,6 +34,7 @@ interface Props {
   onGestureEnd?: () => void;
   onSelect: (id: string | null) => void;
   onMove: (id: string, x: number, y: number) => void;
+  onTransform: (id: string, value: BodyTransform) => void;
 }
 export function SceneCanvas({
   scene,
@@ -39,6 +43,7 @@ export function SceneCanvas({
   locked,
   onSelect,
   onMove,
+  onTransform,
   showVelocity = false,
   onGestureStart,
   onGestureEnd,
@@ -57,6 +62,9 @@ export function SceneCanvas({
     dx: number;
     dy: number;
     pointer: number;
+    mode?: "rotate" | "resize" | undefined;
+    body?: Body;
+    start?: Point;
   } | null>(null);
   function pointer(e: React.PointerEvent<SVGSVGElement>) {
     const p = e.currentTarget.createSVGPoint();
@@ -123,15 +131,27 @@ export function SceneCanvas({
             e.preventDefault();
             return;
           }
-          const node = (e.target as Element).closest("[data-body]"),
-            id = node?.getAttribute("data-body");
+          if (e.button !== 0) return;
+          const node = (e.target as Element).closest(
+              "[data-body], [data-transform-body]",
+            ),
+            id =
+              node?.getAttribute("data-body") ??
+              node?.getAttribute("data-transform-body");
           onSelect(id ?? null);
           if (!id || locked) return;
           onGestureStart?.();
           const body = scene.bodies.find((b) => b.id === id)!;
           const p = pointer(e);
+          const handle = (e.target as Element)
+            .closest("[data-handle]")
+            ?.getAttribute("data-handle");
           drag.current = {
             id,
+            mode:
+              handle === "rotate" || handle === "resize" ? handle : undefined,
+            body: structuredClone(body) as Body,
+            start: p,
             dx: body.position.x - p.x,
             dy: body.position.y - p.y,
             pointer: e.pointerId,
@@ -154,7 +174,20 @@ export function SceneCanvas({
           if (!drag.current || locked || drag.current.pointer !== e.pointerId)
             return;
           const p = pointer(e);
-          onMove(drag.current.id, p.x + drag.current.dx, p.y + drag.current.dy);
+          if (drag.current.mode && drag.current.body && drag.current.start) {
+            const value = pointerTransform(
+              drag.current.body,
+              drag.current.mode,
+              drag.current.start,
+              p,
+            );
+            if (value) onTransform(drag.current.id, value);
+          } else
+            onMove(
+              drag.current.id,
+              p.x + drag.current.dx,
+              p.y + drag.current.dy,
+            );
         }}
         onPointerUp={(e) => {
           if (drag.current?.pointer === e.pointerId) {
@@ -435,6 +468,58 @@ export function SceneCanvas({
                 </g>
               );
             })}
+        {!locked &&
+          (() => {
+            const b = scene.bodies.find((q) => q.id === selected);
+            if (!b || b.shape.type === "polygon") return null;
+            const p = toScreen(b.position),
+              hw =
+                (b.shape.type === "circle"
+                  ? b.shape.radius
+                  : b.shape.width / 2) * 64,
+              hh =
+                (b.shape.type === "circle"
+                  ? b.shape.radius
+                  : b.shape.height / 2) * 64;
+            return (
+              <g
+                className="transform-handles"
+                data-transform-body={b.id}
+                transform={`translate(${p.x} ${p.y}) rotate(${(-b.angle * 180) / Math.PI})`}
+              >
+                <line
+                  x1="0"
+                  y1={-hh}
+                  x2="0"
+                  y2={-hh - 32}
+                  stroke="#57909b"
+                  strokeWidth="1.5"
+                  pointerEvents="none"
+                />
+                <circle
+                  data-handle="rotate"
+                  aria-label="Drag to rotate selected object"
+                  cx="0"
+                  cy={-hh - 32}
+                  r="9"
+                  className="rotate-handle"
+                >
+                  <title>Rotate — drag around the centre</title>
+                </circle>
+                <rect
+                  data-handle="resize"
+                  aria-label="Drag to resize selected object"
+                  x={hw - 8}
+                  y={(b.shape.type === "circle" ? 0 : hh) - 8}
+                  width="16"
+                  height="16"
+                  className="resize-handle"
+                >
+                  <title>Resize — centre remains fixed</title>
+                </rect>
+              </g>
+            );
+          })()}
       </svg>
     </div>
   );
