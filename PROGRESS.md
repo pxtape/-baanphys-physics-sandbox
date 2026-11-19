@@ -1,22 +1,44 @@
 # Progress
 
-Updated: 2026-11-17.
+Updated: 2026-11-19.
 
 ## Current state
 
-**M1-01 COMPLETE; M1-01.5 deployment configuration prepared and locally verified, external publication BLOCKED.** GitHub authenticates as pxtape but denies repository creation. No successful push, remote Actions run or public Pages preview exists. M1-02 and later tasks are NOT STARTED. No scene editor, production physics adapter, persistence server or M1-02 features were implemented. A gated deployment workflow exists but has not run on GitHub.
+**M1-01 and M1-01.5 COMPLETE. M1-02 NOT STARTED — awaiting separate approval.**
 
-## M1-01.5 prepared — 2026-11-17
+- Repository: https://github.com/pxtape/-baanphys-physics-sandbox
+- Live foundation preview: https://pxtape.github.io/-baanphys-physics-sandbox/
+- Successful first main deployment: https://github.com/pxtape/-baanphys-physics-sandbox/actions/runs/44270951839
 
-- Preserved M0/M0.5 commits and committed all existing M1-01 files as `97d0fa8` on main before creating `chore/m1-01-5-pages`. No history rewrite, deletion, force-push or remote replacement occurred.
-- Authenticated GitHub connector and CLI as `pxtape`; confirmed no existing local remote and got 404 for the target repository. Actual `gh repo create pxtape/baanphys-physics-sandbox --public` was denied: `GraphQL: Resource not accessible by integration (createRepository)`.
-- Added `.github/workflows/deploy.yml`: Node 24, npm ci, typecheck, lint, 23 application tests, 25 M0 fixtures, 13 PoC verification tests, production build, artifact smoke test. Only a successful main run may upload/deploy dist; feature/PR runs check only. Pages/OIDC permissions are isolated to deploy, with official actions pinned to release SHAs.
-- Set Vite base `/baanphys-physics-sandbox/` and updated local preview URLs. Added `npm run test:pages` and `tooling/verify-pages.mjs` to check the actual built index, JavaScript/CSS paths, status/MIME types and index refresh using production preview on loopback port 4175.
-- Local checks pass on Node 24.22.1: npm ci, typecheck, lint, 23 Vitest boundary cases, 25 M0 schema fixtures, 13 archived PoC verification cases, production build, and Pages artifact smoke check. Numerical failures/thresholds and original tests remain unchanged; no new claim of physics qualification.
-- Updated README deployment guide, DEPLOYMENT.md authorization/push/runbook, ROADMAP.md and M1_TASKS.md. No repository was created, origin configured, source pushed, GitHub Actions executed or public URL verified because creation permissions are unavailable.
-- Required owner action: create the empty public repository under pxtape, grant the integration source/workflow and Pages/access permissions or use an authorized local gh login, and select Settings → Pages → GitHub Actions. Exact safe commands and permissions are in DEPLOYMENT.md. Never provide credentials in project files or chat.
+## M1-01.5 completed — 2026-11-19
 
-Intended (NOT created/live-verified) targets: `https://github.com/pxtape/baanphys-physics-sandbox` and `https://pxtape.github.io/baanphys-physics-sandbox/`. Do not mark the task complete until push, successful main Actions and public index/assets/refresh checks succeed. Real iPad verification remains manual.
+- Found the owner-created repository by public search: its name starts with a
+  hyphen. It was empty, public and already configured for workflow Pages. The
+  integration cannot rename it (HTTP 403), so its existing name was retained.
+- Preserved M0 65dfde9, M0.5 f1f5ad0 and M1-01 97d0fa8. Added deployment commit
+  268e98d on chore/m1-01-5-pages, ran successful remote development checks, then
+  fast-forwarded main and pushed without force. Origin and both branches exist.
+- Added .github/workflows/deploy.yml with Node 24, npm ci, typecheck, lint,
+  23 application boundary tests, 25 M0 schema fixtures, 13 PoC verification cases,
+  production build and real built-artifact Pages smoke check. Only successful
+  main runs upload/deploy dist; feature/PR runs check only. Official actions are
+  SHA-pinned; deploy-only permissions use GitHub Pages/OIDC, not personal secrets.
+- Vite base and smoke check match /-baanphys-physics-sandbox/. Package name,
+  engine choice, 1/120 s logical tick and four 1/480 s substeps are unchanged.
+- Local checks passed, development run 44269819955 succeeded, and main run
+  44270951839 completed checks and Pages deployment successfully for 268e98d.
+- Live verification: index and refreshed index returned 200 text/html (627 bytes),
+  JS 200 application/javascript (220668 bytes), CSS 200 text/css (1709 bytes).
+  Shared Chrome displayed the React page and stylesheet before and after reload.
+- README, DEPLOYMENT.md, ROADMAP.md and M1_TASKS.md now record actual URLs,
+  completed status and verification. Earlier missing-repository permissions are
+  resolved by owner creation/access. No remote/history replacement, secret
+  commit, force-push, M1-02 feature or physics-threshold change occurred.
+
+The public link can be opened without local services or sign-in. Actual iPad/
+Safari testing has not been performed. The website is still the foundation page;
+scene creation, validation, editing and physics controls are not implemented.
+Future player deep-link refresh requires an explicit Pages routing decision.
 
 ## M1-01 completed — 2026-11-17
 
@@ -54,23 +76,18 @@ Historical M1-01 scope: M0/M0.5 baseline commits and architecture decisions are 
 
 No actual Safari/iPad compatibility/performance measurement, cross-browser replay, repository/embedding integration tests or production Scene semantic validator exists. M1-01 now has a typechecked/built foundation application and a shared-Chrome launch/reload smoke check only. Rolling fails the executed common-friction feasibility variant; the original distinct-static/dynamic B6 case is not certified. Atwood, pulley/gear/motor behavior, slack-to-taut rope impacts, contact-force instrumentation and long-run stress qualification are not tested.
 
-## Git and changed artifacts
+## Git and deployment artifacts
 
-M0.5 artifacts are recorded in a separate local validation commit (`test: qualify physics engines and prepare M1`). Original M0 history remains available at the baseline. No remote is configured. See final delivered Git status for the validation commit hash.
-
-Added: `.gitignore`, `DECISIONS.md`, `BENCHMARKS.md`, `M1_TASKS.md`, `PROGRESS.md`, isolated PoC package/lockfile, adapters, harness, stress/verification scripts, README and generated results/trajectories.
-
-Updated: ENGINE_FEASIBILITY.md, ARCHITECTURE.md, ROADMAP.md, SPEC.md, TEST_PLAN.md and the M0 check's scope message. Existing schema, example, AGENTS.md and M0_VALIDATION.md retain their historical baseline contents.
+Original baseline commits are preserved. Production source is on stable main;
+the deployment development branch remains separate. Remote origin points to the
+owner-created public repository. Deployment files: .github/workflows/deploy.yml,
+vite.config.ts base, package.json smoke-test command, tooling/verify-pages.mjs,
+and README/DEPLOYMENT/ROADMAP/M1_TASKS/PROGRESS documentation. All original physics,
+schema and architecture tests/reports are intact.
 
 ## Next action
 
-Stop with M1-01.5 BLOCKED externally. Owner repository/access/Pages setup is needed to finish publication; follow DEPLOYMENT.md. M1-02 (Domain and validation) remains NOT STARTED and requires separate approval. Safari/iPad testing, production physics, supported material/geometry envelopes, scene validation, storage and the pinned-player integration remain explicit later gates. Rolling and advanced mechanisms remain unimplemented/unqualified.
-
-## Publication resumed — 2026-11-18
-
-The owner-created public repository was found as `pxtape/-baanphys-physics-sandbox`.
-The original 404 was due to its leading hyphen. Access and workflow-based Pages
-are now confirmed. The integration cannot rename the repository (HTTP 403), so
-its existing name and `/-baanphys-physics-sandbox/` Vite base are retained. Local
-checks pass and publication is in progress. Earlier BLOCKED status is historical;
-remote Actions/live checks are pending. M1-02 remains NOT STARTED.
+Review the live foundation preview and this completion summary. M1-02 (Domain
+and validation) is NOT STARTED. Wait for separate user approval before proceeding.
+No blocker remains for M1-01.5. Physical iPad/Safari validation, production scene
+validation/physics, storage and embedded player remain later gates.

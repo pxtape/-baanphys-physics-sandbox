@@ -1,6 +1,6 @@
 # Roadmap
 
-Status: M0.5 and M1-01 completed. M1-01.5 deployment configuration is ready; publication is blocked by GitHub integration permissions. M1-02 remains unstarted. Milestones are gated by evidence, not calendar dates. The user must authorize starting implementation; completion of these documents does not authorize M1.
+Status: M0.5, M1-01 and M1-01.5 completed. The foundation preview is published on GitHub Pages; M1-02 remains unstarted. Milestones are gated by evidence, not calendar dates. The user must authorize starting implementation; completion of these documents does not authorize M1.
 
 ## Delivery order and dependencies
 
@@ -35,26 +35,20 @@ M1 readiness: **READY for basic editor/S0 implementation after user approval**. 
 
 Do not start M1 during this validation turn. M3/advanced capability qualification and release are still blocked by their unimplemented/failed/untested gates. No remote URL is configured; it does not block local work but must be agreed before collaboration/backup via push.
 
-## M1-01.5 — GitHub repository and continuous deployment
+## M1-01.5 — GitHub repository and continuous deployment (COMPLETE)
 
-Inserted after M1-01 and before M1-02 by user authorization. Deliver a public
-`baanphys-physics-sandbox` repository preserving all local commits, separate
-stable/development branches, Node 24 CI with npm ci and all existing checks,
-correct project base, gated Pages artifact deployment and a verified public
-preview (index, JS/CSS and refresh). No M1-02 feature is in scope.
+Inserted between M1-01 and M1-02. Published the existing history and project to
+https://github.com/pxtape/-baanphys-physics-sandbox, retaining the leading hyphen
+in the owner-created repository name. Stable main and development branches are
+separate; no history rewrite or force-push occurred.
 
-Configuration and local verification are complete. **External acceptance is
-BLOCKED**: GitHub authentication works as pxtape, but repository creation was
-denied (`Resource not accessible by integration`). No repository push, remote
-Actions success or public Pages verification is claimed. Required manual
-repository/access/Pages setup and exact resume commands are in DEPLOYMENT.md.
-M1-02 now depends on completing this publication gate and separate approval.
+Node 24 CI uses npm ci, typecheck, lint, all application/M0/PoC verification,
+production build and a project-path/asset/refresh smoke check. Only successful
+main runs can deploy the verified artifact. Main run 44270951839 succeeded and
+published https://pxtape.github.io/-baanphys-physics-sandbox/. Public index,
+JavaScript/CSS and refreshed index were verified as HTTP 200; shared Chrome
+rendered and reloaded the page. Evidence/runbook: DEPLOYMENT.md.
 
-## Publication resumed — 2026-11-18
-
-The owner-created public repository was found as `pxtape/-baanphys-physics-sandbox`.
-The original 404 was due to its leading hyphen. Access and workflow-based Pages
-are now confirmed. The integration cannot rename the repository (HTTP 403), so
-its existing name and `/-baanphys-physics-sandbox/` Vite base are retained. Local
-checks pass and publication is in progress. Earlier BLOCKED status is historical;
-remote Actions/live checks are pending. M1-02 remains NOT STARTED.
+No M1-02, scene editor or production physics feature was implemented. Actual
+Safari/iPad checks and future player deep-link routing remain later acceptance
+gates. Stop for user review before starting M1-02.

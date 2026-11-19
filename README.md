@@ -103,8 +103,13 @@ that the project index, JavaScript, CSS and index refresh work (temporary local
 port 4175). Future history-based player routes need a separate Pages routing
 decision; this task does not add a router.
 
-Repository access is available at `pxtape/-baanphys-physics-sandbox`. The leading
-hyphen is part of the owner-created name and is retained; the integration cannot
-rename it. Pages is configured for GitHub Actions. Publication and remote checks
-are in progress. See [DEPLOYMENT.md](DEPLOYMENT.md) for the deployment runbook.
-M1-02 remains unstarted.
+**Live preview:** https://pxtape.github.io/-baanphys-physics-sandbox/
+
+**Repository:** https://github.com/pxtape/-baanphys-physics-sandbox
+
+The leading hyphen is part of the owner-created name and is retained. The first
+main deployment [completed successfully](https://github.com/pxtape/-baanphys-physics-sandbox/actions/runs/44270951839).
+The public index, JavaScript, CSS and refresh returned 200; shared Chrome rendered
+and reloaded the page. Physical iPad/Safari testing remains outstanding.
+[DEPLOYMENT.md](DEPLOYMENT.md) records evidence and deployment commands. M1-01.5 is
+complete; M1-02 remains unstarted. The current website is a foundation preview.

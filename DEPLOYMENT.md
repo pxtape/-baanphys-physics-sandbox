@@ -1,95 +1,88 @@
-# M1-01.5 — GitHub repository and deployment handoff
+# M1-01.5 — GitHub repository and continuous deployment
 
-Status: repository found on 2026-11-18 at `pxtape/-baanphys-physics-sandbox`; deployment in progress. The leading hyphen is retained because the integration cannot rename repositories. M1-02 is not started.
+Status: **COMPLETE**, live HTTP and Chrome verification recorded 2026-11-19.
+M1-02 is NOT STARTED and awaits separate approval.
 
-## What exists
+- Repository: https://github.com/pxtape/-baanphys-physics-sandbox
+- Public preview: https://pxtape.github.io/-baanphys-physics-sandbox/
+- Successful first main deployment: https://github.com/pxtape/-baanphys-physics-sandbox/actions/runs/44270951839
+- Successful development checks: https://github.com/pxtape/-baanphys-physics-sandbox/actions/runs/44269819955
+- First deployed application/configuration commit: `268e98dd60cfc280c0bb1274777450cce93cba6e`.
 
-- Local M0 commit `65dfde9`, M0.5 commit `f1f5ad0`, and M1-01 commit `97d0fa8`
-  are preserved. Deployment changes are on `chore/m1-01-5-pages`, separate from
-  stable `main` until checks and publication are ready.
-- `.github/workflows/deploy.yml` uses Node 24, `npm ci` with exact lockfiles,
-  typecheck, lint, 23 architecture tests, 25 M0 schema fixtures, 13 PoC verification
-  tests, production build and an actual built-artifact HTTP smoke check.
-- Only a successful `main` run can upload/deploy `dist/`. PR/development runs
-  cannot deploy. Permissions are read-only for checks; only the deploy job gets
-  Pages write and OIDC. Official actions are pinned to verified release SHAs.
-- Vite uses `/-baanphys-physics-sandbox/`. `npm run test:pages` starts the real
-  production preview on loopback port 4175 and checks the project index twice,
-  JavaScript and stylesheet URLs, nonempty responses and correct MIME types.
-- No secrets, token values or credential-bearing remote URLs are committed.
-  No remote was configured for an uncreated/inaccessible repository. There was
-  no force-push, remote replacement, public deployment or M1-02 implementation.
+## Repository and history
 
-## Historical authorization blocker (resolved by owner creation)
+The owner created `pxtape/-baanphys-physics-sandbox` with a leading hyphen. It was
+found by public repository search after the originally planned spelling returned
+404. The repository was empty and Pages was already configured for Actions.
+The integration can push source/workflows but cannot rename repositories (HTTP
+403), so the existing name is retained. No further owner setup is required for
+the current deployment. This supersedes the earlier creation-permission blocker.
 
-`gh auth status` and `gh api user` succeed as **pxtape** with network permission.
-Both the GitHub connector and CLI return 404 for the requested repository.
-`gh repo create pxtape/-baanphys-physics-sandbox --public` was actually attempted
-and denied: **GraphQL: Resource not accessible by integration (createRepository)**.
-This is GitHub's permission denial, not a failed application check. No repository
-was created. Do not retry by overwriting a repository or changing visibility of
-unrelated existing data.
+M0 `65dfde9`, M0.5 `f1f5ad0`, M1-01 `97d0fa8`, and deployment `268e98d` are preserved.
+The `origin` remote uses a credential-free HTTPS URL. Stable `main` and development
+branch `chore/m1-01-5-pages` were both pushed. The deployment branch passed checks
+before main advanced via fast-forward. There was no force-push, overwritten
+remote/history, credential commit or change to physics thresholds.
 
-Intended repository: `https://github.com/pxtape/-baanphys-physics-sandbox`.
-Intended project website: `https://pxtape.github.io/-baanphys-physics-sandbox/`.
-**Neither address has been verified as created/live.** These are configuration
-and handoff targets only, not completed deliverables.
+## Continuous deployment
 
-## Original owner setup instructions (historical)
+`.github/workflows/deploy.yml` uses Node **24** and exact lockfiles:
 
-1. Sign in to GitHub as **pxtape** and create an **empty public** repository named
-   **baanphys-physics-sandbox**. Do not initialize a README, license or gitignore:
-   the local history/files already exist. If that repository already exists,
-   inspect it and its history first; do not overwrite or force-push it.
-2. Give the connected GitHub app access to that specific repository. Pushing
-   source plus this workflow needs **Contents: read/write** and **Workflows:
-   read/write**. Verification needs **Actions: read** (write to dispatch/re-run).
-   Enabling/configuring Pages via API needs **Pages: read/write** and
-   **Administration: read/write**. App permissions may be fixed: merely selecting
-   the repository does not grant missing app permissions. Re-authorize through
-   the normal account/integration UI if supported; never share a token in chat.
-3. In repository **Settings → Pages**, select **Source: GitHub Actions**. Ensure
-   Actions are enabled and official actions are permitted by account/org policy.
-   Keep the `github-pages` environment restricted to stable `main` deployments.
-4. If this integration cannot receive the required access, perform the remaining
-   commands on your own trusted computer with an authorized GitHub CLI login:
+1. Root `npm ci`, typecheck, lint and 23 architecture boundary tests.
+2. Python 3.12 with pinned jsonschema, then 25 M0 structural fixtures.
+3. Isolated PoC `npm ci --ignore-scripts` and all 13 existing verification tests.
+4. Production build and the actual built-artifact Pages HTTP smoke check.
+5. Upload/deploy `dist/` only for successful main runs; PR/development checks do
+   not deploy. The deploy job depends on checks and uses Pages/OIDC permissions
+   in the `github-pages` environment. No personal token/custom secret is needed.
 
-   ```sh
-   gh auth login --hostname github.com --git-protocol https --scopes repo,workflow
-   gh auth setup-git
-   ```
+Official actions are pinned to release SHAs. All original tests and archived
+physics failures remain intact; a successful deployment does not certify rolling
+or any new mechanics. Only built application files in dist are deployed to Pages.
 
-   Existing `GH_TOKEN`/`GITHUB_TOKEN` variables override stored CLI authentication;
-   clear those locally if they point to the restricted integration. Do not put
-   credentials into Git remotes/files. A classic PAT needs `repo` and `workflow`
-   scopes; a fine-grained token needs the repository permissions above. For
-   manually configured Pages, no personal access token is stored in Actions:
-   the workflow uses the automatically issued `GITHUB_TOKEN` and OIDC.
+## Verification evidence
 
-## Push without replacing history
+First main run `44270951839` completed successfully, including checks/build and
+Pages deployment. Public requests to the project index and a refreshed request
+both returned **200 text/html**, each 627 bytes. Deployed assets also returned 200:
 
-Run in this existing checkout after the empty repository exists and access works:
+| Asset | MIME type | Bytes |
+| --- | --- | --- |
+| `assets/index-CS1v1vVh.js` | application/javascript | 220668 |
+| `assets/index-BBEM1tkN.css` | text/css | 1709 |
+
+The public project URL was opened and reloaded in shared Chrome. The React
+foundation page and stylesheet rendered correctly after refresh. The public
+HTTPS link does not require local development services or sign-in and can be
+opened from an iPad; **physical iPad/Safari testing has not been performed**.
+This remains a foundation preview, with no scene editing or simulation controls.
+
+## Local and future deployment commands
+
+Use Node 24+ in this checkout:
 
 ```sh
-git remote -v
-# Only if origin is absent; never overwrite an existing remote:
-git remote add origin https://github.com/pxtape/-baanphys-physics-sandbox.git
-git ls-remote --heads origin
-# A newly created repository should be empty. Stop on unrelated existing history.
-git push -u origin chore/m1-01-5-pages
-git switch main
-git merge --ff-only chore/m1-01-5-pages
-git push -u origin main
+npm ci
+npm run typecheck
+npm run lint
+npm test
+npm run test:m0
+npm --prefix poc/engine-comparison ci --ignore-scripts
+npm run test:poc
+npm run build
+npm run test:pages
+npm run preview
 ```
 
-The first push publishes the checked development branch. The fast-forward keeps
-all original commits and advances stable main without rewriting history; main
-then runs the complete checks and deployment. For subsequent changes, prefer
-feature branches and PRs into main. Where branch rules are available, require
-**Checks and build** before merge. Never use `--force`. If an existing repository
-has different history, stop and reconcile it explicitly rather than replacing it.
+The preview is http://localhost:4173/-baanphys-physics-sandbox/. Vite's base is
+`/-baanphys-physics-sandbox/` in development and production. The smoke check
+starts a temporary production preview on loopback port 4175 and checks the index
+twice plus JavaScript/CSS paths, status and MIME types.
 
-## Verify the external deployment
+For later work use a feature branch, run checks and open a PR into main. Prefer
+requiring **Checks and build** in branch rules where available. Only merging or
+pushing main publishes; never force-push. The workflow can also be dispatched
+manually on main. To inspect a run:
 
 ```sh
 gh run list --repo pxtape/-baanphys-physics-sandbox --workflow deploy.yml
@@ -97,25 +90,7 @@ gh run watch RUN_ID --repo pxtape/-baanphys-physics-sandbox --exit-status
 gh api repos/pxtape/-baanphys-physics-sandbox/pages --jq .html_url
 ```
 
-Open the actual URL returned by GitHub on desktop and iPad. Confirm the BaanPhys
-foundation page renders, JavaScript/CSS return 200 with correct MIME types in
-browser developer tools, and refreshing the project index works. Record the
-successful Actions URL, deployed commit and live checks in PROGRESS.md before
-marking M1-01.5 complete. Neither a passing local smoke test nor a successful push
-alone proves Pages is deployed. Real iPad testing remains a manual check.
-
-Pages does not provide arbitrary SPA history fallbacks. Current verification
-covers the project index only; future `/player/...` URLs need a separately agreed
-routing solution before that feature is published. No domain/physics/scene-model
-change or timestep adjustment is part of this deployment task.
-
-## Repository discovery — 2026-11-18
-
-The owner-created public repository was found as `pxtape/-baanphys-physics-sandbox`
-(with a leading hyphen), empty and with main as the default branch. Both the
-connector and CLI can access it; Pages is configured for workflow deployments.
-A rename to the originally planned name was attempted but denied by the
-integration with HTTP 403. The existing name is retained rather than requiring
-more owner setup. Vite and the artifact smoke check now use
-`/-baanphys-physics-sandbox/`. The package name and architecture are unchanged.
-The historical missing-repository status above no longer describes current access.
+Pages does not provide arbitrary SPA history fallbacks. Refresh verification
+currently covers the project index; future `/player/...` routes need an explicit
+routing solution before that feature is published. No router, domain/scene model,
+production physics adapter or timestep change was introduced by this task.
