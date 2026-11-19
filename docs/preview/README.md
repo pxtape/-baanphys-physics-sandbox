@@ -10,3 +10,7 @@ play/pause/reset/step, stable IDs, contact stop and student/iframe lockout.
 A separate run against `npm run preview` with `EDITOR_TEST_URL` and
 `--public-build` verified that the default production build disables execution.
 This is browser verification, not Safari/iPad hardware or physics qualification.
+
+Save/Load MVP: [local library screenshot](scene-library.png).
+`npm run test:library` checks persistence, JSON, conflicts and failure handling;
+its `--public-build` mode verifies that storage works with playback disabled.

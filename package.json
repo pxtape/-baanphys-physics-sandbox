@@ -19,7 +19,8 @@
     "test:pages": "node tooling/verify-pages.mjs",
     "generate:scene": "node tooling/generate-scene.mjs",
     "check:generated": "node tooling/generate-scene.mjs --check",
-    "test:editor": "node tooling/verify-editor.mjs"
+    "test:editor": "node tooling/verify-editor.mjs",
+    "test:library": "node tooling/verify-scene-library.mjs"
   },
   "dependencies": {
     "ajv-formats": "3.0.1",
@@ -35,6 +36,7 @@
     "@vitejs/plugin-react": "6.3.0",
     "ajv": "8.17.1",
     "eslint": "10.15.0",
+    "fake-indexeddb": "6.2.8",
     "json-schema-to-typescript": "15.0.4",
     "playwright": "1.65.1",
     "typescript": "5.9.3",
