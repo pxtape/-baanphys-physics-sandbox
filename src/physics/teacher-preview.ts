@@ -107,7 +107,7 @@ export function createTeacherPreview(
     scene.studentPolicy.controls.length ||
     scene.bodies.some(
       (b) =>
-        b.shape.type === "polygon" ||
+        (!collisions && b.shape.type === "polygon") ||
         (collisions
           ? Math.abs(b.angularVelocity) > 20
           : b.angularVelocity !== 0),
@@ -116,7 +116,7 @@ export function createTeacherPreview(
     scene.bodies.some((b) => Math.hypot(b.velocity.x, b.velocity.y) > 20)
   )
     return blocked(
-      "This preview supports circles/rectangles, gravity ≤20 m/s², initial speed ≤20 m/s and, in collision mode, initial spin ≤20 rad/s. Forces require experimental collision mode. Only experimental hinges, rods and ropes are available; student controls remain unavailable.",
+      "Free-flight supports circles/rectangles; experimental collisions also support validated centred convex polygons. Gravity ≤20 m/s², initial speed ≤20 m/s and, in collision mode, initial spin ≤20 rad/s. Forces require experimental collision mode. Only experimental hinges, rods and ropes are available; student controls remain unavailable.",
     );
   const made =
     collisions && scene.constraints.length

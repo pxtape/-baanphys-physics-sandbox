@@ -580,3 +580,11 @@ quarter/half-speed scheduling. Solver dt/substeps/iterations unchanged. 450 test
 typecheck/generated consistency, lint, build and Pages checks passed; Chromium
 verified density/motion edits, inclined sliding (vx=0.428 m/s in smoke run), and
 Step still advancing 1/120 s at quarter speed. No numerical certification claim.
+
+Physical controls PR #14 merged as eda2bcbf1937002a3906c2db9c8a6fa53b0ac3f5;
+main/Pages 44599452768 passed; live controls and public lockout verified.
+Triangle/pentagon creation, rendering and uniform scaling expose the existing
+centred convex Scene v1/native geometry support. The teacher bridge explicitly
+admits these only in experimental collision mode; free-flight/public gates remain.
+453 tests, typecheck/generated consistency, lint, build/Pages pass. Chromium
+verified polygon creation/scale/rotation, native rebound and authored-state isolation.

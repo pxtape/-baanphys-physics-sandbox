@@ -85,3 +85,33 @@ it("fixing is explicit, preserves geometry/ID, zeros motion and never discards a
   expect(JSON.stringify(driven)).toBe(before);
   expect(newScene("incline").bodies[1]!.angle).toBe(-0.25);
 });
+it.each(["triangle", "pentagon"] as const)(
+  "authors a valid centred CCW %s without changing the Scene v1 format",
+  async (kind) => {
+    const { pointerTransform } = await import("../renderer/manipulation");
+    const source = newScene(),
+      b = makeBody(kind, undefined, 2);
+    const created = editScene(source, (s) => {
+      s.bodies.push(b);
+    });
+    if (!created.ok) throw Error(created.message);
+    const scaled = pointerTransform(
+      b,
+      "resize",
+      { x: b.position.x + 1, y: b.position.y },
+      { x: b.position.x + 2, y: b.position.y },
+    );
+    if (!scaled || !("shape" in scaled)) throw Error("No polygon scale");
+    const result = editScene(created.scene, (s) => {
+      s.bodies.find((q) => q.id === b.id)!.shape = scaled.shape;
+    });
+    if (!result.ok) throw Error(result.message);
+    expect(result.scene.schemaVersion).toBe(1);
+    expect(result.scene.bodies.at(-1)!.id).toBe(b.id);
+    const shape = result.scene.bodies.at(-1)!.shape;
+    expect(shape.type === "polygon" && shape.vertices.length).toBe(
+      kind === "triangle" ? 3 : 5,
+    );
+    expect(JSON.stringify(source)).not.toContain(b.id);
+  },
+);

@@ -11,7 +11,8 @@ import {
   checkPlanckCapabilities,
 } from "../physics";
 
-export type ObjectKind = "circle" | "rectangle" | "floor";
+export type ObjectKind =
+  "circle" | "rectangle" | "floor" | "triangle" | "pentagon";
 export function objectId(): string {
   if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
   const bytes = crypto.getRandomValues(new Uint8Array(16));
@@ -24,16 +25,41 @@ export function makeBody(kind: ObjectKind, id = objectId(), offset = 0): Body {
   return {
     id,
     name:
-      kind === "circle" ? "Circle" : kind === "floor" ? "Floor" : "Rectangle",
+      kind === "circle"
+        ? "Circle"
+        : kind === "floor"
+          ? "Floor"
+          : kind === "triangle"
+            ? "Triangle"
+            : kind === "pentagon"
+              ? "Pentagon"
+              : "Rectangle",
     motionType: kind === "floor" ? "static" : "dynamic",
     shape:
       kind === "circle"
         ? { type: "circle", radius: 0.3 }
-        : {
-            type: "rectangle",
-            width: kind === "floor" ? 12 : 1.2,
-            height: kind === "floor" ? 0.3 : 0.8,
-          },
+        : kind === "triangle"
+          ? {
+              type: "polygon",
+              vertices: [
+                { x: -0.6, y: -0.4 },
+                { x: 0.6, y: -0.4 },
+                { x: 0, y: 0.8 },
+              ],
+            }
+          : kind === "pentagon"
+            ? {
+                type: "polygon",
+                vertices: Array.from({ length: 5 }, (_, i) => ({
+                  x: 0.75 * Math.cos(Math.PI / 2 + (i * 2 * Math.PI) / 5),
+                  y: 0.75 * Math.sin(Math.PI / 2 + (i * 2 * Math.PI) / 5),
+                })),
+              }
+            : {
+                type: "rectangle",
+                width: kind === "floor" ? 12 : 1.2,
+                height: kind === "floor" ? 0.3 : 0.8,
+              },
     position: {
       x: kind === "floor" ? 0 : offset,
       y: kind === "floor" ? -0.15 : 4,

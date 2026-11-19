@@ -34,5 +34,22 @@ export function pointerTransform(
         height: 2 * Math.abs(ly),
       },
     };
+  if (body.shape.type === "polygon") {
+    const initial = Math.hypot(
+      start.x - body.position.x,
+      start.y - body.position.y,
+    );
+    if (initial < 1e-8) return null;
+    const scale = Math.hypot(x, y) / initial;
+    return {
+      shape: {
+        type: "polygon",
+        vertices: body.shape.vertices.map((v) => ({
+          x: v.x * scale,
+          y: v.y * scale,
+        })),
+      },
+    };
+  }
   return null;
 }

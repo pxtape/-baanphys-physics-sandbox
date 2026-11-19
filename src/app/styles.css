@@ -329,25 +329,31 @@ h2 {
   cursor: grabbing;
 }
 .dynamic-body > circle:first-child,
-.dynamic-body > rect:first-child {
+.dynamic-body > rect:first-child,
+.dynamic-body > polygon:first-child {
   fill: #bce2e0;
   stroke: #148c8e;
   stroke-width: 2;
   vector-effect: non-scaling-stroke;
 }
 .dynamic-body.selected > circle:first-child,
-.dynamic-body.selected > rect:first-child {
+.dynamic-body.selected > rect:first-child,
+.dynamic-body.selected > polygon:first-child {
   stroke: #006e73;
   stroke-width: 3;
   filter: drop-shadow(0 3px 5px #097c7a20);
 }
-.static-body > rect:first-child {
+.static-body > rect:first-child,
+.static-body > circle:first-child,
+.static-body > polygon:first-child {
   fill: #cbd5da;
   stroke: #7e929d;
   stroke-width: 1.5;
   vector-effect: non-scaling-stroke;
 }
-.static-body.selected > rect:first-child {
+.static-body.selected > rect:first-child,
+.static-body.selected > circle:first-child,
+.static-body.selected > polygon:first-child {
   stroke: #087e80;
   stroke-width: 3;
 }

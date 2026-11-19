@@ -257,7 +257,7 @@ export function App() {
               ? body.shape.radius
               : body.shape.type === "rectangle"
                 ? body.shape.height / 2
-                : 0
+                : Math.max(...body.shape.vertices.map((v) => v.y))
             : 0,
       };
       const anchorA = {
@@ -562,6 +562,14 @@ export function App() {
             </button>
             <button disabled={locked} onClick={() => add("rectangle")}>
               <span className="shape-icon">▭</span>Rectangle
+              <span className="plus">+</span>
+            </button>
+            <button disabled={locked} onClick={() => add("triangle")}>
+              <span className="shape-icon">△</span>Triangle
+              <span className="plus">+</span>
+            </button>
+            <button disabled={locked} onClick={() => add("pentagon")}>
+              <span className="shape-icon">⬠</span>Pentagon
               <span className="plus">+</span>
             </button>
             <button disabled={locked} onClick={() => add("floor")}>
@@ -906,6 +914,38 @@ export function App() {
                   />
                 </div>
               ) : null}
+              {body.shape.type === "polygon" && (
+                <>
+                  <p className="property-hint">
+                    Centred convex {body.shape.vertices.length}-vertex polygon.
+                    The square canvas handle scales it uniformly.
+                  </p>
+                  <NumberField
+                    label="Polygon radius"
+                    unit="m"
+                    value={Math.max(
+                      ...body.shape.vertices.map((v) => Math.hypot(v.x, v.y)),
+                    )}
+                    disabled={locked}
+                    onCommit={(radius) =>
+                      radius > 0 &&
+                      updateBody((b) => {
+                        if (b.shape.type !== "polygon") return;
+                        const old = Math.max(
+                            ...b.shape.vertices.map((v) =>
+                              Math.hypot(v.x, v.y),
+                            ),
+                          ),
+                          factor = radius / old;
+                        b.shape.vertices = b.shape.vertices.map((v) => ({
+                          x: v.x * factor,
+                          y: v.y * factor,
+                        }));
+                      })
+                    }
+                  />
+                </>
+              )}
               <NumberField
                 label="Angle"
                 unit="°"

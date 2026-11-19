@@ -123,3 +123,30 @@ it("experimental saved off-centre forces accelerate and rotate the body without 
   expect(b.angularVelocity).toBeGreaterThan(0.9);
   expect(JSON.stringify(s)).toBe(original);
 });
+it("allows a validated convex polygon only in opted-in collision mode, with actual native rebound", () => {
+  const s = scene(),
+    b = s.bodies[0]!;
+  b.shape = {
+    type: "polygon",
+    vertices: [
+      { x: -0.6, y: -0.4 },
+      { x: 0.6, y: -0.4 },
+      { x: 0, y: 0.8 },
+    ],
+  };
+  b.position = { x: 0, y: 2 };
+  b.material.restitution = 0.8;
+  expect(createTeacherPreview(s, true, { collisions: false }).ok).toBe(false);
+  expect(planckAdapterContract.initialize(s).ok).toBe(false);
+  const before = JSON.stringify(s),
+    r = open(s);
+  let falling = false,
+    bounced = false;
+  for (let i = 0; i < 180; i++) {
+    const body = step(r).bodies.find((q) => q.id === b.id)!;
+    if (body.velocity.y < -1) falling = true;
+    if (falling && body.velocity.y > 0.3) bounced = true;
+  }
+  expect(bounced).toBe(true);
+  expect(JSON.stringify(s)).toBe(before);
+});
