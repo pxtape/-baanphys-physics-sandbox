@@ -4,7 +4,7 @@ Updated: 2026-11-19.
 
 ## Current state
 
-**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B capability policy is ACCEPTED and merged (PR #3, 1250efd); C is ACCEPTED and merged (PR #4, 68d856e); D is implemented on feat/m1-03d-fixed-stepping for review; E remains unstarted. Historical records below describe their original checkpoints.
+**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B capability policy is ACCEPTED and merged (PR #3, 1250efd); C is ACCEPTED and merged (PR #4, 68d856e); D is ACCEPTED and merged (PR #5, e3fa893); E is authorized for implementation on a separate feature branch. Historical records below describe their original checkpoints.
 
 - Repository: https://github.com/pxtape/-baanphys-physics-sandbox
 - Live foundation preview: https://pxtape.github.io/-baanphys-physics-sandbox/
@@ -473,3 +473,20 @@ Exact commands/results and all limitations: src/physics/adapters/RUNTIME.md.
 No schema, benchmark source/result/threshold, dependency or approved setting change.
 Main/Pages unchanged; no UI/editor/persistence, scheduler, mechanisms or E work.
 Stop for final review before merge/deployment or further milestone implementation.
+
+
+## M1-03D independent acceptance and merge — 2026-11-19
+
+User acceptance: PASS with zero blocking issues, recorded in PR review
+5974545626 (COMMENTED; connected owner cannot formally approve own PR):
+https://github.com/pxtape/-baanphys-physics-sandbox/pull/5#pullrequestreview-5974545626
+Verified exact head 9f6aa64e82d1c4f5ffb7166fc8f48caf9d4b8bfb and successful
+Actions run 44519082926. PR #5 merged normally without force as
+e3fa893cc9447b07ce39c046ddd4338f84e9f4f2. Post-merge main checks and Pages run
+44519698017 succeeded at that exact SHA; deployment API confirmed it. Public
+HTML/JS/CSS and repeat refresh returned 200 with correct MIME and built asset
+bytes. No actual Safari/iPad test is implied by that HTTP smoke verification.
+
+M1-03E implementation is now explicitly authorized separately. Public
+executionReady remains false and public initialization remains blocked pending
+independent E acceptance. No UI/editor/persistence/scheduler feature is authorized.
