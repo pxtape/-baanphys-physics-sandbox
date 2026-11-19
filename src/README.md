@@ -1,8 +1,8 @@
 # Application module boundaries
 
-One Vite application, following ARCHITECTURE.md. Only `app` and the React entry
-point contain executable application code in M1-01. The other directories reserve
-the agreed boundaries; they are not implemented features or alternate models.
+One Vite application, following ARCHITECTURE.md. M1-01 provides the app/React entry point. M1-02 adds the schema-derived domain
+and standalone validation boundary; other directories still reserve the approved
+modules and are not implemented runtime/editor features.
 
 | Directory | Responsibility |
 | --- | --- |
@@ -23,8 +23,11 @@ imports, type-only/native Planck leaks, CommonJS require and computed module
 imports. No path aliases are configured. Add aliases only together with resolver
 support in the architecture rule/tests so they cannot bypass these checks.
 
-Scene data, IDs, mutations, validation, coordinates and engine construction are
-deliberately absent in this task. Future scene edits must go through validated
-domain commands, never Planck handles or display pixels. Preserve the existing
+M1-02 validation accepts the single Scene v1 representation and returns frozen,
+detached authored data with stable IDs. See schema/README.md for its API and
+execution/persistence limitations. Coordinate transforms, UI mutations, engine
+construction and editor commands remain later tasks. Future edits must validate
+a candidate before replacing authored state, never mutate Planck handles or
+display pixels as physical state. Preserve the existing
 JSON schema and qualified settings; do not register a production profile just
 because the package is installed.

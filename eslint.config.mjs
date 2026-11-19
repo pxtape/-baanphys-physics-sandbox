@@ -3,7 +3,7 @@ import tseslint from 'typescript-eslint';
 import architectureRule from './tooling/architecture-rule.mjs';
 
 export default tseslint.config(
-  { ignores: ['node_modules/**', 'dist/**', 'poc/**', 'coverage/**', '.git/**'] },
+  { ignores: ['node_modules/**', 'dist/**', 'poc/**', 'coverage/**', '.git/**', 'src/schema/generated/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
