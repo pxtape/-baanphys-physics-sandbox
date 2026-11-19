@@ -188,3 +188,8 @@ mass. Try the inclined-plane example and ½×/¼× playback; Step always advance
 Triangle and pentagon tools use centred convex Scene v1 polygons. Scale them
 uniformly with the square handle or Polygon radius field. Polygon contacts are
 available only in the opted-in experimental collision preview, not free-flight mode.
+
+With a force-bearing body selected, drag the amber square to edit force direction
+and magnitude; drag the amber circle to move its body-local application point.
+The display scale is capped; numeric Newton components remain authoritative.
+Force handles edit initial conditions and are locked during preview.

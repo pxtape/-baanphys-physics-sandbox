@@ -53,3 +53,36 @@ export function pointerTransform(
   }
   return null;
 }
+
+export function forceDisplayScale(vector: Point): number {
+  const n = Math.hypot(vector.x, vector.y);
+  return n ? Math.min(18, 100 / n) : 18; // pixels/Newton, display only
+}
+export function forcePointerTransform(
+  body: Pick<Body, "position" | "angle">,
+  force: { readonly vector: Point; readonly localPoint: Point },
+  mode: "vector" | "point",
+  start: Point,
+  current: Point,
+): { vector: Point } | { localPoint: Point } | null {
+  if (![start.x, start.y, current.x, current.y].every(Number.isFinite))
+    return null;
+  const c = Math.cos(body.angle),
+    s = Math.sin(body.angle);
+  const dx = current.x - start.x,
+    dy = current.y - start.y;
+  if (mode === "point")
+    return {
+      localPoint: {
+        x: force.localPoint.x + c * dx + s * dy,
+        y: force.localPoint.y - s * dx + c * dy,
+      },
+    };
+  const scale = forceDisplayScale(force.vector);
+  return {
+    vector: {
+      x: force.vector.x + (dx * 64) / scale,
+      y: force.vector.y + (dy * 64) / scale,
+    },
+  };
+}

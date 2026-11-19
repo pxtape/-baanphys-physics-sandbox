@@ -1,4 +1,8 @@
-import { pointerTransform } from "./manipulation";
+import {
+  pointerTransform,
+  forcePointerTransform,
+  forceDisplayScale,
+} from "./manipulation";
 import type { BodyTransform, Point } from "./manipulation";
 import type { Body } from "../domain/scene-v1.generated";
 import { anchorPosition } from "../domain/anchors";
@@ -35,6 +39,10 @@ interface Props {
   onSelect: (id: string | null) => void;
   onMove: (id: string, x: number, y: number) => void;
   onTransform: (id: string, value: BodyTransform) => void;
+  onForce: (
+    id: string,
+    value: { vector: Point } | { localPoint: Point },
+  ) => void;
 }
 export function SceneCanvas({
   scene,
@@ -44,6 +52,7 @@ export function SceneCanvas({
   onSelect,
   onMove,
   onTransform,
+  onForce,
   showVelocity = false,
   onGestureStart,
   onGestureEnd,
@@ -56,6 +65,15 @@ export function SceneCanvas({
     x: number;
     y: number;
     pointer: number;
+  } | null>(null);
+  const forceDrag = useRef<{
+    id: string;
+    body: Body;
+    force: SceneDocument["forces"][number];
+    start: Point;
+    mode: "vector" | "point";
+    pointer: number;
+    scale: number;
   } | null>(null);
   const drag = useRef<{
     id: string;
@@ -113,7 +131,7 @@ export function SceneCanvas({
         aria-label="Physics scene canvas"
         role="group"
         onPointerDown={(e) => {
-          if (drag.current || pan.current) return;
+          if (drag.current || pan.current || forceDrag.current) return;
           if (panMode || e.button === 1) {
             const inverse = e.currentTarget.getScreenCTM()?.inverse();
             if (!inverse) return;
@@ -132,6 +150,30 @@ export function SceneCanvas({
             return;
           }
           if (e.button !== 0) return;
+          const handleNode = (e.target as Element).closest(
+            "[data-force-handle]",
+          );
+          if (handleNode && !locked) {
+            const id = handleNode.getAttribute("data-force-id"),
+              force = scene.forces.find((f) => f.id === id),
+              body = scene.bodies.find((b) => b.id === force?.bodyId);
+            if (!force || !body) return;
+            onGestureStart?.();
+            forceDrag.current = {
+              id: force.id,
+              body: structuredClone(body) as Body,
+              force,
+              start: pointer(e),
+              pointer: e.pointerId,
+              mode:
+                handleNode.getAttribute("data-force-handle") === "point"
+                  ? "point"
+                  : "vector",
+              scale: forceDisplayScale(force.vector),
+            };
+            e.currentTarget.setPointerCapture(e.pointerId);
+            return;
+          }
           const node = (e.target as Element).closest(
               "[data-body], [data-transform-body]",
             ),
@@ -171,6 +213,22 @@ export function SceneCanvas({
             }));
             return;
           }
+          if (
+            forceDrag.current &&
+            !locked &&
+            forceDrag.current.pointer === e.pointerId
+          ) {
+            const f = forceDrag.current,
+              value = forcePointerTransform(
+                f.body,
+                f.force,
+                f.mode,
+                f.start,
+                pointer(e),
+              );
+            if (value) onForce(f.id, value);
+            return;
+          }
           if (!drag.current || locked || drag.current.pointer !== e.pointerId)
             return;
           const p = pointer(e);
@@ -190,6 +248,10 @@ export function SceneCanvas({
             );
         }}
         onPointerUp={(e) => {
+          if (forceDrag.current?.pointer === e.pointerId) {
+            forceDrag.current = null;
+            onGestureEnd?.();
+          }
           if (drag.current?.pointer === e.pointerId) {
             drag.current = null;
             onGestureEnd?.();
@@ -199,6 +261,10 @@ export function SceneCanvas({
             e.currentTarget.releasePointerCapture(e.pointerId);
         }}
         onPointerCancel={() => {
+          if (forceDrag.current) {
+            forceDrag.current = null;
+            onGestureEnd?.();
+          }
           if (drag.current) {
             drag.current = null;
             onGestureEnd?.();
@@ -419,7 +485,10 @@ export function SceneCanvas({
               y: pose.position.y + sn * f.localPoint.x + c * f.localPoint.y,
             });
           const m = Math.hypot(f.vector.x, f.vector.y),
-            scale = m ? Math.min(18, 100 / m) : 18;
+            scale =
+              forceDrag.current?.id === f.id
+                ? forceDrag.current.scale
+                : forceDisplayScale(f.vector);
           return (
             <g key={f.id} pointerEvents="none" className="force-arrow">
               <line
@@ -440,6 +509,35 @@ export function SceneCanvas({
               >
                 {m.toFixed(1)} N
               </text>
+              {!locked && selected === b.id && (
+                <>
+                  <circle
+                    className="force-handle"
+                    data-force-id={f.id}
+                    data-force-handle="point"
+                    pointerEvents="all"
+                    cx={start.x}
+                    cy={start.y}
+                    r="7"
+                    aria-label="Drag force application point"
+                  >
+                    <title>Move application point (body-local)</title>
+                  </circle>
+                  <rect
+                    className="force-handle"
+                    data-force-id={f.id}
+                    data-force-handle="vector"
+                    pointerEvents="all"
+                    x={start.x + f.vector.x * scale - 6}
+                    y={start.y - f.vector.y * scale - 6}
+                    width="12"
+                    height="12"
+                    aria-label="Drag force vector"
+                  >
+                    <title>Change force direction and magnitude (N)</title>
+                  </rect>
+                </>
+              )}
             </g>
           );
         })}

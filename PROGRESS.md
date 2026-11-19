@@ -588,3 +588,11 @@ centred convex Scene v1/native geometry support. The teacher bridge explicitly
 admits these only in experimental collision mode; free-flight/public gates remain.
 453 tests, typecheck/generated consistency, lint, build/Pages pass. Chromium
 verified polygon creation/scale/rotation, native rebound and authored-state isolation.
+
+Polygon PR #15 merged as 9bf281d72d5019179f4e4486342c6c1271cfeaeb;
+main/Pages 44600246657 passed and live polygon tools/public lockout verified.
+Force arrows now have authoring-only vector and application-point drag handles.
+SI/body-local conversions and validation preserve real force/torque semantics;
+each gesture is undoable and handles are absent during preview. 454 tests,
+typecheck/generated consistency, lint, build/Pages pass; Chromium verified force,
+torque, Undo and runtime lockout. No live-force permissions or profile changes.
