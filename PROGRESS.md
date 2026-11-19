@@ -490,3 +490,44 @@ bytes. No actual Safari/iPad test is implied by that HTTP smoke verification.
 M1-03E implementation is now explicitly authorized separately. Public
 executionReady remains false and public initialization remains blocked pending
 independent E acceptance. No UI/editor/persistence/scheduler feature is authorized.
+
+## M1-03D final deployed revision and M1-03E submission — 2026-11-19
+
+D acceptance is complete: reviewed head
+9f6aa64e82d1c4f5ffb7166fc8f48caf9d4b8bfb, review 5974545626, successful head
+run 44519082926; normal PR #5 merge e3fa893cc9447b07ce39c046ddd4338f84e9f4f2.
+Main run 44519698017 passed checks and Pages for the merge. Acceptance-record-only
+follow-up cc8b9ac5b6c7166399b900dcb26310761871d432 also passed main checks and
+Pages in run 44520752436; deployment 7912592943 reports success at this final SHA.
+https://github.com/pxtape/-baanphys-physics-sandbox/actions/runs/44520752436
+Public HTML, JS and CSS return 200 with correct MIME and byte-identical local
+build assets; repeated index fetch is unchanged. No E code is on main or Pages.
+
+E implementation is isolated on feat/m1-03e-qualification. It adds executable
+production-runtime B1/B2/B3 and convergence/contact audits, raw trajectories and
+source digests, fresh replay, long-run CPU/contact stress, lifecycle/GC observation
+and browser qualification. Existing domain/model/native runtime behavior, Scene
+v1, approved profile/settings and archived benchmarks are unchanged. Development
+only Playwright is pinned; no renderer/UI/persistence/scheduler was added.
+
+Qualification is BLOCKED, not accepted: four native-substep penetration audits
+fail .004166666666664 m versus unchanged .0025 m; original logical-tick B3 samples
+still pass, explaining archived PoC PASS without rewriting its evidence. All
+other basic analytical metrics pass. General transient CCD clamp observability
+is unqualified. Chromium passes Node comparison but reproduces the contact audit
+failure. WebKit is UNAVAILABLE (missing OS dependencies; dependency installation
+requires unavailable administrative access), and real Safari/iPad is untested.
+
+Verification: 438/442 automated tests pass, four explicit E contact gates fail;
+all 422 pre-existing tests pass. Typecheck/generated consistency, lint, 25 M0
+fixtures, 13 PoC verification tests, build and local Pages asset/refresh smoke
+pass. Physics strict command exits nonzero for qualification failures; browser
+strict command exits nonzero for contact failures/unavailable WebKit. Full raw
+results, stress timing/replay/memory evidence and commands are in
+[qualification/RESULTS.md](qualification/RESULTS.md) and
+[qualification/README.md](qualification/README.md). No thresholds are weakened.
+
+Public executionReady remains false; public initialization remains blocked pending
+independent E acceptance. E must not merge or deploy in this state. Next action:
+review the evidence and explicitly resolve the contact-envelope/clamp-observability
+qualification gaps and missing platform tests. No automatic next milestone.

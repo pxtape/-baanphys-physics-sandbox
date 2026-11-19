@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'node',
-    include: ['src/**/*.test.{ts,tsx}', 'tests/tooling/**/*.test.ts'],
+    include: ['src/**/*.test.{ts,tsx}', 'tests/tooling/**/*.test.ts', 'qualification/**/*.test.ts'],
     clearMocks: true,
   },
 });

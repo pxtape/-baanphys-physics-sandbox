@@ -1,17 +1,18 @@
 # M1 implementation backlog and acceptance
 
-Status: **M1-02 ACCEPTED AND MERGED** (PR #1, 00fe21a; exact reviewed head dfdaa65). Main CI and Pages passed. Historical records below retain their original checkpoint context. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); M1-03B is ACCEPTED and merged (PR #3, 1250efd); M1-03C is ACCEPTED and merged (PR #4, 68d856e); D is ACCEPTED and merged (PR #5, e3fa893); E implementation is authorized. See DECISIONS.md and BENCHMARKS.md for the unchanged engine decision and numerical limitations.
+Status: **M1-02 ACCEPTED AND MERGED** (PR #1, 00fe21a; exact reviewed head dfdaa65). Main CI and Pages passed. Historical records below retain their original checkpoint context. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); M1-03B is ACCEPTED and merged (PR #3, 1250efd); M1-03C is ACCEPTED and merged (PR #4, 68d856e); D is ACCEPTED and merged (PR #5, e3fa893); E evidence is implemented on a feature branch; qualification is BLOCKED pending the recorded contact/clamp/browser findings. See DECISIONS.md and BENCHMARKS.md for the unchanged engine decision and numerical limitations.
 
 | Task | Dependencies | Acceptance criteria | Status |
 | --- | --- | --- | --- |
 | M1-01 Tooling and boundaries | User approval | React/TypeScript strict/Vite project, pinned Planck 1.5.1 and lockfile, Node 24+ documented; tests/typecheck/build scripts; domain/physics/renderer/editor/persistence/player separation. `poc` has no production imports. Keep M0 baseline/history. | COMPLETE — awaiting review |
 | M1-01.5 GitHub repository and continuous deployment | M1-01; repository creation/write and Pages permissions | Preserve history in owner-created pxtape/-baanphys-physics-sandbox; feature/main separation; Node 24 npm ci, typecheck/lint/application/M0/PoC tests and build gates; correct Vite project base; deploy verified dist via GitHub Actions only from main; verify successful Actions, public index, JS/CSS and refresh. | COMPLETE — live deployment verified |
 | M1-02 Domain and validation | M1-01 and M1-01.5 | Typed Scene v1, bundled schema+format assertions, semantic/reference/geometry/resource validation and diagnostics. Immutable authored state distinct from UI/runtime. No eval or schema-selected network fetching. Existing invalid fixtures and all shape branches covered. | ACCEPTED — PR #1 merged as 00fe21a |
-| M1-03 Production Planck adapter | M1-02 | Explicit mass/density/inertia, y-up SI and seconds, fixed dt=1/120 with 4 substeps, 12/12 solver mapping, zero restitution threshold, documented equal-friction profile and native contact/clamp envelope. Reject unsupported profile/materials/features. Production adapter reruns B1/B2/B3 and torque within unchanged tolerances; fresh-engine replay≤1e-10 in same runtime. | A/B/C/D ACCEPTED; E AUTHORIZED |
+| M1-03 Production Planck adapter | M1-02 | Explicit mass/density/inertia, y-up SI and seconds, fixed dt=1/120 with 4 substeps, 12/12 solver mapping, zero restitution threshold, documented equal-friction profile and native contact/clamp envelope. Reject unsupported profile/materials/features. Production adapter reruns B1/B2/B3 and torque within unchanged tolerances; fresh-engine replay≤1e-10 in same runtime. | A/B/C/D ACCEPTED; E QUALIFICATION BLOCKED |
 | M1-03A Adapter contracts | Accepted M1-02 | Engine-independent initialization/step/disposal interfaces; ordered tick inputs and SI snapshots; structured diagnostics; exact Planck 1.5.1 / adapter 1.0.0 / profile identity; mismatches reject, all scenes stay non-executable; immutable authored data and no native type leakage. No world construction or solver. | ACCEPTED — PR #2 merged as 15a8f48 |
 | M1-03B Capability validation | Accepted M1-03A | Pure policy with exact identity/settings; supported geometry, equal-friction material, explicit provisional numerical bounds and full interacting student ranges; unsupported constraints/measurements reject; bounded deterministic diagnostics; immutable source; executionReady=false and no native construction. | ACCEPTED — PR #3 merged as 1250efd |
 | M1-03C SI properties/private construction | Accepted M1-03B | Explicit uniform-lamina area/mass/density/COM inertia; private deterministic Planck body/fixture construction after complete preflight; exact geometry preservation, SI initial state, atomic cleanup and snapshot/dispose-only harness. Public execution remains blocked. | ACCEPTED — PR #4 merged as 68d856e |
 | M1-03D Fixed stepping/forces/snapshots | Accepted M1-03C | Private 1/120 logical ticks, four 1/480 native steps at 12/12; saved/ephemeral SI forces/torque; strict bounded atomic batch validation; settings/envelope monitoring; immutable snapshots/time, terminal failure and disposal. Public executionReady remains false. | ACCEPTED — PR #5 merged as e3fa893 |
+| M1-03E Numerical and compatibility qualification | Accepted M1-03D | Production B1/B2/B3, convergence, contact/CCD audit, fresh replay, long-run/performance/lifecycle and available browser evidence; unchanged profile/schema/thresholds; public initialization blocked until independent acceptance. | IMPLEMENTED EVIDENCE — BLOCKED; see qualification/RESULTS.md |
 | M1-04 Shared renderer/viewport | M1-02 | SVG scene and camera separate from physics; inverse transforms at zoom/DPR; accessible object list and units. Pointer and keyboard selection; screen transforms cannot change solver states. Select named desktop/iPad baselines and check Safari rendering/input early. | NOT STARTED |
 | M1-05 S0 scene authoring | M1-03/04 | Circle, rectangle, finite static floor palette; select/drag; dimensions, position, mass/velocity inspector with validation; duplicate/delete. One gesture is one undo command; undo/redo survives repeated previews without authored-state leakage. | NOT STARTED |
 | M1-06 Preview controls | M1-03/05 | Play/Pause/Reset/Step, visible simulation time; Step advances one logical dt, no variable integration step; hidden-tab/backlog policy. Save/reset use authored initial values. Slow motion may follow as M2 completion but cannot alter h. | NOT STARTED |
@@ -328,3 +329,31 @@ bytes. No actual Safari/iPad test is implied by that HTTP smoke verification.
 M1-03E implementation is now explicitly authorized separately. Public
 executionReady remains false and public initialization remains blocked pending
 independent E acceptance. No UI/editor/persistence/scheduler feature is authorized.
+
+## M1-03E qualification submission — 2026-11-19
+
+Implemented isolated production-runtime fixtures, independent SI oracles, native
+substep/contact instrumentation, raw CSV/source digests, unregistered fresh-world
+convergence probes, fresh-world replay, 600-second 100-body CPU/contact stress,
+GC lifecycle observations and a loopback-only Playwright browser runner. Native
+imports remain inside adapters; the app does not load the qualification harness.
+
+B1/B2 pass. Original B3 logical-tick samples and velocity/conservation gates pass,
+but the added native-substep audit measures .004166666666664 m physical overlap,
+above the unchanged .0025 m bound. Four qualification tests deliberately remain
+failing (equal masses and ratios 2/10/100); no skip/xfail or widened tolerance.
+Transient internal CCD clamp observability remains UNQUALIFIED. Chromium replay
+matches Node; Chromium reproduces contact audit failures. WebKit could not launch
+because OS libraries are unavailable; privileged dependency installation was not
+available. Actual Safari/iPad remains untested. These are not qualification passes.
+
+All existing 422 tests remain intact/passing. Total suite: 438 pass, 4 fail (442).
+Generated consistency/typecheck, lint, 25 M0 fixtures, 13 PoC verification tests,
+production build and local Pages smoke pass. Production settings/schema/benchmarks
+are unchanged. Exact results, stress timing, raw data and reproducible commands:
+[qualification/RESULTS.md](qualification/RESULTS.md) and
+[qualification/README.md](qualification/README.md).
+
+Public executionReady=false and initialization remains blocked. Submit a separate
+PR for evidence review; do not merge, deploy, certify the provisional envelope or
+start renderer/editor work. Resolve qualification findings before E acceptance.
