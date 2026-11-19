@@ -367,6 +367,12 @@ export function SceneCanvas({
                   height={shape.height * 64}
                   rx="2"
                 />
+              ) : shape.type === "polygon" ? (
+                <polygon
+                  points={shape.vertices
+                    .map((v) => `${v.x * 64},${-v.y * 64}`)
+                    .join(" ")}
+                />
               ) : null}
               {body.motionType === "static" && shape.type === "rectangle" && (
                 <rect
@@ -471,16 +477,22 @@ export function SceneCanvas({
         {!locked &&
           (() => {
             const b = scene.bodies.find((q) => q.id === selected);
-            if (!b || b.shape.type === "polygon") return null;
+            if (!b) return null;
             const p = toScreen(b.position),
               hw =
                 (b.shape.type === "circle"
                   ? b.shape.radius
-                  : b.shape.width / 2) * 64,
+                  : b.shape.type === "rectangle"
+                    ? b.shape.width / 2
+                    : Math.max(...b.shape.vertices.map((v) => Math.abs(v.x)))) *
+                64,
               hh =
                 (b.shape.type === "circle"
                   ? b.shape.radius
-                  : b.shape.height / 2) * 64;
+                  : b.shape.type === "rectangle"
+                    ? b.shape.height / 2
+                    : Math.max(...b.shape.vertices.map((v) => Math.abs(v.y)))) *
+                64;
             return (
               <g
                 className="transform-handles"
@@ -510,12 +522,16 @@ export function SceneCanvas({
                   data-handle="resize"
                   aria-label="Drag to resize selected object"
                   x={hw - 8}
-                  y={(b.shape.type === "circle" ? 0 : hh) - 8}
+                  y={(b.shape.type === "rectangle" ? hh : 0) - 8}
                   width="16"
                   height="16"
                   className="resize-handle"
                 >
-                  <title>Resize — centre remains fixed</title>
+                  <title>
+                    {b.shape.type === "polygon"
+                      ? "Uniform scale — centre remains fixed"
+                      : "Resize — centre remains fixed"}
+                  </title>
                 </rect>
               </g>
             );

@@ -184,3 +184,7 @@ Motion switches between movable bodies and fixed surfaces. Remove forces/joints
 before fixing an attached body; fixing explicitly zeros initial velocity.
 Choose fixed mass or uniform 2D areal density (kg/m²); density-mode resizing changes
 mass. Try the inclined-plane example and ½×/¼× playback; Step always advances 1/120 s.
+
+Triangle and pentagon tools use centred convex Scene v1 polygons. Scale them
+uniformly with the square handle or Polygon radius field. Polygon contacts are
+available only in the opted-in experimental collision preview, not free-flight mode.
