@@ -1,12 +1,12 @@
 # M1 implementation backlog and acceptance
 
-Status: **M1-02 implemented on feat/m1-02-domain-validation — awaiting review/merge approval**. Main and GitHub Pages remain unchanged. M1-03 and later tasks are NOT STARTED. See DECISIONS.md and BENCHMARKS.md for the unchanged engine decision and numerical limitations.
+Status: **M1-02 ACCEPTED AND MERGED** (PR #1, 00fe21a; exact reviewed head dfdaa65). Main CI and Pages passed. Historical records below retain their original checkpoint context. M1-03 and later tasks are NOT STARTED. See DECISIONS.md and BENCHMARKS.md for the unchanged engine decision and numerical limitations.
 
 | Task | Dependencies | Acceptance criteria | Status |
 | --- | --- | --- | --- |
 | M1-01 Tooling and boundaries | User approval | React/TypeScript strict/Vite project, pinned Planck 1.5.1 and lockfile, Node 24+ documented; tests/typecheck/build scripts; domain/physics/renderer/editor/persistence/player separation. `poc` has no production imports. Keep M0 baseline/history. | COMPLETE — awaiting review |
 | M1-01.5 GitHub repository and continuous deployment | M1-01; repository creation/write and Pages permissions | Preserve history in owner-created pxtape/-baanphys-physics-sandbox; feature/main separation; Node 24 npm ci, typecheck/lint/application/M0/PoC tests and build gates; correct Vite project base; deploy verified dist via GitHub Actions only from main; verify successful Actions, public index, JS/CSS and refresh. | COMPLETE — live deployment verified |
-| M1-02 Domain and validation | M1-01 and M1-01.5 | Typed Scene v1, bundled schema+format assertions, semantic/reference/geometry/resource validation and diagnostics. Immutable authored state distinct from UI/runtime. No eval or schema-selected network fetching. Existing invalid fixtures and all shape branches covered. | COMPLETE — task branch, pending acceptance/merge |
+| M1-02 Domain and validation | M1-01 and M1-01.5 | Typed Scene v1, bundled schema+format assertions, semantic/reference/geometry/resource validation and diagnostics. Immutable authored state distinct from UI/runtime. No eval or schema-selected network fetching. Existing invalid fixtures and all shape branches covered. | ACCEPTED — PR #1 merged as 00fe21a |
 | M1-03 Production Planck adapter | M1-02 | Explicit mass/density/inertia, y-up SI and seconds, fixed dt=1/120 with 4 substeps, 12/12 solver mapping, zero restitution threshold, documented equal-friction profile and native contact/clamp envelope. Reject unsupported profile/materials/features. Production adapter reruns B1/B2/B3 and torque within unchanged tolerances; fresh-engine replay≤1e-10 in same runtime. | NOT STARTED |
 | M1-04 Shared renderer/viewport | M1-02 | SVG scene and camera separate from physics; inverse transforms at zoom/DPR; accessible object list and units. Pointer and keyboard selection; screen transforms cannot change solver states. Select named desktop/iPad baselines and check Safari rendering/input early. | NOT STARTED |
 | M1-05 S0 scene authoring | M1-03/04 | Circle, rectangle, finite static floor palette; select/drag; dimensions, position, mass/velocity inspector with validation; duplicate/delete. One gesture is one undo command; undo/redo survives repeated previews without authored-state leakage. | NOT STARTED |
@@ -19,13 +19,13 @@ Status: **M1-02 implemented on feat/m1-02-domain-validation — awaiting review/
 ## Critical blockers versus later gates
 
 - **Critical technical blockers to start basic M1: none identified.** Local Git works; dependencies and executable evidence are available; Planck passes the defined basic mechanics at the chosen fixed settings.
-- **Workflow gate: M1-02 is implemented on its task branch.** Review the PR; do not merge or start M1-03 without separate approval.
+- **Workflow gate: M1-02 is accepted and merged.** M1-03 is planned in [M1-03_PLAN.md](M1-03_PLAN.md); do not implement it without approval.
 - Repository and live Pages preview are available under pxtape/-baanphys-physics-sandbox (leading hyphen retained). Origin and feature/main branches are configured; see DEPLOYMENT.md for verified deployment evidence.
 - Safari/real iPad access and named hardware must be arranged for compatibility/performance acceptance. No claim that these were tested in M0.5; lack of evidence blocks that acceptance/release, not headless/editor construction.
 - Rolling/no-slip fidelity, distinct static/dynamic friction, advanced rope transients, full 10-minute scene budget, Atwood/pulleys/gears/motors and cross-browser determinism remain separate gates. They cannot be exposed as certified capabilities based on this report.
 - BaanPhys host origins/auth/problem contract and server publication are unresolved M5 dependencies. Local player tests do not establish cross-device embedding.
 
-M1-01 and M1-01.5 are accepted. M1-02 is implemented for review; do not merge it or start M1-03 until separately instructed. Completion of the foundation does not imply that scene validation, authoring, simulation or embedding already works.
+M1-01, M1-01.5 and M1-02 are accepted. Do not start M1-03 until separately instructed. Completion of the foundation does not imply that scene validation, authoring, simulation or embedding already works.
 
 ## M1-01 completion evidence — 2026-11-17
 
@@ -124,3 +124,19 @@ or M1-03 implementation. Historical completion counts above describe the origina
 383e090 submission. Remaining risks: pinned format-library compatibility (including
 permissive leap-second dates), future repository lineage checks and untested real
 Safari/iPad behavior. All successful documents still have executionReady=false.
+
+
+## Final M1-02 acceptance — 2026-11-19
+
+PASS at dfdaa65f45c20a877bb49d4ed5f2a5396866727c; normal PR #1 merge
+00fe21a5df232d9bde879323baebdc9be00edf89. Main checks and Pages run 44499277414
+succeeded at the merge SHA. Public index/JS/CSS and refresh verified HTTP 200;
+assets match the production build. Local re-verification: typecheck/generated
+sync, lint, 195 application tests including all 58 timestamp regressions, 25 M0
+fixtures, 13 PoC verification tests and build PASS. No unresolved critical/major
+issue found; schema and accepted formats unchanged. Leap-second date authenticity
+is not checked by the pinned format library; preserved and documented, not
+silently restricted. Full acceptance evidence: PROGRESS.md.
+
+Next task: [M1-03 implementation plan](M1-03_PLAN.md). Its original scope and
+thresholds are unchanged; status remains NOT STARTED pending user approval.

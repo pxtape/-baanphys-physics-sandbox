@@ -1,6 +1,6 @@
 # Roadmap
 
-Status: M0.5, M1-01 and M1-01.5 completed. The foundation preview is published on GitHub Pages; M1-02 remains unstarted. Milestones are gated by evidence, not calendar dates. The user must authorize starting implementation; completion of these documents does not authorize M1.
+Status: M0.5, M1-01 and M1-01.5 completed. The foundation preview is published on GitHub Pages; M1-02 is accepted and merged (PR #1, 00fe21a); M1-03 is planned only in M1-03_PLAN.md and awaits implementation approval. Milestones are gated by evidence, not calendar dates. The user must authorize starting implementation; completion of these documents does not authorize M1.
 
 ## Delivery order and dependencies
 

@@ -4,7 +4,7 @@ Updated: 2026-11-19.
 
 ## Current state
 
-**M1-02 COMPLETE ON TASK BRANCH — awaiting acceptance/merge approval.** Branch: feat/m1-02-domain-validation. Main remains abf556e; GitHub Pages is unchanged. M1-03 and later tasks are NOT STARTED.
+**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03 is planned only and awaits implementation approval. Historical records below describe their original checkpoints.
 
 - Repository: https://github.com/pxtape/-baanphys-physics-sandbox
 - Live foundation preview: https://pxtape.github.io/-baanphys-physics-sandbox/
@@ -139,3 +139,33 @@ or M1-03 implementation. Historical completion counts above describe the origina
 383e090 submission. Remaining risks: pinned format-library compatibility (including
 permissive leap-second dates), future repository lineage checks and untested real
 Safari/iPad behavior. All successful documents still have executionReady=false.
+
+
+## M1-02 final acceptance — 2026-11-19
+
+All mandatory criteria PASS; no unresolved critical/major findings identified.
+Exact PR head dfdaa65f45c20a877bb49d4ed5f2a5396866727c had successful push run
+44498428228 and PR run 44498437777; no review threads existed. Re-ran typecheck /
+generated consistency, lint, all 195 tests (including 58 timestamp regressions),
+25 M0 fixtures, 13 PoC verification tests and production build successfully.
+Scene v1 schema is byte-identical to the prior main; format dependency, generator
+and generated validator are unchanged by the fix. Resource/reference/geometry,
+immutable authored state and executionReady=false tests remain passing.
+
+PR #1 merged normally, preserving history, as
+00fe21a5df232d9bde879323baebdc9be00edf89. Main run 44499277414 passed checks and
+Pages deployment for that exact merge SHA. Public project index, JavaScript and
+CSS returned HTTP 200 with correct MIME types; JS/CSS matched local build bytes;
+reloading the public index returned identical HTML. This is an HTTP/artifact smoke
+check, not a new visual Safari/iPad qualification. Documentation follow-up
+commits have their own deployment records in Actions; the verified code merge
+SHA above is retained as the acceptance evidence.
+
+Leap-second limitation: pinned ajv-formats permits second 60 at 23:59 on dates
+without checking a historical leap-second table. Ordering preserves those accepted
+representations, exact decimal fractions, and all single T/t/ECMAScript-whitespace
+separators. No schema/accepted-format restriction or migration was introduced.
+
+M1-03_PLAN.md decomposes the existing adapter task and records physics references,
+unchanged numerical gates, supported-envelope risks and exit criteria. No M1-03
+production code was implemented. Await user approval before starting it.
