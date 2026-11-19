@@ -4,7 +4,7 @@ Updated: 2026-11-19.
 
 ## Current state
 
-**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B capability policy is ACCEPTED and merged (PR #3, 1250efd); C is planned only and C–E remain unstarted. Historical records below describe their original checkpoints.
+**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B capability policy is ACCEPTED and merged (PR #3, 1250efd); C is implemented on feat/m1-03c-world-construction for review; D/E remain unstarted. Historical records below describe their original checkpoints.
 
 - Repository: https://github.com/pxtape/-baanphys-physics-sandbox
 - Live foundation preview: https://pxtape.github.io/-baanphys-physics-sandbox/
@@ -314,3 +314,47 @@ fixture construction, stable UUID order, SI initial-state mapping, explicit nati
 mass/density/COM handling, source isolation, geometry verification and transactional
 cleanup. Public execution remains blocked until D/E; C tests must not masquerade
 as trajectory qualification. No C/D/E code was implemented. Await approval.
+
+
+## M1-03C SI properties/private construction — 2026-11-19
+
+Branched from latest main b55c086dc73e3800f1080ef33eed3b02f5b8df2a. Added pure
+physicalProperties for disk/rectangle/centred convex polygon, explicit mass and
+areal density; existing geometry formulas now expose their already-calculated
+centroid without changing numerical tolerances or Scene v1. Native construction
+is confined to physics/adapters and omitted from public barrel/facade.
+
+Harness revalidates detached complete scene and B policy before allocation,
+precomputes properties, verifies native settings and constructs canonical lowercase
+UUID order. Fixture density/material explicit; dynamic MassData sets physical
+mass, COM inertia and local centre zero; final initial velocities assigned after
+mass changes. Static inverse mass/inertia remain zero. Native vertices must match
+source exactly up to cyclic order; mismatch rejects and cleans up. Temporary-world
+failure never publishes a session. Session exposes only frozen detached tick-zero
+SI snapshots and idempotent disposal; use after disposal fails.
+
+Executed analytical tests in both mass/density modes: disk r=.2,m=1,I=.02,
+measured .020000000000000004 (error 3.469446951953614e-18); rectangle 2×1,m=2
+and identical polygon I=5/6 (error 0); centred triangle area=3,m=3,I=2 (error 0).
+All area/mass errors 0. Evidence/command: src/physics/adapters/CONSTRUCTION.md.
+No tolerance was widened; boundary comparisons use 1e-12 scaled, centroid 1e-8 m.
+
+22 new tests cover shapes/mass models, native fixture data and static inverse
+quantities, initial velocities/transforms, negative/rotated positions, centroid
+residual, boundaries, immutable/frozen source, actual native creation order,
+isolation, first/middle/final body/fixture/mass injection, world/native failure,
+native geometry corruption, preflight rejection and disposal. All 292 tests,
+typecheck/generated sync, lint, 25 M0 fixtures, 13 PoC verification tests and build
+pass. Existing architecture deprecation warning remains non-failing. No UI/browser
+change; no Safari/iPad, stepping/replay or production trajectory qualification.
+
+Source inspection corrected prior documentation: native Planck 1.5.1 supports
+12 polygon vertices, but BaanPhys approved policy remains 3–8. Native setting
+verification uses 12; no policy/schema/numerical setting/threshold expansion.
+Architecture and capability notes now distinguish native and approved limits.
+
+Main/Pages unchanged; no public execution enabled. Global settings are shared
+within the native module and must not be modified by other consumers; future
+fixture changes reset mass and require revalidation/reassignment. C/D/E still
+need current-state guards, fixed stepping and numerical qualification. Do not
+merge/deploy or start M1-03D until this task is reviewed/accepted.

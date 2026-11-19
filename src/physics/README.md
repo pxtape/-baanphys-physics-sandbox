@@ -61,3 +61,11 @@ policy checks, not a runtime. `checkPlanckContract` remains identity/settings-on
 unsupported requirements and return explicit `policyCompatible` separately from
 `profileCompatible`. Both retain `executionReady=false`; initialize always fails.
 No native Planck module is imported and no authored model/schema changes.
+
+## M1-03C internal construction
+
+The private harness and measured analytical evidence are documented in
+[adapters/CONSTRUCTION.md](adapters/CONSTRUCTION.md). Only that internal module
+constructs native objects; it exports an engine-independent snapshot/dispose
+session and is absent from the public physics barrel. Public initialization,
+capability execution readiness and numerical qualification remain blocked.

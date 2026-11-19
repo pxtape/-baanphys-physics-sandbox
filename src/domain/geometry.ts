@@ -1,7 +1,7 @@
 import type { BodyShape, WorldVector } from './scene';
 import type { DiagnosticSink } from './diagnostics';
 
-export interface LaminaProperties { readonly area: number; readonly inertiaPerMass: number }
+export interface LaminaProperties { readonly area: number; readonly inertiaPerMass: number; readonly centroid: WorldVector }
 const cross = (a: WorldVector, b: WorldVector, c: WorldVector) =>
   (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
 const onSegment = (a: WorldVector, b: WorldVector, p: WorldVector) =>
@@ -15,8 +15,8 @@ function intersects(a: WorldVector, b: WorldVector, c: WorldVector, d: WorldVect
 
 /** Called after structural bounds (3..128 vertices) have been checked. No recentering. */
 export function validateGeometry(shape: BodyShape, path: string, add: DiagnosticSink): LaminaProperties | undefined {
-  if (shape.type === 'circle') return { area: Math.PI * shape.radius ** 2, inertiaPerMass: shape.radius ** 2 / 2 };
-  if (shape.type === 'rectangle') return { area: shape.width * shape.height, inertiaPerMass: (shape.width ** 2 + shape.height ** 2) / 12 };
+  if (shape.type === 'circle') return { area: Math.PI * shape.radius ** 2, inertiaPerMass: shape.radius ** 2 / 2, centroid: { x: 0, y: 0 } };
+  if (shape.type === 'rectangle') return { area: shape.width * shape.height, inertiaPerMass: (shape.width ** 2 + shape.height ** 2) / 12, centroid: { x: 0, y: 0 } };
   const vertices = shape.vertices;
   const n = vertices.length;
   const vertex = (i: number): WorldVector => vertices[(i + n) % n]!;
@@ -53,5 +53,5 @@ export function validateGeometry(shape: BodyShape, path: string, add: Diagnostic
     fail('POLYGON_CENTROID_OFFSET', 'Polygon centroid must be within 1e-8 m of its local origin.', 'Re-author vertices about their centre of mass and update local anchors explicitly.');
     return undefined;
   }
-  return { area: twiceArea / 2, inertiaPerMass: moment / (6 * twiceArea) - cx ** 2 - cy ** 2 };
+  return { area: twiceArea / 2, inertiaPerMass: moment / (6 * twiceArea) - cx ** 2 - cy ** 2, centroid: { x: cx, y: cy } };
 }

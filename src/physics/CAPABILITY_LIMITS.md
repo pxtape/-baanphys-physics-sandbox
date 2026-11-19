@@ -37,7 +37,7 @@ No tolerance for <=1% benchmarks was changed or inferred from these bounds.
 | Quantity | Inclusive bound | Basis and uncertainty |
 | --- | --- | --- |
 | Circle diameter; rectangle width/height | .02..100 m | Provisional. .02 is twice native polygon skin and four times linear slop; this ratio alone establishes no contact accuracy. |
-| Convex polygon vertices | 3..8 | Source-reviewed native vertex limit, documented ARCHITECTURE.md; schema permits up to 128 for inspection. No hull/decomposition. |
+| Convex polygon vertices | 3..8 | Approved conservative profile limit; C source inspection confirms native Planck 1.5.1 allows 12, correcting the earlier native-limit claim. Schema permits 128 for inspection. Policy stays 3–8; no hull/decomposition. |
 | Polygon edge | .02..100 m | Provisional minimum edge restriction; semantic checks alone allow much smaller. |
 | Polygon COM-to-edge distance | .01..50 m | Provisional thin-sliver guard; uses supporting lines of already validated strictly convex centred polygons. |
 | Polygon local vertex radius | <=50 m | Provisional extent guard; no recentering. Rectangle corner radius may reach sqrt(2)*50 m. |
