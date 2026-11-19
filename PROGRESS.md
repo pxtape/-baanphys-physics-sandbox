@@ -4,7 +4,7 @@ Updated: 2026-11-19.
 
 ## Current state
 
-**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A contracts are implemented on feat/m1-03a-adapter-contracts for review; B–E remain unstarted. Historical records below describe their original checkpoints.
+**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B is planned only and B–E implementation remains unstarted. Historical records below describe their original checkpoints.
 
 - Repository: https://github.com/pxtape/-baanphys-physics-sandbox
 - Live foundation preview: https://pxtape.github.io/-baanphys-physics-sandbox/
@@ -199,3 +199,37 @@ production numerical qualification. Inputs here are trusted typed data; future
 runtime must check dynamic targets/envelopes before applying them. No runtime
 or native object exists yet. Stop after PR submission for acceptance; do not
 merge, deploy or implement M1-03B–E without approval.
+
+
+## M1-03A final acceptance and B preparation — 2026-11-19
+
+Independent final review at exact PR #2 head
+33cfb2ea0f424716bde34feb2b265d48c9f24748 found no critical/major blocker.
+PR head matched, no review threads, required Checks and build run 44503465766
+passed every required step; PR deployment was correctly skipped. Local generated
+consistency/typecheck, lint, 224 tests, 25 M0 fixtures, 13 existing PoC verification
+tests and build passed again. Existing architecture test emits a non-failing
+TSImportType argument deprecation warning; no test or rule was weakened.
+
+Normal merge SHA: 15a8f480e47e30997b714a0b88dca6ebdc30cf62.
+Main checks and Pages deployment run 44503938253 passed at that exact SHA.
+The Pages deployment API confirmed that deployed SHA. Public index/JS/CSS
+returned HTTP 200 with correct MIME types, code assets matched local build,
+and repeat index fetch/refresh was identical. This is an HTTP/artifact smoke
+check, not a new browser or Safari/iPad qualification. Documentation follow-up
+commits have separate Actions/deployment history; retain this merge evidence.
+
+Contracts are implementable without variable-step input or native handle exposure.
+All construction currently rejects; future initialization must validate first and
+clean up failures. orderTickInputs only orders trusted typed inputs: dynamic body
+references, permissions, aggregate force/torque and current-state safety checks
+are mandatory at the future runtime boundary before any mutation. Profile identity
+and approved numerical settings remain exact; executionReady is still false.
+Canonical Scene v1, benchmark sources/results/thresholds and dependencies unchanged.
+
+Added M1-03B_PLAN.md for approval only: geometry, equal-friction materials,
+evidence-based numerical bounds, entire interacting student ranges, unsupported
+features, structured bounded diagnostics and all-or-nothing qualification. It
+lists boundary/negative/isolation tests, expected affected files and explicit
+acceptance. Policy success alone cannot certify execution before C/D/E evidence.
+No B production code was implemented. Stop and await user approval.
