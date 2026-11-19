@@ -179,3 +179,8 @@ MVP branch described above now builds on the accepted domain and runtime.
 Select an object to reveal canvas handles: drag the circular handle to rotate,
 or the square handle to resize about its centre. Undo reverses a complete drag.
 Numeric property fields remain available for precise and keyboard-based edits.
+
+Motion switches between movable bodies and fixed surfaces. Remove forces/joints
+before fixing an attached body; fixing explicitly zeros initial velocity.
+Choose fixed mass or uniform 2D areal density (kg/m²); density-mode resizing changes
+mass. Try the inclined-plane example and ½×/¼× playback; Step always advances 1/120 s.

@@ -1,3 +1,4 @@
+import { physicalProperties } from "../physics/physical-properties";
 import { anchorPosition } from "../domain/anchors";
 import { checkExperimentalScene } from "../physics/experimental-policy";
 import example from "../../examples/falling-ball.scene.json";
@@ -76,7 +77,8 @@ export function newScene(
     | "sliding"
     | "forces"
     | "pendulum"
-    | "rope" = "free-fall",
+    | "rope"
+    | "incline" = "free-fall",
 ): SceneDocument {
   const s = structuredClone(example) as SceneV1;
   s.identity = { state: "draft" };
@@ -174,6 +176,29 @@ export function newScene(
         ? { ...shared, type: "hinge" }
         : { ...shared, type: "rope", maxLength: 2 },
     ];
+  }
+  if (preset === "incline") {
+    const ramp = makeBody("floor"),
+      block = makeBody("rectangle"),
+      angle = -0.25,
+      c = Math.cos(angle),
+      sn = Math.sin(angle);
+    ramp.name = "Inclined surface";
+    ramp.shape = { type: "rectangle", width: 9, height: 0.3 };
+    ramp.position = { x: 0, y: 1.8 };
+    ramp.angle = angle;
+    block.name = "Sliding block";
+    block.position = { x: -2.5 * c - 0.56 * sn, y: 1.8 - 2.5 * sn + 0.56 * c };
+    block.angle = angle;
+    block.massModel = { mode: "mass", mass: 2 };
+    ramp.material = block.material = {
+      friction: 0.15,
+      staticFriction: 0.15,
+      restitution: 0,
+    };
+    s.bodies = [block, ramp, makeBody("floor")];
+    s.title = "Inclined plane";
+    s.world.gravity = { x: 0, y: -9.81 };
   }
   s.measurements = [];
   s.studentPolicy.controls = [];
@@ -328,4 +353,55 @@ export function positionBody(
     },
     !fixedPivots,
   );
+}
+
+/** An explicit authoring operation; never changes runtime state or silently drops forces. */
+export function setBodyMotion(
+  scene: SceneDocument,
+  id: string,
+  motion: "static" | "dynamic",
+) {
+  const body = scene.bodies.find((b) => b.id === id);
+  if (!body) return { ok: false as const, message: "Select a body first." };
+  if (body.motionType === motion) return { ok: true as const, scene };
+  if (
+    motion === "static" &&
+    (scene.forces.some((f) => f.bodyId === id) ||
+      scene.constraints.some(
+        (c) =>
+          (c.anchorA.type === "body" && c.anchorA.bodyId === id) ||
+          (c.anchorB.type === "body" && c.anchorB.bodyId === id),
+      ))
+  ) {
+    return {
+      ok: false as const,
+      message:
+        "Remove this body's forces and joints before fixing it. They are not deleted automatically.",
+    };
+  }
+  return editScene(scene, (s) => {
+    const b = s.bodies.find((b) => b.id === id)!;
+    b.motionType = motion;
+    if (motion === "static") {
+      b.velocity = { x: 0, y: 0 };
+      b.angularVelocity = 0;
+    }
+  });
+}
+/** Switch authoritative quantity while preserving the uniform body's physical mass. */
+export function setMassMode(
+  scene: SceneDocument,
+  id: string,
+  mode: "mass" | "density",
+) {
+  const body = scene.bodies.find((b) => b.id === id);
+  if (!body) return { ok: false as const, message: "Select a body first." };
+  const p = physicalProperties(body);
+  if (!p.ok) return { ok: false as const, message: p.diagnostics[0]!.message };
+  return editScene(scene, (s) => {
+    s.bodies.find((b) => b.id === id)!.massModel =
+      mode === "mass"
+        ? { mode, mass: p.value.mass }
+        : { mode, arealDensity: p.value.arealDensity };
+  });
 }

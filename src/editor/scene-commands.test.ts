@@ -48,3 +48,40 @@ it("maps SI world coordinates to SVG coordinates and back with y up", () => {
   }
   expect(toScreen({ x: 0, y: 1 }).y).toBeLessThan(toScreen({ x: 0, y: 0 }).y);
 });
+it("switches mass models without changing physical mass and honors density on resize", async () => {
+  const { setMassMode } = await import("./scene-commands");
+  const { physicalProperties } = await import("../physics/physical-properties");
+  const source = newScene(),
+    id = source.bodies[0]!.id;
+  const next = setMassMode(source, id, "density");
+  if (!next.ok) throw Error(next.message);
+  const p = physicalProperties(next.scene.bodies[0]!);
+  expect(p.ok && p.value.mass).toBeCloseTo(1, 12);
+  const bigger = editScene(next.scene, (s) => {
+    const b = s.bodies[0]!;
+    if (b.shape.type === "circle") b.shape.radius *= 2;
+  });
+  if (!bigger.ok) throw Error(bigger.message);
+  const q = physicalProperties(bigger.scene.bodies[0]!);
+  expect(q.ok && q.value.mass).toBeCloseTo(4, 12);
+  expect(next.scene.bodies[0]!.id).toBe(id);
+  expect(source.bodies[0]!.massModel).toEqual({ mode: "mass", mass: 1 });
+});
+it("fixing is explicit, preserves geometry/ID, zeros motion and never discards authored forces", async () => {
+  const { setBodyMotion } = await import("./scene-commands");
+  const source = newScene("projectile"),
+    b = source.bodies[0]!;
+  const fixed = setBodyMotion(source, b.id, "static");
+  if (!fixed.ok) throw Error(fixed.message);
+  expect(fixed.scene.bodies[0]).toMatchObject({
+    id: b.id,
+    shape: b.shape,
+    velocity: { x: 0, y: 0 },
+    angularVelocity: 0,
+  });
+  const driven = newScene("forces"),
+    before = JSON.stringify(driven);
+  expect(setBodyMotion(driven, driven.bodies[0]!.id, "static").ok).toBe(false);
+  expect(JSON.stringify(driven)).toBe(before);
+  expect(newScene("incline").bodies[1]!.angle).toBe(-0.25);
+});
