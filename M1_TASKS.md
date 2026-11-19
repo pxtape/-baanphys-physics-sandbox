@@ -1,6 +1,6 @@
 # M1 implementation backlog and acceptance
 
-Status: **M1-02 ACCEPTED AND MERGED** (PR #1, 00fe21a; exact reviewed head dfdaa65). Main CI and Pages passed. Historical records below retain their original checkpoint context. M1-03 and later tasks are NOT STARTED. See DECISIONS.md and BENCHMARKS.md for the unchanged engine decision and numerical limitations.
+Status: **M1-02 ACCEPTED AND MERGED** (PR #1, 00fe21a; exact reviewed head dfdaa65). Main CI and Pages passed. Historical records below retain their original checkpoint context. M1-03A contracts are implemented on a task branch for review; M1-03B–E and later tasks are NOT STARTED. See DECISIONS.md and BENCHMARKS.md for the unchanged engine decision and numerical limitations.
 
 | Task | Dependencies | Acceptance criteria | Status |
 | --- | --- | --- | --- |
@@ -8,6 +8,7 @@ Status: **M1-02 ACCEPTED AND MERGED** (PR #1, 00fe21a; exact reviewed head dfdaa
 | M1-01.5 GitHub repository and continuous deployment | M1-01; repository creation/write and Pages permissions | Preserve history in owner-created pxtape/-baanphys-physics-sandbox; feature/main separation; Node 24 npm ci, typecheck/lint/application/M0/PoC tests and build gates; correct Vite project base; deploy verified dist via GitHub Actions only from main; verify successful Actions, public index, JS/CSS and refresh. | COMPLETE — live deployment verified |
 | M1-02 Domain and validation | M1-01 and M1-01.5 | Typed Scene v1, bundled schema+format assertions, semantic/reference/geometry/resource validation and diagnostics. Immutable authored state distinct from UI/runtime. No eval or schema-selected network fetching. Existing invalid fixtures and all shape branches covered. | ACCEPTED — PR #1 merged as 00fe21a |
 | M1-03 Production Planck adapter | M1-02 | Explicit mass/density/inertia, y-up SI and seconds, fixed dt=1/120 with 4 substeps, 12/12 solver mapping, zero restitution threshold, documented equal-friction profile and native contact/clamp envelope. Reject unsupported profile/materials/features. Production adapter reruns B1/B2/B3 and torque within unchanged tolerances; fresh-engine replay≤1e-10 in same runtime. | NOT STARTED |
+| M1-03A Adapter contracts | Accepted M1-02 | Engine-independent initialization/step/disposal interfaces; ordered tick inputs and SI snapshots; structured diagnostics; exact Planck 1.5.1 / adapter 1.0.0 / profile identity; mismatches reject, all scenes stay non-executable; immutable authored data and no native type leakage. No world construction or solver. | IMPLEMENTED — task branch, awaiting review |
 | M1-04 Shared renderer/viewport | M1-02 | SVG scene and camera separate from physics; inverse transforms at zoom/DPR; accessible object list and units. Pointer and keyboard selection; screen transforms cannot change solver states. Select named desktop/iPad baselines and check Safari rendering/input early. | NOT STARTED |
 | M1-05 S0 scene authoring | M1-03/04 | Circle, rectangle, finite static floor palette; select/drag; dimensions, position, mass/velocity inspector with validation; duplicate/delete. One gesture is one undo command; undo/redo survives repeated previews without authored-state leakage. | NOT STARTED |
 | M1-06 Preview controls | M1-03/05 | Play/Pause/Reset/Step, visible simulation time; Step advances one logical dt, no variable integration step; hidden-tab/backlog policy. Save/reset use authored initial values. Slow motion may follow as M2 completion but cannot alter h. | NOT STARTED |
@@ -140,3 +141,19 @@ silently restricted. Full acceptance evidence: PROGRESS.md.
 
 Next task: [M1-03 implementation plan](M1-03_PLAN.md). Its original scope and
 thresholds are unchanged; status remains NOT STARTED pending user approval.
+
+
+## M1-03A review submission — 2026-11-19
+
+Only step 1 of M1-03_PLAN.md is implemented. Public contracts and exact trusted
+identity/settings gate live in src/physics; adapterVersion=1.0.0. All scenes remain
+executionReady=false and initialization rejects without constructing a runtime.
+No native imports, worlds, bodies, fixtures, mass conversions or solver stepping.
+Tick-input ordering is deterministic, detached/frozen and rejects invalid batches.
+SceneDocument and canonical Scene v1 remain unchanged. Contract lifecycle and
+versioning details: src/physics/README.md. No benchmark thresholds/settings change.
+
+Acceptance evidence: 29 new contract/order/declaration/type tests; full 224 tests,
+typecheck/generated consistency, lint, 25 M0 fixtures, 13 existing PoC verification
+tests and production build pass. Runtime/numerical gates are NOT executed by this
+contract-only task. Stop for review; no merge/deployment or B–E implementation.
