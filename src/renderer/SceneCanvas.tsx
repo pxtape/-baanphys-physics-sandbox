@@ -38,6 +38,7 @@ interface Props {
   onGestureEnd?: () => void;
   onSelect: (id: string | null) => void;
   onMove: (id: string, x: number, y: number) => void;
+  onPivot: (id: string, point: Point) => void;
   onTransform: (id: string, value: BodyTransform) => void;
   onForce: (
     id: string,
@@ -51,6 +52,7 @@ export function SceneCanvas({
   locked,
   onSelect,
   onMove,
+  onPivot,
   onTransform,
   onForce,
   showVelocity = false,
@@ -64,6 +66,12 @@ export function SceneCanvas({
     start: DOMPoint;
     x: number;
     y: number;
+    pointer: number;
+  } | null>(null);
+  const pivotDrag = useRef<{
+    id: string;
+    dx: number;
+    dy: number;
     pointer: number;
   } | null>(null);
   const forceDrag = useRef<{
@@ -131,7 +139,13 @@ export function SceneCanvas({
         aria-label="Physics scene canvas"
         role="group"
         onPointerDown={(e) => {
-          if (drag.current || pan.current || forceDrag.current) return;
+          if (
+            drag.current ||
+            pan.current ||
+            forceDrag.current ||
+            pivotDrag.current
+          )
+            return;
           if (panMode || e.button === 1) {
             const inverse = e.currentTarget.getScreenCTM()?.inverse();
             if (!inverse) return;
@@ -150,6 +164,30 @@ export function SceneCanvas({
             return;
           }
           if (e.button !== 0) return;
+          const pivotNode = (e.target as Element).closest("[data-pivot-id]");
+          if (pivotNode && !locked) {
+            const c = scene.constraints.find(
+              (c) => c.id === pivotNode.getAttribute("data-pivot-id"),
+            );
+            if (!c) return;
+            const a =
+              c.anchorA.type === "world"
+                ? c.anchorA
+                : c.anchorB.type === "world"
+                  ? c.anchorB
+                  : null;
+            if (!a) return;
+            const p = pointer(e);
+            pivotDrag.current = {
+              id: c.id,
+              dx: a.point.x - p.x,
+              dy: a.point.y - p.y,
+              pointer: e.pointerId,
+            };
+            onGestureStart?.();
+            e.currentTarget.setPointerCapture(e.pointerId);
+            return;
+          }
           const handleNode = (e.target as Element).closest(
             "[data-force-handle]",
           );
@@ -214,6 +252,16 @@ export function SceneCanvas({
             return;
           }
           if (
+            pivotDrag.current &&
+            !locked &&
+            pivotDrag.current.pointer === e.pointerId
+          ) {
+            const p = pointer(e),
+              d = pivotDrag.current;
+            onPivot(d.id, { x: p.x + d.dx, y: p.y + d.dy });
+            return;
+          }
+          if (
             forceDrag.current &&
             !locked &&
             forceDrag.current.pointer === e.pointerId
@@ -248,6 +296,10 @@ export function SceneCanvas({
             );
         }}
         onPointerUp={(e) => {
+          if (pivotDrag.current?.pointer === e.pointerId) {
+            pivotDrag.current = null;
+            onGestureEnd?.();
+          }
           if (forceDrag.current?.pointer === e.pointerId) {
             forceDrag.current = null;
             onGestureEnd?.();
@@ -261,6 +313,10 @@ export function SceneCanvas({
             e.currentTarget.releasePointerCapture(e.pointerId);
         }}
         onPointerCancel={() => {
+          if (pivotDrag.current) {
+            pivotDrag.current = null;
+            onGestureEnd?.();
+          }
           if (forceDrag.current) {
             forceDrag.current = null;
             onGestureEnd?.();
@@ -572,6 +628,40 @@ export function SceneCanvas({
                 </g>
               );
             })}
+        {!locked &&
+          scene.constraints.map((c) => {
+            const world =
+                c.anchorA.type === "world"
+                  ? c.anchorA
+                  : c.anchorB.type === "world"
+                    ? c.anchorB
+                    : null,
+              body =
+                c.anchorA.type === "body"
+                  ? c.anchorA
+                  : c.anchorB.type === "body"
+                    ? c.anchorB
+                    : null;
+            if (!world || body?.bodyId !== selected) return null;
+            const p = toScreen(world.point);
+            return (
+              <g key={c.id} className="pivot-tool">
+                <circle
+                  data-pivot-id={c.id}
+                  aria-label="Drag fixed world pivot"
+                  cx={p.x}
+                  cy={p.y}
+                  r="10"
+                >
+                  <title>Move world pivot and attached body</title>
+                </circle>
+                <path
+                  d={`M${p.x - 4} ${p.y}h8M${p.x} ${p.y - 4}v8`}
+                  pointerEvents="none"
+                />
+              </g>
+            );
+          })}
         {!locked &&
           (() => {
             const b = scene.bodies.find((q) => q.id === selected);

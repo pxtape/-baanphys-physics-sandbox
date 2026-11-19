@@ -596,3 +596,11 @@ SI/body-local conversions and validation preserve real force/torque semantics;
 each gesture is undoable and handles are absent during preview. 454 tests,
 typecheck/generated consistency, lint, build/Pages pass; Chromium verified force,
 torque, Undo and runtime lockout. No live-force permissions or profile changes.
+
+Force handles PR #16 merged as 7f4aeeac12e707476bd16d0c5e693bf7255351fe;
+main/Pages 44600693627 passed; live handles/public lockout verified.
+Added quick joint buttons and direct world-pivot dragging. Pivot and attached body
+move as one validated authored edit with stable IDs; Undo restores the gesture.
+455 tests, typecheck/generated consistency, lint, build/Pages pass. Chromium
+verified pivot dragging, Undo, native hinge initialization and preview lockout.
+Pulley/spring remain unsupported; no schema or numerical profile changes.

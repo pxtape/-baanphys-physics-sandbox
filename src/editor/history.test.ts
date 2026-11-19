@@ -50,3 +50,20 @@ it("fixed-pivot authoring changes pendulum pose without moving the world pivot",
   expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeLessThan(1e-10);
   expect(next.scene.bodies[0]!.angle).not.toBe(source.bodies[0]!.angle);
 });
+it("world-pivot dragging preserves hinge coincidence and validates atomically", async () => {
+  const { moveWorldPivot } = await import("./scene-commands");
+  const { anchorPosition } = await import("../domain/anchors");
+  const source = newScene("pendulum"),
+    c = source.constraints[0]!,
+    before = JSON.stringify(source);
+  const next = moveWorldPivot(source, c.id, { x: 1, y: 6 });
+  if (!next.ok) throw Error(next.message);
+  const joint = next.scene.constraints[0]!;
+  const a = anchorPosition(next.scene, joint.anchorA),
+    b = anchorPosition(next.scene, joint.anchorB);
+  expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeLessThan(1e-10);
+  expect(joint.id).toBe(c.id);
+  expect(next.scene.bodies[0]!.id).toBe(source.bodies[0]!.id);
+  expect(moveWorldPivot(source, c.id, { x: NaN, y: 6 }).ok).toBe(false);
+  expect(JSON.stringify(source)).toBe(before);
+});
