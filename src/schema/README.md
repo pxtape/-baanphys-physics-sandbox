@@ -100,3 +100,28 @@ non-enumerable/symbol members, sparse/named arrays and nonfinite values. JavaScr
 Proxy traps cannot be made inert by an object-inspection API; arbitrary host
 objects are outside its contract. Use parseSceneJson for untrusted external input.
 Real Safari/iPad/UI testing is not claimed by the browser-target bundle test.
+
+### Timestamp compatibility and ordering
+
+Scene v1 keeps the existing canonical schema and pinned ajv-formats 3.0.1 full
+`date-time` assertion. Its parser accepts a four-digit Gregorian date, one `T`,
+`t` or ECMAScript `\s` separator, two-digit hour/minute/second fields and an
+optional decimal fraction with one or more digits. Schema format checking also
+accepts `z`/`Z` and signed offsets (`±HH`, `±HHMM`, `±HH:MM`); existing scene
+semantics require uppercase `Z`, so offsets and lowercase `z` remain rejected.
+Repeated separators, missing zones and invalid calendar/time fields fail format
+validation. Accepted leap-second representations remain accepted; the format
+library does not certify historical leap-second dates.
+
+Ordering now compares parsed numeric UTC calendar fields and exact decimal
+fractions, independently of the separator. Fractions are zero-padded for
+comparison only, never converted to floating point or truncated to milliseconds.
+Leap second 60 sorts after second 59 and before the following date. Year 0000
+through 9999 retain the format validator's existing behavior. Authored strings
+are preserved verbatim. No format restriction, schema migration, host Date
+parsing, timezone conversion or network lookup is introduced.
+
+`timestamps.test.ts` enumerates all 25 ECMAScript whitespace characters plus T/t,
+checks all 729 separator pairs in both ordering directions and equality, and
+runs every check through both in-memory and JSON-text entry points. Future
+format-library changes must retain or explicitly review this compatibility.

@@ -3,13 +3,25 @@ import type { DiagnosticSink } from '../domain/diagnostics';
 import { validateGeometry } from '../domain/geometry';
 
 const key = (id: string) => id.toLowerCase();
-/** Exact ordering of validated UTC strings, including sub-millisecond fractions. */
+/** Compare parsed UTC instants after schema/uppercase-Z validation.
+ * Fixed-width calendar fields are independent of the single T/t/\s separator.
+ * Keep decimal fractions exact; Date/Number would discard sub-ms precision.
+ * Second 60 stays after 59 and before the next date (accepted leap seconds).
+ */
 function utcOrder(a: string, b: string): number {
-  const [wholeA = '', fracA = ''] = a.slice(0, -1).toUpperCase().replace(' ', 'T').split('.');
-  const [wholeB = '', fracB = ''] = b.slice(0, -1).toUpperCase().replace(' ', 'T').split('.');
-  if (wholeA !== wholeB) return wholeA < wholeB ? -1 : 1;
-  const n = Math.max(fracA.length, fracB.length), x = fracA.padEnd(n, '0'), y = fracB.padEnd(n, '0');
-  return x === y ? 0 : x < y ? -1 : 1;
+  const components = (value: string) => [
+    Number(value.slice(0, 4)), Number(value.slice(5, 7)), Number(value.slice(8, 10)),
+    Number(value.slice(11, 13)), Number(value.slice(14, 16)), Number(value.slice(17, 19)),
+  ];
+  const x = components(a), y = components(b);
+  for (let i = 0; i < x.length; i++) {
+    if (x[i] !== y[i]) return x[i]! < y[i]! ? -1 : 1;
+  }
+  const fraction = (value: string) => value[19] === '.' ? value.slice(20, -1) : '';
+  const fracA = fraction(a), fracB = fraction(b);
+  const n = Math.max(fracA.length, fracB.length);
+  const digitsA = fracA.padEnd(n, '0'), digitsB = fracB.padEnd(n, '0');
+  return digitsA === digitsB ? 0 : digitsA < digitsB ? -1 : 1;
 }
 export function validateSemantics(scene: SceneDocument, add: DiagnosticSink): void {
   const fail = (code: string, path: string, message: string, suggestion: string) =>

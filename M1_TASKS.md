@@ -94,3 +94,33 @@ persistence or migrations were implemented. Physical iPad/Safari remains unteste
 Main remains abf556e and Pages is not deployed from this task branch. Commit/PR
 identity is supplied in the completion report and Git history. Stop after review
 submission; merging and M1-03 require separate approval.
+
+
+## M1-02 timestamp blocker resolution — 2026-11-19
+
+Final review of PR #1 at 383e090 found that tab-separated createdAt could bypass
+savedAt ordering. Fixed only UTC ordering: parse numeric calendar components,
+ignore the validated single separator, and compare exact decimal fraction digits.
+Canonical schema/generated artifacts and accepted formats are unchanged; no Date
+rounding, data rewriting, physics settings or threshold changes. Repository-wide
+search found no other production timestamp comparisons.
+
+Added 58 regression cases: exact reproduction, all 27 accepted separators against
+each other (729 pairs, forward/reverse/equivalent instants), equal timestamps,
+unequal-length/sub-millisecond fractions, day/leap-day/year/year-0000 boundaries,
+accepted leap seconds, invalid calendar/time/separator/zone cases and unchanged
+uppercase-Z requirement. Each case exercises both public validation entry points
+and checks authored timestamp preservation. Compatibility details are recorded
+in src/schema/README.md.
+
+Verification: targeted 58-case suite, full 195-test suite, generated consistency
+and typecheck, lint, 25 M0 fixtures/schema checks, 13 existing PoC verification
+tests and production build passed on Node 24.22.1. PoC verification reruns adapter probes/replay and checks archived
+evidence; no new benchmark qualification or changed tolerances is claimed.
+
+Blocker fix is submitted for review on feat/m1-02-domain-validation / PR #1;
+final acceptance remains pending review of the new commit. No merge, deployment
+or M1-03 implementation. Historical completion counts above describe the original
+383e090 submission. Remaining risks: pinned format-library compatibility (including
+permissive leap-second dates), future repository lineage checks and untested real
+Safari/iPad behavior. All successful documents still have executionReady=false.
