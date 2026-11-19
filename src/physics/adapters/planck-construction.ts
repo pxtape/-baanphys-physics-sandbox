@@ -3,6 +3,8 @@ import type { Body, Shape } from 'planck';
 import type { SceneDocument, SceneBody, WorldVector } from '../../domain/scene';
 import { freezeJson } from '../../domain/scene';
 import { validateScene } from '../../schema';
+import { checkExperimentalScene } from '../experimental-policy';
+import { attachExperimentalJoints } from './experimental-joints';
 import { checkPlanckCapabilities } from '../capabilities';
 import { physicalProperties } from '../physical-properties';
 import type { PhysicsResult, SimulationSnapshot } from '../contracts';
@@ -43,12 +45,17 @@ export function constructInitialWorld(input: SceneDocument, observe?: Constructi
 export function constructSteppingRuntime(input: SceneDocument, permissions: RuntimePermissions = { allowTickForces: false }): PhysicsResult<InternalRuntime> {
   return constructWorld(input, undefined, { allowTickForces: permissions?.allowTickForces === true });
 }
+/** Teacher-only experimental path; certified construction still rejects joints. */
+export function constructExperimentalMechanismRuntime(input: SceneDocument): PhysicsResult<InternalRuntime> {
+  return constructWorld(input, undefined, { allowTickForces: false }, true);
+}
+function constructWorld(input: SceneDocument, observe: undefined, permissions: RuntimePermissions, experimental: true): PhysicsResult<InternalRuntime>;
 function constructWorld(input: SceneDocument, observe?: ConstructionObserver): PhysicsResult<InitialWorldSession>;
 function constructWorld(input: SceneDocument, observe: undefined, permissions: RuntimePermissions): PhysicsResult<InternalRuntime>;
-function constructWorld(input: SceneDocument, observe?: ConstructionObserver, permissions?: RuntimePermissions): PhysicsResult<InitialWorldSession | InternalRuntime> {
+function constructWorld(input: SceneDocument, observe?: ConstructionObserver, permissions?: RuntimePermissions, experimental = false): PhysicsResult<InitialWorldSession | InternalRuntime> {
   const parsed = validateScene(input);
   if (!parsed.ok) return freezeJson({ ok: false as const, diagnostics: parsed.diagnostics.map(d => physicsDiagnostic('CONSTRUCTION_FAILED', d.path, d.message, d.suggestion)) });
-  const scene = parsed.scene, policy = checkPlanckCapabilities(scene);
+  const scene = parsed.scene, policy = experimental ? checkExperimentalScene(scene) : checkPlanckCapabilities(scene);
   if (!policy.policyCompatible) return freezeJson({ ok: false as const, diagnostics: policy.diagnostics });
   const sorted = [...scene.bodies].sort((a, b) => a.id.toLowerCase() < b.id.toLowerCase() ? -1 : 1);
   const prepared = sorted.map(body => ({ body, properties: physicalProperties(body) }));
@@ -98,6 +105,7 @@ function constructWorld(input: SceneDocument, observe?: ConstructionObserver, pe
       native.setLinearVelocity({ ...body.velocity }); native.setAngularVelocity(body.angularVelocity);
       checkpoint('mass', i);
     });
+    if (experimental) attachExperimentalJoints(scene, world, new Map(bodies.map(b => [b.id.toLowerCase(), b.native])), () => { if (!nativeSettingsMatch()) throw new SettingsMismatch(); });
     checkpoint('publish', -1);
     // Final fixture audit also catches shape-local alteration with stable globals.
     bodies.forEach(({ native }, i) => {

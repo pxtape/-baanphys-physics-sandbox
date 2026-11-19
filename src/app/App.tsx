@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { anchorPosition, localPoint } from "../domain/anchors";
 import type { SceneV1 } from "../domain/scene-v1.generated";
 import type { PhysicsRuntime, SimulationSnapshot } from "../physics";
 import { createTeacherPreview } from "../physics/teacher-preview";
@@ -155,6 +156,101 @@ export function App() {
       if (b) edit(b);
     });
   }
+  function addJoint(type: "hinge" | "rod" | "rope") {
+    if (!body || body.motionType !== "dynamic") return;
+    change((s) => {
+      const local = {
+        x: 0,
+        y:
+          type === "hinge"
+            ? body.shape.type === "circle"
+              ? body.shape.radius
+              : body.shape.type === "rectangle"
+                ? body.shape.height / 2
+                : 0
+            : 0,
+      };
+      const anchorA = {
+          type: "body" as const,
+          bodyId: body.id,
+          localPoint: local,
+        },
+        p = anchorPosition(s, anchorA);
+      const base = {
+        id: objectId(),
+        name: type === "hinge" ? "Hinge" : type === "rod" ? "Rod" : "Rope",
+        anchorA,
+        anchorB: {
+          type: "world" as const,
+          point: { x: p.x, y: p.y + (type === "hinge" ? 0 : 2) },
+        },
+        collideConnected: false,
+      };
+      s.constraints.push(
+        type === "hinge"
+          ? { ...base, type }
+          : type === "rod"
+            ? { ...base, type, length: 2 }
+            : { ...base, type, maxLength: 2 },
+      );
+    });
+  }
+  function changeJoint(
+    id: string,
+    edit: (c: SceneV1["constraints"][number], s: SceneV1) => void,
+  ) {
+    return change((s) => {
+      const c = s.constraints.find((c) => c.id === id);
+      if (c) edit(c, s);
+    });
+  }
+  function jointLength(id: string, length: number) {
+    if (!Number.isFinite(length) || length < 0.05 || length > 50) {
+      setNotice("Experimental link length must be 0.05–50 m.");
+      return false;
+    }
+    return changeJoint(id, (c, s) => {
+      if (c.type !== "rod" && c.type !== "rope") return;
+      const a = anchorPosition(s, c.anchorA),
+        b = anchorPosition(s, c.anchorB),
+        d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (c.anchorA.type === "body" && (c.type === "rod" || length < d)) {
+        const target = c.anchorA.bodyId,
+          body = s.bodies.find((b) => b.id === target)!;
+        body.position.x += (a.x - b.x) * (length / d - 1);
+        body.position.y += (a.y - b.y) * (length / d - 1);
+      }
+      if (c.type === "rod") c.length = length;
+      else c.maxLength = length;
+    });
+  }
+  function jointWorldPoint(id: string, axis: "x" | "y", value: number) {
+    return changeJoint(id, (c, s) => {
+      if (c.anchorB.type !== "world" || c.anchorA.type !== "body") return;
+      const delta = value - c.anchorB.point[axis];
+      c.anchorB.point[axis] = value;
+      const target = c.anchorA.bodyId;
+      s.bodies.find((b) => b.id === target)!.position[axis] += delta;
+    });
+  }
+  function connectJoint(id: string, target: string) {
+    changeJoint(id, (c, s) => {
+      const p = anchorPosition(s, c.anchorA),
+        old = anchorPosition(s, c.anchorB),
+        b = s.bodies.find((b) => b.id === target);
+      c.anchorB = b
+        ? {
+            type: "body",
+            bodyId: b.id,
+            localPoint: c.type === "hinge" ? localPoint(b, p) : { x: 0, y: 0 },
+          }
+        : { type: "world", point: c.type === "hinge" ? p : old };
+      const q = anchorPosition(s, c.anchorB),
+        length = Math.hypot(p.x - q.x, p.y - q.y);
+      if (c.type === "rod") c.length = length;
+      if (c.type === "rope") c.maxLength = length;
+    });
+  }
   function addForce(couple = false) {
     if (!body || body.motionType !== "dynamic") return;
     change((s) => {
@@ -228,7 +324,14 @@ export function App() {
     if (single) stepOnce();
   }
   function preset(
-    name: "free-fall" | "projectile" | "collision" | "sliding" | "forces",
+    name:
+      | "free-fall"
+      | "projectile"
+      | "collision"
+      | "sliding"
+      | "forces"
+      | "pendulum"
+      | "rope",
   ) {
     if (locked) return;
     const s = newScene(name);
@@ -274,11 +377,15 @@ export function App() {
                 ? "projectile"
                 : scene.title === "Body collision"
                   ? "collision"
-                  : scene.title === "Force and torque"
-                    ? "forces"
-                    : scene.title === "Sliding block"
-                      ? "sliding"
-                      : "free-fall"
+                  : scene.title === "Hinged pendulum"
+                    ? "pendulum"
+                    : scene.title === "Rope pendulum"
+                      ? "rope"
+                      : scene.title === "Force and torque"
+                        ? "forces"
+                        : scene.title === "Sliding block"
+                          ? "sliding"
+                          : "free-fall"
             }
             onChange={(e) =>
               preset(
@@ -287,7 +394,9 @@ export function App() {
                   | "projectile"
                   | "collision"
                   | "sliding"
-                  | "forces",
+                  | "forces"
+                  | "pendulum"
+                  | "rope",
               )
             }
           >
@@ -296,6 +405,8 @@ export function App() {
             <option value="collision">Body collision</option>
             <option value="sliding">Sliding block</option>
             <option value="forces">Force and torque</option>
+            <option value="pendulum">Hinged pendulum</option>
+            <option value="rope">Rope pendulum</option>
           </select>
         </label>
       </div>
@@ -456,7 +567,7 @@ export function App() {
               </strong>
               <p>
                 {collisionMode
-                  ? "Real solver contacts and bouncing; overlap, tunnelling and numerical errors are possible. Forces and contacts are experimental; mechanisms remain unavailable."
+                  ? "Real solver contacts and bouncing; overlap, tunnelling and numerical errors are possible. Forces, contacts and native hinges/rods/ropes are experimental; numerical accuracy is not certified."
                   : "Free flight stops before possible contact. Collision accuracy remains unqualified."}
               </p>
               <label className="preview-model">
@@ -771,6 +882,109 @@ export function App() {
                     ))}
                 </section>
               )}
+              {body.motionType === "dynamic" && (
+                <section className="joint-controls">
+                  <h3>Experimental mechanisms</h3>
+                  <div className="force-buttons">
+                    <button disabled={locked} onClick={() => addJoint("hinge")}>
+                      Add hinge
+                    </button>
+                    <button disabled={locked} onClick={() => addJoint("rod")}>
+                      Add rod
+                    </button>
+                    <button disabled={locked} onClick={() => addJoint("rope")}>
+                      Add rope
+                    </button>
+                  </div>
+                  <p className="material-hint">
+                    Native hinges and massless rod/rope constraints; not
+                    certified. Moving a body carries its world anchor.
+                    World-anchor edits move the attached body; shortening a link
+                    repositions it. Springs/pulleys are not implemented.
+                  </p>
+                  {scene.constraints
+                    .filter(
+                      (c) =>
+                        c.anchorA.type === "body" &&
+                        c.anchorA.bodyId === body.id,
+                    )
+                    .map((c, i) => (
+                      <div className="force-card" key={c.id}>
+                        <strong>{c.name}</strong>
+                        <label className="joint-target">
+                          Connect to
+                          <select
+                            aria-label={`Joint ${i + 1} target`}
+                            disabled={locked}
+                            value={
+                              c.anchorB.type === "world"
+                                ? "world"
+                                : c.anchorB.bodyId
+                            }
+                            onChange={(e) => connectJoint(c.id, e.target.value)}
+                          >
+                            <option value="world">World anchor</option>
+                            {scene.bodies
+                              .filter((b) => b.id !== body.id)
+                              .map((b) => (
+                                <option key={b.id} value={b.id}>
+                                  {b.name}
+                                </option>
+                              ))}
+                          </select>
+                        </label>
+                        {c.anchorB.type === "world" && (
+                          <div className="field-pair">
+                            <NumberField
+                              label={`Joint ${i + 1} anchor x`}
+                              unit="m"
+                              value={c.anchorB.point.x}
+                              disabled={locked}
+                              onCommit={(x) => jointWorldPoint(c.id, "x", x)}
+                            />
+                            <NumberField
+                              label={`Joint ${i + 1} anchor y`}
+                              unit="m"
+                              value={c.anchorB.point.y}
+                              disabled={locked}
+                              onCommit={(y) => jointWorldPoint(c.id, "y", y)}
+                            />
+                          </div>
+                        )}
+                        {c.type === "rod" && (
+                          <NumberField
+                            label={`Joint ${i + 1} length`}
+                            unit="m"
+                            value={c.length}
+                            disabled={locked}
+                            onCommit={(n) => jointLength(c.id, n)}
+                          />
+                        )}
+                        {c.type === "rope" && (
+                          <NumberField
+                            label={`Joint ${i + 1} max length`}
+                            unit="m"
+                            value={c.maxLength}
+                            disabled={locked}
+                            onCommit={(n) => jointLength(c.id, n)}
+                          />
+                        )}
+                        <button
+                          disabled={locked}
+                          onClick={() =>
+                            change((s) => {
+                              s.constraints = s.constraints.filter(
+                                (q) => q.id !== c.id,
+                              );
+                            })
+                          }
+                        >
+                          Remove joint {i + 1}
+                        </button>
+                      </div>
+                    ))}
+                </section>
+              )}
               <h3>Contact material</h3>
               <div className="field-pair">
                 <NumberField
@@ -856,6 +1070,17 @@ export function App() {
                     change((s) => {
                       s.bodies = s.bodies.filter((b) => b.id !== body.id);
                       s.forces = s.forces.filter((f) => f.bodyId !== body.id);
+                      s.constraints = s.constraints.filter(
+                        (c) =>
+                          !(
+                            c.anchorA.type === "body" &&
+                            c.anchorA.bodyId === body.id
+                          ) &&
+                          !(
+                            c.anchorB.type === "body" &&
+                            c.anchorB.bodyId === body.id
+                          ),
+                      );
                     })
                   )
                     setSelected(null);

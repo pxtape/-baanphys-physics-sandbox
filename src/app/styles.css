@@ -812,3 +812,14 @@ h3 {
   color: #956b25;
   margin-bottom: 12px;
 }
+.joint-target {
+  font-size: 10px;
+  display: block;
+  margin-bottom: 10px;
+}
+.joint-target select {
+  font-size: 11px;
+  padding: 7px;
+  min-height: 36px;
+  margin-top: 5px;
+}

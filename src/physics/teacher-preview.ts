@@ -9,7 +9,10 @@ import type {
   SimulationSnapshot,
 } from "./contracts";
 import { physicsDiagnostic } from "./profile";
-import { constructSteppingRuntime } from "./adapters/planck-construction";
+import {
+  constructExperimentalMechanismRuntime,
+  constructSteppingRuntime,
+} from "./adapters/planck-construction";
 
 const blocked = (message: string): PhysicsResult<never> => ({
   ok: false,
@@ -99,7 +102,7 @@ export function createTeacherPreview(
   const duration = collisions ? 30 : 5;
   if (
     (!collisions && scene.forces.length) ||
-    scene.constraints.length ||
+    (!collisions && scene.constraints.length) ||
     scene.measurements.length ||
     scene.studentPolicy.controls.length ||
     scene.bodies.some(
@@ -113,9 +116,12 @@ export function createTeacherPreview(
     scene.bodies.some((b) => Math.hypot(b.velocity.x, b.velocity.y) > 20)
   )
     return blocked(
-      "This preview supports circles/rectangles, gravity ≤20 m/s², initial speed ≤20 m/s and, in collision mode, initial spin ≤20 rad/s. Forces require experimental collision mode. Mechanisms and student controls are unavailable.",
+      "This preview supports circles/rectangles, gravity ≤20 m/s², initial speed ≤20 m/s and, in collision mode, initial spin ≤20 rad/s. Forces require experimental collision mode. Only experimental hinges, rods and ropes are available; student controls remain unavailable.",
     );
-  const made = constructSteppingRuntime(scene);
+  const made =
+    collisions && scene.constraints.length
+      ? constructExperimentalMechanismRuntime(scene)
+      : constructSteppingRuntime(scene);
   if (!made.ok) return made;
   const runtime = made.value;
   let disposed = false;
