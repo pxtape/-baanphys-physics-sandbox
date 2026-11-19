@@ -4,7 +4,7 @@ Updated: 2026-11-19.
 
 ## Current state
 
-**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03 is planned only and awaits implementation approval. Historical records below describe their original checkpoints.
+**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A contracts are implemented on feat/m1-03a-adapter-contracts for review; B–E remain unstarted. Historical records below describe their original checkpoints.
 
 - Repository: https://github.com/pxtape/-baanphys-physics-sandbox
 - Live foundation preview: https://pxtape.github.io/-baanphys-physics-sandbox/
@@ -169,3 +169,33 @@ separators. No schema/accepted-format restriction or migration was introduced.
 M1-03_PLAN.md decomposes the existing adapter task and records physics references,
 unchanged numerical gates, supported-envelope risks and exit criteria. No M1-03
 production code was implemented. Await user approval before starting it.
+
+
+## M1-03A adapter contracts — 2026-11-19 (task branch only)
+
+Branched from latest main e2674ece96113cea73e0eaea6a4bd081802033fc; accepted
+M1-02 and its timestamp regression remain present. Added engine-independent
+interfaces for initialization, logical-tick stepping, disposal, immutable SI
+snapshots and trusted ordered tick inputs. Existing SceneDocument is reused.
+Defined structured execution diagnostics and exact Planck 1.5.1 / adapter 1.0.0 /
+planck-1.5.1-si-v1 identity. Profile/settings mismatch diagnostics never yield a
+runtime. Even matching profiles remain unqualified and initialize fails explicitly.
+
+Added 29 tests covering profile/version/settings rejection, no partial runtime,
+readonly authored and snapshot types, native-free declaration dependency closure,
+ordering permutations/duplicates/invalid ticks/finite values and detached frozen
+batches. Full 224 tests, generated consistency/typecheck, lint, 25 M0 fixtures,
+13 existing PoC verification tests and build pass. No existing tests were changed.
+No UI/browser test was needed: foundation assets remain unchanged. No numerical
+adapter qualification or Safari/iPad test is claimed.
+
+Changed src/physics/{contracts.ts,profile.ts,tick-inputs.ts,index.ts,
+contracts.test.ts,README.md}, M1_TASKS.md and this file. Schema, benchmarks,
+profile numerical settings, existing validation and main/Pages are unchanged.
+
+Remaining: capability geometry/material/student-range checks (recommended next
+M1-03B), actual construction, lifecycle execution tests, fixed solver and
+production numerical qualification. Inputs here are trusted typed data; future
+runtime must check dynamic targets/envelopes before applying them. No runtime
+or native object exists yet. Stop after PR submission for acceptance; do not
+merge, deploy or implement M1-03B–E without approval.
