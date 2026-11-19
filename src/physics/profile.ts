@@ -1,6 +1,6 @@
 import { freezeJson } from '../domain/scene';
 import type { SceneDocument } from '../domain/scene';
-import type { CapabilityReport, PhysicsAdapter, PhysicsDiagnostic, PhysicsDiagnosticCode } from './contracts';
+import type { CapabilityReport, PhysicsDiagnostic, PhysicsDiagnosticCode } from './contracts';
 
 /** Exact registry identity; no semver ranges or fallback. Not yet qualified. */
 export const PLANCK_IDENTITY = freezeJson({
@@ -15,7 +15,7 @@ export function physicsDiagnostic(code: PhysicsDiagnosticCode, path: string, mes
   return Object.freeze({ code, path, stage: 'execution', severity: 'error', message, suggestion });
 }
 /** Trusted, already structurally/semantically validated SceneDocument only.
- * Geometry/material/range qualification is deferred to M1-03B. No native code.
+ * Identity/settings only; use checkPlanckCapabilities for provisional policy. No native code.
  */
 export function checkPlanckContract(scene: SceneDocument): CapabilityReport {
   const diagnostics: PhysicsDiagnostic[] = [];
@@ -31,17 +31,6 @@ export function checkPlanckContract(scene: SceneDocument): CapabilityReport {
     if (scene.simulation.solverIterations[key] !== PLANCK_SETTINGS.solverIterations[key]) diagnostics.push(physicsDiagnostic('SETTINGS_UNSUPPORTED', `/simulation/solverIterations/${key}`, 'Expected iteration budget 12.', 'Use 12/12 with constraint budget 12 mapped to the shared solver.'));
   }
   const profileCompatible = diagnostics.length === 0;
-  diagnostics.push(physicsDiagnostic('FEATURE_NOT_QUALIFIED', '', 'Production geometry, material, student-range and numerical qualification is not implemented.', 'Keep this scene inspection-only until later M1-03 tasks pass.'));
+  diagnostics.push(physicsDiagnostic('FEATURE_NOT_QUALIFIED', '', 'Production runtime and numerical qualification are not implemented; provisional policy alone cannot qualify execution.', 'Keep this scene inspection-only until later M1-03 tasks pass.'));
   return freezeJson({ profileCompatible, executionReady: false, diagnostics });
 }
-/** Contract-only facade: deliberately no constructor, factory or native imports. */
-export const planckAdapterContract: PhysicsAdapter = Object.freeze({
-  identity: PLANCK_IDENTITY,
-  capabilities: checkPlanckContract,
-  initialize(scene: SceneDocument) {
-    const report = checkPlanckContract(scene);
-    return freezeJson({ ok: false as const, diagnostics: [...report.diagnostics,
-      physicsDiagnostic('ADAPTER_NOT_IMPLEMENTED', '', 'No production runtime is implemented in M1-03A.', 'Await implementation and qualification; no runtime was constructed.'),
-    ] });
-  },
-});
