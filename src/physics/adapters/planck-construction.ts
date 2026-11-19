@@ -10,6 +10,8 @@ import type { InitialWorldSession, ConstructionObserver } from '../construction-
 import { physicsDiagnostic, PLANCK_IDENTITY } from '../profile';
 import { NATIVE_ENVELOPE } from '../limits';
 
+import { createSteppingSession } from './planck-runtime';
+import type { InternalRuntime, RuntimePermissions } from '../runtime-contract';
 import { initializeNativeSettings, nativeSettingsMatch } from './native-settings';
 
 const same = (a: WorldVector, b: WorldVector) => a.x === b.x && a.y === b.y;
@@ -35,6 +37,15 @@ function preserved(body: SceneBody, shape: Shape): boolean {
  * Revalidate before native allocation; publish only after the transaction commits.
  */
 export function constructInitialWorld(input: SceneDocument, observe?: ConstructionObserver): PhysicsResult<InitialWorldSession> {
+  return constructWorld(input, observe);
+}
+/** Internal only: no public profile execution qualification is implied. */
+export function constructSteppingRuntime(input: SceneDocument, permissions: RuntimePermissions = { allowTickForces: false }): PhysicsResult<InternalRuntime> {
+  return constructWorld(input, undefined, { allowTickForces: permissions?.allowTickForces === true });
+}
+function constructWorld(input: SceneDocument, observe?: ConstructionObserver): PhysicsResult<InitialWorldSession>;
+function constructWorld(input: SceneDocument, observe: undefined, permissions: RuntimePermissions): PhysicsResult<InternalRuntime>;
+function constructWorld(input: SceneDocument, observe?: ConstructionObserver, permissions?: RuntimePermissions): PhysicsResult<InitialWorldSession | InternalRuntime> {
   const parsed = validateScene(input);
   if (!parsed.ok) return freezeJson({ ok: false as const, diagnostics: parsed.diagnostics.map(d => physicsDiagnostic('CONSTRUCTION_FAILED', d.path, d.message, d.suggestion)) });
   const scene = parsed.scene, policy = checkPlanckCapabilities(scene);
@@ -50,8 +61,15 @@ export function constructInitialWorld(input: SceneDocument, observe?: Constructi
   const dispose = () => {
     if (disposed) return;
     disposed = true;
-    if (world) while (world.getBodyList()) world.destroyBody(world.getBodyList()!);
+    const ownedWorld = world;
     bodies.length = 0; world = undefined;
+    // A native exception can leave Planck locked. Never spin on destroyBody(false)
+    // or unlock/repair solver state: detach that private JS graph for GC instead.
+    if (ownedWorld && !ownedWorld.isLocked()) {
+      for (let body = ownedWorld.getBodyList(); body;) {
+        const next = body.getNext(); ownedWorld.destroyBody(body); body = next;
+      }
+    }
   };
   let path = '';
   try {
@@ -86,6 +104,12 @@ export function constructInitialWorld(input: SceneDocument, observe?: Constructi
       if (!preserved(sorted[i]!, native.getFixtureList()!.getShape())) throw new GeometryAltered();
     });
     if (!nativeSettingsMatch()) throw new SettingsMismatch();
+    if (permissions) {
+      const session = createSteppingSession(world, scene, bodies, dispose,
+        () => bodies.every(({ native }, i) => preserved(sorted[i]!, native.getFixtureList()!.getShape())), permissions);
+      if (!nativeSettingsMatch()) throw new SettingsMismatch();
+      return Object.freeze({ ok: true as const, value: session });
+    }
     const session: InitialWorldSession = Object.freeze({
       snapshot(): PhysicsResult<SimulationSnapshot> {
         if (disposed) return freezeJson({ ok: false as const, diagnostics: [physicsDiagnostic('RUNTIME_DISPOSED', '', 'Construction session has been disposed.', 'Construct a fresh validated initial world.')] });

@@ -69,3 +69,10 @@ The private harness and measured analytical evidence are documented in
 constructs native objects; it exports an engine-independent snapshot/dispose
 session and is absent from the public physics barrel. Public initialization,
 capability execution readiness and numerical qualification remain blocked.
+
+## M1-03D internal stepping
+
+[adapters/RUNTIME.md](adapters/RUNTIME.md) documents the private fixed-step runtime,
+strict bounded input boundary, force semantics, numerical smoke results and
+terminal failure/cleanup behavior. Public execution is still blocked pending E.
+No native handles or stepping constructor were added to this public barrel.
