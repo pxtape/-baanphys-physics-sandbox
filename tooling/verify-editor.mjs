@@ -74,6 +74,18 @@ try {
       await page.getByLabel("Mass", { exact: true }).inputValue(),
       "2",
     );
+    await page.getByLabel("Mass", { exact: true }).fill("3");
+    await page.getByLabel("Mass", { exact: true }).press("Escape");
+    await page.waitForFunction(
+      () =>
+        globalThis.document.querySelector('input[aria-label="Mass"]').value ===
+        "2",
+    );
+    assert.equal(
+      await page.getByLabel("Mass", { exact: true }).inputValue(),
+      "2",
+      "Escape cancels rather than committing pending physics properties",
+    );
     await page.getByLabel("Width", { exact: true }).fill("-1");
     await page.getByLabel("Width", { exact: true }).press("Tab");
     await page.getByRole("alert").waitFor();
@@ -82,10 +94,11 @@ try {
       "1.2",
     );
     const rect = page.getByRole("button", {
-        name: "Select Rectangle",
-        exact: true,
-      }),
-      box = await rect.boundingBox();
+      name: "Select Rectangle",
+      exact: true,
+    });
+    await rect.scrollIntoViewIfNeeded();
+    const box = await rect.boundingBox();
     const beforeX = Number(
       await page.getByLabel("Position x", { exact: true }).inputValue(),
     );

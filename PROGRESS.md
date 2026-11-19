@@ -604,3 +604,12 @@ move as one validated authored edit with stable IDs; Undo restores the gesture.
 455 tests, typecheck/generated consistency, lint, build/Pages pass. Chromium
 verified pivot dragging, Undo, native hinge initialization and preview lockout.
 Pulley/spring remain unsupported; no schema or numerical profile changes.
+
+Joint tools PR #17 merged as af1149a43ae25c557b38cfc67bc0c50572e30163;
+main/Pages 44601240605 passed; cache-busted live pivot UI/public lockout verified.
+Fixed confirmed Escape-cancellation bug (pending mass=3 incorrectly committed
+instead of retaining 1). Escape now bypasses blur commit without history mutation.
+Desktop inspector scrolls independently; selection/preview exposes measurements
+at its top. 455 unit tests, generated/type checks, lint, build/Pages and full
+editor/collision Chromium flows pass. Browser regression preserves existing drag
+assertion and scrolls its target into view before operating it. Screenshots refreshed.
