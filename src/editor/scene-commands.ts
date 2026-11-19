@@ -51,6 +51,30 @@ export function validateDraft(
       ok: false,
       message: `${v.diagnostics[0]!.message} (${v.diagnostics[0]!.path || "/"})`,
     };
+  if (!v.scene.title.trim())
+    return {
+      ok: false,
+      message:
+        "Give the scene a non-empty title before opening it in the editor.",
+    };
+  if (
+    v.scene.bodies.some(
+      (b) =>
+        b.shape.type === "polygon" ||
+        b.massModel.mode !== "mass" ||
+        b.angularVelocity !== 0,
+    ) ||
+    v.scene.forces.length ||
+    v.scene.constraints.length ||
+    v.scene.measurements.length ||
+    v.scene.studentPolicy.controls.length
+  ) {
+    return {
+      ok: false,
+      message:
+        "This editor supports mass-mode circles, rectangles and static floors without spin, applied forces, constraints, measurements or student controls. The current draft is unchanged.",
+    };
+  }
   const policy = checkPlanckCapabilities(v.scene);
   if (!policy.policyCompatible)
     return {

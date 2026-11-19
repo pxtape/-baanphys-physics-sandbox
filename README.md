@@ -39,7 +39,20 @@ development does not require special sandbox permissions.
    Reset restores authored conditions and unlocks editing. Possible contact stops
    before stepping; move objects apart to continue a different experiment.
 
-Scenes are in-memory drafts: reload loses edits. Preview supports circles/rectangles,
+Use **Save locally** to create/update a scene and **Saved scenes** to reopen,
+rename or delete it. Saves capture authored initial conditions even during preview.
+Unsaved changes are labeled; reload loses only edits you have not saved.
+**Export JSON** is a portable backup; **Import JSON** validates a file (<=2 MiB)
+and opens a new unsaved copy. Object IDs/properties remain intact; imported saved
+simulation/revision identities are deliberately not reused or overwritten.
+Unmodified saved exports retain identity; exports of unsaved edits are drafts.
+Local saves use IndexedDB atomic revisions and reject stale-tab overwrites. Browser
+storage can be cleared/evicted; it is not cloud sync, a public embed or a backup.
+Quota/private-mode/storage errors keep your draft open for JSON export.
+Import currently accepts mass-mode circles/rectangles/floors; unsupported scene
+features are rejected visibly, never silently dropped.
+
+Preview supports circles/rectangles,
 no spin/forces/mechanisms, gravity and initial speed <=20 SI, and at most 5 seconds.
 Conservative swept bounds include polygon skin; near objects may stop early.
 
@@ -50,6 +63,8 @@ Pages. This is a workspace/build boundary, not authenticated roles; no backend a
 is implemented. Embedded/student surfaces reject execution, and the public adapter
 still reports executionReady=false. Main/Pages are unchanged until acceptance.
 
+`npm run test:library` verifies the Save/Load/rename/delete/import/export workflow
+and failure cases against the running dev server.
 `npm run test:editor` runs Chromium integration checks against the running dev
 server (override `EDITOR_TEST_URL` / `BAANPHYS_CHROMIUM_PATH` if needed). Install
 Playwright Chromium with `npx playwright install chromium` and point the latter

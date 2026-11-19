@@ -520,3 +520,34 @@ e91732815ffa0946c720a8d47baa93e2a1e379c7 on local branch
 investigation/m1-03e-collision-diagnostics. MVP branch includes all accepted tests;
 it neither removes nor converts E qualification failures into passes.
 Submit one feature PR; do not merge or deploy automatically.
+
+## PR #7 acceptance and Save/Load MVP — 2026-11-19
+
+Lightweight critical review: exact head 250cf5fce2ed50918ae57c70c4dc0b6bb882dc0f,
+green CI 44574044727/44574193542; no crash, corrupting write, public execution or
+core-interaction blocker found. Normal merge 0354a2deeeeace1d8df2e40b05c24131af66e529.
+Main CI/Pages 44578471786 passed; deployment 7920848410 reports that exact SHA.
+Public editor loaded/refreshed in Chromium with no errors, two authored objects,
+Play disabled and no opt-in checkbox. Local development teacher walkthrough passed.
+https://pxtape.github.io/-baanphys-physics-sandbox/
+
+Save/Load implemented separately on feat/local-scene-library: IndexedDB atomic
+immutable revisions + expected-head conflict checks; library reopen/rename/delete;
+JSON export/import with bounded existing validation and explicit new-copy identity
+handling. All entity IDs and authored properties survive save/load/import. Numeric
+fields no longer round imported quantities on an untouched focus/blur. Saving or
+exporting during preview uses authored data, never runtime positions.
+Storage/quota/invalid-file errors retain the working draft. Local saves are not
+cloud storage or cross-device embeds. Import accepts the editor's current subset;
+unsupported scene features reject visibly rather than being silently dropped.
+Experimental/public gates, native settings, schema and numerical thresholds are
+unchanged. Main/Pages will not receive Save/Load until separate acceptance.
+
+Verification: typecheck/generated consistency, lint, 441 tests (432 existing +9
+persistence/file integration cases), 25 M0 fixtures, 13 PoC checks, production
+build and Pages smoke passed. Chromium verified Save/Load after reload, rename,
+ID/quantity preservation, preview-vs-authored saving, JSON round-trip, invalid
+files, deletion, real-browser storage failure and competing-tab conflict. The
+same storage workflow passed in the default production build with playback still
+disabled. Existing teacher/touch workflow passed. Safari/iPad hardware remains
+untested; existing non-failing build-size/deprecation warnings are unchanged.

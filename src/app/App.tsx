@@ -4,6 +4,11 @@ import type { PhysicsRuntime, SimulationSnapshot } from "../physics";
 import { createTeacherPreview } from "../physics/teacher-preview";
 import { newScene, editScene, makeBody } from "../editor/scene-commands";
 import type { ObjectKind } from "../editor/scene-commands";
+import { SceneLibrary } from "../editor/SceneLibrary";
+import { downloadScene, importSceneFile } from "../editor/scene-files";
+import { LocalSceneRepository } from "../persistence/local-scenes";
+import type { SceneDocument } from "../domain/scene";
+import { validateDraft } from "../editor/scene-commands";
 import { SceneCanvas } from "../renderer/SceneCanvas";
 
 function NumberField({
@@ -22,7 +27,7 @@ function NumberField({
   step?: number;
 }) {
   const [draft, setDraft] = useState(String(value));
-  useEffect(() => setDraft(String(Number(value.toFixed(5)))), [value]);
+  useEffect(() => setDraft(String(value)), [value]);
   return (
     <label className="number-field">
       <span>
@@ -43,6 +48,7 @@ function NumberField({
           }
         }}
         onBlur={() => {
+          if (draft === String(value)) return;
           const n = draft.trim() ? Number(draft) : NaN;
           if (!Number.isFinite(n) || !onCommit(n)) setDraft(String(value));
         }}
@@ -61,6 +67,15 @@ export function App() {
     [selected, setSelected] = useState<string | null>(
       () => scene.bodies[0]!.id,
     );
+  const [repository] = useState(() => new LocalSceneRepository());
+  const [dirty, setDirty] = useState(true),
+    [fileBusy, setFileBusy] = useState(false),
+    [libraryOpen, setLibraryOpen] = useState(false);
+  const [documentMessage, setDocumentMessage] = useState<{
+    error: boolean;
+    text: string;
+  } | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
   const [frame, setFrame] = useState<SimulationSnapshot | null>(null),
     [mode, setMode] = useState<"edit" | "running" | "paused" | "stopped">(
       "edit",
@@ -68,7 +83,7 @@ export function App() {
   const [optIn, setOptIn] = useState(false),
     [notice, setNotice] = useState("");
   const runtime = useRef<PhysicsRuntime | null>(null),
-    locked = frame !== null;
+    locked = frame !== null || fileBusy;
   const body = scene.bodies.find((b) => b.id === selected),
     live = frame?.bodies.find((b) => b.id === selected);
   const poses = useMemo(
@@ -139,6 +154,8 @@ export function App() {
       return false;
     }
     setScene(result.scene);
+    setDirty(true);
+    setDocumentMessage(null);
     setNotice("");
     return true;
   }
@@ -170,7 +187,7 @@ export function App() {
     setNotice("");
   }
   function start(single = false) {
-    if (!teacherEnabled || !optIn || studentSurface) {
+    if (fileBusy || !teacherEnabled || !optIn || studentSurface) {
       setNotice(
         "Enable the experimental teacher preview first. Public and student execution remain blocked.",
       );
@@ -194,8 +211,107 @@ export function App() {
     if (locked) return;
     const s = newScene(name);
     setScene(s);
+    setDirty(true);
+    setDocumentMessage(null);
     setSelected(s.bodies[0]!.id);
     setNotice("");
+  }
+  function replaceDocument(next: SceneDocument, imported = false) {
+    if (
+      dirty &&
+      !window.confirm(
+        "Replace the unsaved draft? Export JSON first if you want to keep it.",
+      )
+    )
+      return false;
+    reset();
+    setScene(next);
+    setSelected(next.bodies[0]?.id ?? null);
+    setDirty(imported);
+    setDocumentMessage({
+      error: false,
+      text: imported
+        ? "Imported as a new unsaved local copy. Object IDs and authored properties are preserved."
+        : "Opened saved scene.",
+    });
+    return true;
+  }
+  async function saveLocally() {
+    if (fileBusy) return;
+    setFileBusy(true);
+    setDocumentMessage(null);
+    try {
+      const saved = await repository.save(scene);
+      setScene(saved);
+      setDirty(false);
+      setDocumentMessage({
+        error: false,
+        text: "Saved locally in this browser. Export JSON for a portable backup.",
+      });
+    } catch (e) {
+      setDocumentMessage({
+        error: true,
+        text:
+          e instanceof Error
+            ? e.message
+            : "Save failed. Your draft is unchanged.",
+      });
+    } finally {
+      setFileBusy(false);
+    }
+  }
+  async function importFile(file: File) {
+    if (fileBusy) return;
+    setFileBusy(true);
+    setDocumentMessage(null);
+    try {
+      const imported = await importSceneFile(file);
+      replaceDocument(imported, true);
+    } catch (e) {
+      setDocumentMessage({
+        error: true,
+        text:
+          e instanceof Error
+            ? e.message
+            : "File import failed. Your draft is unchanged.",
+      });
+    } finally {
+      setFileBusy(false);
+    }
+  }
+  function renamed(saved: SceneDocument, oldHead: string) {
+    if (
+      scene.identity.state === "saved" &&
+      saved.identity.state === "saved" &&
+      scene.identity.simulationId === saved.identity.simulationId &&
+      scene.identity.revisionId === oldHead
+    ) {
+      const draft = structuredClone(scene) as SceneV1;
+      draft.identity = structuredClone(saved.identity);
+      draft.title = saved.title;
+      const v = validateDraft(draft);
+      if (v.ok) setScene(v.scene);
+    }
+    setDocumentMessage({
+      error: false,
+      text: "Saved scene renamed. Any unsaved object edits remain in your draft.",
+    });
+  }
+  function deleted(id: string) {
+    if (
+      scene.identity.state === "saved" &&
+      scene.identity.simulationId === id
+    ) {
+      const draft = structuredClone(scene) as SceneV1;
+      draft.identity = { state: "draft" };
+      const v = validateDraft(draft);
+      if (v.ok) setScene(v.scene);
+      setDirty(true);
+    }
+    setDocumentMessage({
+      error: false,
+      text: "Local saved scene deleted. Your current draft is still open.",
+    });
   }
   if (studentSurface)
     return (
@@ -217,7 +333,15 @@ export function App() {
         </a>
         <div className="topbar-meta">
           <span className="teacher-badge">TEACHER WORKSPACE</span>
-          <span className="draft-badge">● Unsaved draft</span>
+          <span className="draft-badge" role="status">
+            {dirty
+              ? scene.identity.state === "saved"
+                ? "● Unsaved changes"
+                : "● Unsaved draft"
+              : scene.identity.state === "saved"
+                ? `Saved locally · revision ${scene.identity.revisionNumber}`
+                : "● Unsaved draft"}
+          </span>
         </div>
       </header>
       <div className="workspace-title">
@@ -231,17 +355,88 @@ export function App() {
             aria-label="Scene example"
             disabled={locked}
             value={
-              scene.title === "Projectile motion" ? "projectile" : "free-fall"
+              scene.title === "Projectile motion"
+                ? "projectile"
+                : scene.title === "Free fall"
+                  ? "free-fall"
+                  : "custom"
             }
             onChange={(e) =>
               preset(e.target.value as "free-fall" | "projectile")
             }
           >
+            <option value="custom" disabled>
+              Current scene
+            </option>
             <option value="free-fall">Free fall</option>
             <option value="projectile">Projectile motion</option>
           </select>
         </label>
       </div>
+      <div className="document-toolbar" aria-label="Scene files">
+        <button
+          className="save-scene"
+          disabled={fileBusy}
+          onClick={() => void saveLocally()}
+        >
+          {fileBusy ? "Working…" : "Save locally"}
+        </button>
+        <button disabled={locked} onClick={() => setLibraryOpen(true)}>
+          Saved scenes
+        </button>
+        <button
+          disabled={fileBusy}
+          onClick={() => {
+            try {
+              downloadScene(scene, dirty);
+              setDocumentMessage({
+                error: false,
+                text: "Scene JSON exported from authored initial conditions.",
+              });
+            } catch (e) {
+              setDocumentMessage({
+                error: true,
+                text: e instanceof Error ? e.message : "Export failed.",
+              });
+            }
+          }}
+        >
+          Export JSON
+        </button>
+        <button disabled={locked} onClick={() => fileInput.current?.click()}>
+          Import JSON
+        </button>
+        <input
+          ref={fileInput}
+          type="file"
+          accept=".json,application/json"
+          aria-label="Import Scene JSON file"
+          hidden
+          onChange={(e) => {
+            const file = e.currentTarget.files?.[0];
+            e.currentTarget.value = "";
+            if (file) void importFile(file);
+          }}
+        />
+        <span>Local to this browser · JSON backups are portable</span>
+      </div>
+      {documentMessage && (
+        <div
+          className={`document-message ${documentMessage.error ? "error" : "success"}`}
+          role={documentMessage.error ? "alert" : "status"}
+        >
+          {documentMessage.text}
+        </div>
+      )}
+      {libraryOpen && (
+        <SceneLibrary
+          repository={repository}
+          onClose={() => setLibraryOpen(false)}
+          onOpen={(s) => replaceDocument(s)}
+          onRename={renamed}
+          onDelete={deleted}
+        />
+      )}
       <main className="workspace" id="main-content">
         <aside className="tools-panel">
           <div className="panel-heading">
@@ -364,7 +559,12 @@ export function App() {
                 aria-label={
                   mode === "running" ? "Pause simulation" : "Play simulation"
                 }
-                disabled={!teacherEnabled || !optIn || mode === "stopped"}
+                disabled={
+                  (fileBusy && mode !== "running") ||
+                  !teacherEnabled ||
+                  !optIn ||
+                  mode === "stopped"
+                }
                 onClick={() =>
                   mode === "running" ? setMode("paused") : start()
                 }
@@ -374,6 +574,7 @@ export function App() {
               <button
                 aria-label="Step simulation"
                 disabled={
+                  fileBusy ||
                   !teacherEnabled ||
                   !optIn ||
                   mode === "running" ||
@@ -444,6 +645,7 @@ export function App() {
                   disabled={locked}
                   maxLength={120}
                   onBlur={(e) => {
+                    if (e.currentTarget.value === body.name) return;
                     const name = e.target.value.trim();
                     if (
                       !name ||
@@ -639,7 +841,7 @@ export function App() {
         </aside>
       </main>
       <footer className="footer">
-        <span>Authored scene and preview state stay separate.</span>
+        <span>Save and export authored conditions, never preview state.</span>
         <span>Planck 1.5.1 · fixed 120 Hz · teacher experiment</span>
       </footer>
     </div>
