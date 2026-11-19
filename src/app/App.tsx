@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { anchorPosition, localPoint } from "../domain/anchors";
+import { SceneHistory } from "../editor/history";
 import type { SceneV1 } from "../domain/scene-v1.generated";
 import type { PhysicsRuntime, SimulationSnapshot } from "../physics";
 import { createTeacherPreview } from "../physics/teacher-preview";
@@ -8,6 +9,8 @@ import {
   editScene,
   makeBody,
   objectId,
+  duplicateBody,
+  positionBody,
 } from "../editor/scene-commands";
 import type { ObjectKind } from "../editor/scene-commands";
 import { SceneCanvas } from "../renderer/SceneCanvas";
@@ -67,6 +70,11 @@ export function App() {
     [selected, setSelected] = useState<string | null>(
       () => scene.bodies[0]!.id,
     );
+  const [history] = useState(() => new SceneHistory());
+  const [, refreshHistory] = useState(0);
+  const [showVelocity, setShowVelocity] = useState(false);
+  const [fixedPivots, setFixedPivots] = useState(false);
+  const sceneRef = useRef(scene);
   const [frame, setFrame] = useState<SimulationSnapshot | null>(null),
     [mode, setMode] = useState<"edit" | "running" | "paused" | "stopped">(
       "edit",
@@ -121,9 +129,11 @@ export function App() {
         accumulator -= 1 / 120;
         count++;
       }
-      if (accumulator >= 1 / 120) {
+      if (accumulator > 0.25) {
         setMode("paused");
-        setNotice("Preview paused to avoid skipping physics ticks.");
+        setNotice(
+          "Preview paused after excessive backlog; no physics ticks were skipped.",
+        );
         return;
       }
       handle = requestAnimationFrame(animate);
@@ -140,11 +150,15 @@ export function App() {
   }, [mode, stepOnce]);
   function change(edit: (draft: SceneV1) => void) {
     if (locked) return false;
-    const result = editScene(scene, edit);
+    return acceptScene(editScene(sceneRef.current, edit));
+  }
+  function acceptScene(result: ReturnType<typeof editScene>) {
     if (!result.ok) {
       setNotice(result.message);
       return false;
     }
+    if (!history.record(sceneRef.current, result.scene)) return true;
+    sceneRef.current = result.scene;
     setScene(result.scene);
     setNotice("");
     return true;
@@ -156,6 +170,78 @@ export function App() {
       if (b) edit(b);
     });
   }
+  function restoreHistory(redo = false) {
+    if (locked) return;
+    const current = sceneRef.current,
+      next = redo ? history.redo(current) : history.undo(current);
+    if (!next) return;
+    const added = next.bodies.find(
+      (b) => !current.bodies.some((q) => q.id === b.id),
+    );
+    sceneRef.current = next;
+    setScene(next);
+    setSelected(
+      (id) =>
+        added?.id ??
+        (next.bodies.some((b) => b.id === id)
+          ? id
+          : (next.bodies[0]?.id ?? null)),
+    );
+    setNotice("");
+  }
+  function duplicateSelected() {
+    if (locked || !selected) return;
+    const result = duplicateBody(sceneRef.current, selected);
+    if (!result.ok) {
+      setNotice(result.message);
+      return;
+    }
+    history.record(sceneRef.current, result.scene);
+    sceneRef.current = result.scene;
+    setScene(result.scene);
+    setSelected(result.bodyId);
+  }
+  function deleteSelected() {
+    if (!selected) return;
+    if (
+      change((s) => {
+        s.bodies = s.bodies.filter((b) => b.id !== selected);
+        s.forces = s.forces.filter((f) => f.bodyId !== selected);
+        s.constraints = s.constraints.filter(
+          (c) =>
+            !(c.anchorA.type === "body" && c.anchorA.bodyId === selected) &&
+            !(c.anchorB.type === "body" && c.anchorB.bodyId === selected),
+        );
+      })
+    )
+      setSelected(null);
+  }
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      const target = e.target;
+      if (
+        target instanceof Element &&
+        target.closest('input,textarea,select,[contenteditable="true"]')
+      )
+        return;
+      if (locked) return;
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        restoreHistory(e.shiftKey);
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+        e.preventDefault();
+        restoreHistory(true);
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        duplicateSelected();
+      } else if (e.key === "Delete" || e.key === "Backspace") {
+        e.preventDefault();
+        deleteSelected();
+      }
+    };
+    document.addEventListener("keydown", key);
+    return () => document.removeEventListener("keydown", key);
+  }, [scene, selected, locked]);
   function addJoint(type: "hinge" | "rod" | "rope") {
     if (!body || body.motionType !== "dynamic") return;
     change((s) => {
@@ -335,6 +421,8 @@ export function App() {
   ) {
     if (locked) return;
     const s = newScene(name);
+    history.record(sceneRef.current, s);
+    sceneRef.current = s;
     setScene(s);
     setSelected(s.bodies[0]!.id);
     setNotice("");
@@ -409,6 +497,47 @@ export function App() {
             <option value="rope">Rope pendulum</option>
           </select>
         </label>
+      </div>
+      <div className="edit-toolbar" aria-label="Scene editing tools">
+        <button
+          disabled={locked || !history.canUndo}
+          onClick={() => restoreHistory()}
+        >
+          ↶ Undo
+        </button>
+        <button
+          disabled={locked || !history.canRedo}
+          onClick={() => restoreHistory(true)}
+        >
+          ↷ Redo
+        </button>
+        <button
+          disabled={locked || !body}
+          onClick={duplicateSelected}
+          title="Copy body and its forces, not joints"
+        >
+          Duplicate object
+        </button>
+        <button disabled={locked || !body} onClick={deleteSelected}>
+          Delete selected
+        </button>
+        <button
+          disabled={locked}
+          aria-pressed={fixedPivots}
+          onClick={() => setFixedPivots((v) => !v)}
+          title="Drag hinge/rod bodies around fixed anchors; ropes can start slack"
+        >
+          Fixed-pivot drag
+        </button>
+        <button
+          aria-pressed={showVelocity}
+          onClick={() => setShowVelocity((v) => !v)}
+        >
+          Velocity vectors
+        </button>
+        <span>
+          Ctrl/⌘ Z · Ctrl/⌘ D · arrows · vectors display-scaled/capped
+        </span>
       </div>
       <main className="workspace" id="main-content">
         <aside className="tools-panel">
@@ -513,16 +642,26 @@ export function App() {
             selected={selected}
             poses={poses}
             locked={locked}
+            showVelocity={showVelocity}
+            onGestureStart={() => history.begin(sceneRef.current)}
+            onGestureEnd={() => {
+              history.end(sceneRef.current);
+              refreshHistory((n) => n + 1);
+            }}
             onSelect={setSelected}
             onMove={(id, x, y) => {
-              change((s) => {
-                const b = s.bodies.find((b) => b.id === id);
-                if (b)
-                  b.position = {
-                    x: Math.round(x * 100) / 100,
-                    y: Math.round(y * 100) / 100,
-                  };
-              });
+              if (!locked)
+                acceptScene(
+                  positionBody(
+                    sceneRef.current,
+                    id,
+                    {
+                      x: Math.round(x * 100) / 100,
+                      y: Math.round(y * 100) / 100,
+                    },
+                    fixedPivots,
+                  ),
+                );
             }}
           />
           <div className="playbar">

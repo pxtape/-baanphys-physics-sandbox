@@ -555,3 +555,11 @@ Joint anchors render from solver snapshots; authoring moves world pivots coheren
 442 tests and essential checks pass, including native slack-rope behavior and
 construction cleanup. Browser verified hinge swing, slack indication and pivot edits.
 Pulley is not approximated: Scene v1 has no pulley contract. No qualification claim.
+
+Mechanisms PR #11 merged as 66104ff8ad9d17e5f21f12585477be6c3e8becc4; main/Pages
+44594090292 passed and live rope authoring was verified with public execution off.
+Editing now has grouped-drag Undo/Redo, body/force duplication with fresh IDs,
+keyboard commands, fixed-pivot dragging, zoom/pan and velocity vectors. Rendering
+backlog remains bounded without pausing for one brief delayed frame; native fixed
+steps/iteration settings are unchanged. 445 tests and essential checks pass;
+browser verified duplication/undo/redo, zoomed dragging and vector display.

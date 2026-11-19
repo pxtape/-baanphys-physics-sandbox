@@ -32,7 +32,7 @@ development does not require special sandbox permissions.
 
 ## Try the teacher MVP
 
-1. Open the local URL above. Choose Free fall, Projectile motion, Body collision or Sliding block, or add objects.
+1. Open the local URL above. Choose a fall, collision, sliding, force/torque or hinge/rope pendulum example, or add objects.
 2. Select an object in the scene/list. Drag it, use arrow keys (Shift: 0.5 m), or
    edit SI fields; blur/Enter commits a field. Invalid values leave the scene intact.
 3. Check **Enable experimental preview**, then Play/Pause, Step (1/120 s), or Reset.
@@ -46,7 +46,10 @@ native-settings checks still apply. Pairs use geometric-mean friction and maximu
 restitution; the floor defaults to restitution 0. Free-flight mode retains its
 original pre-contact stop and 5 s limit. Overlap, tunnelling, jitter and numerical
 errors remain possible; no collision/rolling accuracy is certified. Applied-force
-controls, joints and ropes are not included in this change.
+controls use body-local application points with world-fixed vectors. Off-centre
+forces and force couples generate real torque (which varies with orientation).
+Experimental native hinges, rigid massless rods and unilateral ropes are available;
+these are not accuracy-certified. Springs and pulleys remain unsupported.
 
 Default `npm run build` provides authoring with preview **disabled**. Development
 builds enable the explicit teacher opt-in; an intentionally controlled teacher build
@@ -54,6 +57,11 @@ can set `VITE_ENABLE_TEACHER_PREVIEW=true`. Do not publish an enabled build to p
 Pages. This is a workspace/build boundary, not authenticated roles; no backend auth
 is implemented. Embedded/student surfaces reject execution, and the public adapter
 still reports executionReady=false. Main/Pages are unchanged until acceptance.
+
+Undo/Redo groups each drag into one action. Duplicate copies a body and its forces
+with fresh IDs (not joints). Ctrl/⌘ Z, Ctrl/⌘ D and Delete work outside fields.
+Fixed-pivot drag sets hinge/rod poses around anchors and permits slack rope starts.
+Zoom/Pan/Home and velocity vectors affect only the view; arrow lengths are display-scaled.
 
 `npm run test:collisions` checks visible rebound, body collisions, sliding and
 material/rotation controls against the dev server.
