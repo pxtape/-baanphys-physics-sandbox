@@ -2,7 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { SceneV1 } from "../domain/scene-v1.generated";
 import type { PhysicsRuntime, SimulationSnapshot } from "../physics";
 import { createTeacherPreview } from "../physics/teacher-preview";
-import { newScene, editScene, makeBody } from "../editor/scene-commands";
+import {
+  newScene,
+  editScene,
+  makeBody,
+  objectId,
+} from "../editor/scene-commands";
 import type { ObjectKind } from "../editor/scene-commands";
 import { SceneCanvas } from "../renderer/SceneCanvas";
 
@@ -150,6 +155,35 @@ export function App() {
       if (b) edit(b);
     });
   }
+  function addForce(couple = false) {
+    if (!body || body.motionType !== "dynamic") return;
+    change((s) => {
+      s.forces.push({
+        id: objectId(),
+        type: "constantForce",
+        bodyId: body.id,
+        vector: { x: 0, y: couple ? 1 : 2 },
+        localPoint: { x: couple ? 0.5 : 0, y: 0 },
+      });
+      if (couple)
+        s.forces.push({
+          id: objectId(),
+          type: "constantForce",
+          bodyId: body.id,
+          vector: { x: 0, y: -1 },
+          localPoint: { x: -0.5, y: 0 },
+        });
+    });
+  }
+  function updateForce(
+    id: string,
+    edit: (f: SceneV1["forces"][number]) => void,
+  ) {
+    return change((s) => {
+      const f = s.forces.find((f) => f.id === id);
+      if (f) edit(f);
+    });
+  }
   function add(kind: ObjectKind) {
     const count = scene.bodies.filter((b) => b.motionType === "dynamic").length;
     const added = makeBody(
@@ -193,7 +227,9 @@ export function App() {
     setMode(single ? "paused" : "running");
     if (single) stepOnce();
   }
-  function preset(name: "free-fall" | "projectile" | "collision" | "sliding") {
+  function preset(
+    name: "free-fall" | "projectile" | "collision" | "sliding" | "forces",
+  ) {
     if (locked) return;
     const s = newScene(name);
     setScene(s);
@@ -238,9 +274,11 @@ export function App() {
                 ? "projectile"
                 : scene.title === "Body collision"
                   ? "collision"
-                  : scene.title === "Sliding block"
-                    ? "sliding"
-                    : "free-fall"
+                  : scene.title === "Force and torque"
+                    ? "forces"
+                    : scene.title === "Sliding block"
+                      ? "sliding"
+                      : "free-fall"
             }
             onChange={(e) =>
               preset(
@@ -248,7 +286,8 @@ export function App() {
                   | "free-fall"
                   | "projectile"
                   | "collision"
-                  | "sliding",
+                  | "sliding"
+                  | "forces",
               )
             }
           >
@@ -256,6 +295,7 @@ export function App() {
             <option value="projectile">Projectile motion</option>
             <option value="collision">Body collision</option>
             <option value="sliding">Sliding block</option>
+            <option value="forces">Force and torque</option>
           </select>
         </label>
       </div>
@@ -416,7 +456,7 @@ export function App() {
               </strong>
               <p>
                 {collisionMode
-                  ? "Real solver contacts and bouncing; overlap, tunnelling and numerical errors are possible. Rolling and mechanisms are not certified."
+                  ? "Real solver contacts and bouncing; overlap, tunnelling and numerical errors are possible. Forces and contacts are experimental; mechanisms remain unavailable."
                   : "Free flight stops before possible contact. Collision accuracy remains unqualified."}
               </p>
               <label className="preview-model">
@@ -629,6 +669,108 @@ export function App() {
                   }
                 />
               )}
+              {body.motionType === "dynamic" && (
+                <section className="force-controls">
+                  <h3>Applied forces</h3>
+                  <div className="force-buttons">
+                    <button disabled={locked} onClick={() => addForce()}>
+                      Add force
+                    </button>
+                    <button disabled={locked} onClick={() => addForce(true)}>
+                      Add force couple
+                    </button>
+                  </div>
+                  <output className="force-torque" aria-label="Applied torque">
+                    Applied torque:{" "}
+                    {scene.forces
+                      .filter((f) => f.bodyId === body.id)
+                      .reduce((sum, f) => {
+                        const angle = live?.angle ?? body.angle,
+                          c = Math.cos(angle),
+                          sn = Math.sin(angle);
+                        return (
+                          sum +
+                          (c * f.localPoint.x - sn * f.localPoint.y) *
+                            f.vector.y -
+                          (sn * f.localPoint.x + c * f.localPoint.y) *
+                            f.vector.x
+                        );
+                      }, 0)
+                      .toFixed(3)}{" "}
+                    N·m
+                  </output>
+                  <p className="material-hint">
+                    Vectors stay world-fixed; application points rotate with the
+                    body. Off-centre forces create torque. A world-force
+                    couple’s torque varies as it turns.
+                  </p>
+                  {scene.forces
+                    .filter((f) => f.bodyId === body.id)
+                    .map((f, i) => (
+                      <div className="force-card" key={f.id}>
+                        <strong>Force {i + 1}</strong>
+                        <div className="field-pair">
+                          <NumberField
+                            label={`Force ${i + 1} x`}
+                            unit="N"
+                            value={f.vector.x}
+                            disabled={locked}
+                            onCommit={(x) =>
+                              updateForce(f.id, (q) => {
+                                q.vector.x = x;
+                              })
+                            }
+                          />
+                          <NumberField
+                            label={`Force ${i + 1} y`}
+                            unit="N"
+                            value={f.vector.y}
+                            disabled={locked}
+                            onCommit={(y) =>
+                              updateForce(f.id, (q) => {
+                                q.vector.y = y;
+                              })
+                            }
+                          />
+                        </div>
+                        <div className="field-pair">
+                          <NumberField
+                            label={`Force ${i + 1} point x`}
+                            unit="m local"
+                            value={f.localPoint.x}
+                            disabled={locked}
+                            onCommit={(x) =>
+                              updateForce(f.id, (q) => {
+                                q.localPoint.x = x;
+                              })
+                            }
+                          />
+                          <NumberField
+                            label={`Force ${i + 1} point y`}
+                            unit="m local"
+                            value={f.localPoint.y}
+                            disabled={locked}
+                            onCommit={(y) =>
+                              updateForce(f.id, (q) => {
+                                q.localPoint.y = y;
+                              })
+                            }
+                          />
+                        </div>
+                        <button
+                          disabled={locked}
+                          onClick={() =>
+                            change((s) => {
+                              s.forces = s.forces.filter((q) => q.id !== f.id);
+                            })
+                          }
+                        >
+                          Remove force {i + 1}
+                        </button>
+                      </div>
+                    ))}
+                </section>
+              )}
               <h3>Contact material</h3>
               <div className="field-pair">
                 <NumberField
@@ -713,6 +855,7 @@ export function App() {
                   if (
                     change((s) => {
                       s.bodies = s.bodies.filter((b) => b.id !== body.id);
+                      s.forces = s.forces.filter((f) => f.bodyId !== body.id);
                     })
                   )
                     setSelected(null);

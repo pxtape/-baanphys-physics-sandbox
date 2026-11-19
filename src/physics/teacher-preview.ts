@@ -98,7 +98,7 @@ export function createTeacherPreview(
   const collisions = options.collisions === true;
   const duration = collisions ? 30 : 5;
   if (
-    scene.forces.length ||
+    (!collisions && scene.forces.length) ||
     scene.constraints.length ||
     scene.measurements.length ||
     scene.studentPolicy.controls.length ||
@@ -113,7 +113,7 @@ export function createTeacherPreview(
     scene.bodies.some((b) => Math.hypot(b.velocity.x, b.velocity.y) > 20)
   )
     return blocked(
-      "This preview supports circles/rectangles, gravity ≤20 m/s², initial speed ≤20 m/s and, in collision mode, initial spin ≤20 rad/s. Applied forces, mechanisms and student controls are unavailable.",
+      "This preview supports circles/rectangles, gravity ≤20 m/s², initial speed ≤20 m/s and, in collision mode, initial spin ≤20 rad/s. Forces require experimental collision mode. Mechanisms and student controls are unavailable.",
     );
   const made = constructSteppingRuntime(scene);
   if (!made.ok) return made;

@@ -64,7 +64,12 @@ export function validateDraft(
   return { ok: true, scene: v.scene };
 }
 export function newScene(
-  preset: "free-fall" | "projectile" | "collision" | "sliding" = "free-fall",
+  preset:
+    | "free-fall"
+    | "projectile"
+    | "collision"
+    | "sliding"
+    | "forces" = "free-fall",
 ): SceneDocument {
   const s = structuredClone(example) as SceneV1;
   s.identity = { state: "draft" };
@@ -113,6 +118,25 @@ export function newScene(
     s.bodies = [block, floor];
   }
   s.forces = [];
+  if (preset === "forces") {
+    const block = makeBody("rectangle");
+    block.name = "Driven block";
+    block.shape = { type: "rectangle", width: 2, height: 1 };
+    block.position = { x: 0, y: 3 };
+    block.massModel = { mode: "mass", mass: 2 };
+    s.title = "Force and torque";
+    s.world.gravity = { x: 0, y: 0 };
+    s.bodies = [block, makeBody("floor")];
+    s.forces = [
+      {
+        id: objectId(),
+        type: "constantForce",
+        bodyId: block.id,
+        vector: { x: 0, y: 2 },
+        localPoint: { x: 0.5, y: 0 },
+      },
+    ];
+  }
   s.constraints = [];
   s.measurements = [];
   s.studentPolicy.controls = [];

@@ -788,3 +788,27 @@ h3 {
   pointer-events: none;
   vector-effect: non-scaling-stroke;
 }
+.force-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.force-buttons button,
+.force-card button {
+  font-size: 10px;
+  padding: 7px;
+  min-height: 36px;
+}
+.force-card {
+  padding: 10px;
+  background: #fff9eb;
+  border: 1px solid #ecdfbc;
+  border-radius: 6px;
+  margin: 10px 0;
+}
+.force-card strong {
+  display: block;
+  font-size: 11px;
+  color: #956b25;
+  margin-bottom: 12px;
+}
