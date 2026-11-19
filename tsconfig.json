@@ -19,5 +19,5 @@
     "skipLibCheck": true,
     "types": ["vite/client", "node"]
   },
-  "include": ["src", "tests/tooling", "vite.config.ts"]
+  "include": ["src", "tests/tooling", "vite.config.ts", "qualification"]
 }

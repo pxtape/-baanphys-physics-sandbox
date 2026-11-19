@@ -1,0 +1,6680 @@
+{
+  "recordedAt": "2026-11-19T12:21:14.684Z",
+  "environment": {
+    "node": "v24.22.1",
+    "platform": "linux",
+    "arch": "x64",
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "cores": 3,
+    "totalMemory": 10452459520
+  },
+  "profile": {
+    "engine": "planck",
+    "version": "1.5.1",
+    "adapter": "1.0.0",
+    "profile": "planck-1.5.1-si-v1",
+    "logicalDt": 0.008333333333333333,
+    "substeps": 4,
+    "velocityIterations": 12,
+    "positionIterations": 12,
+    "constraintBudget": 12,
+    "seed": 1,
+    "sleeping": false,
+    "drag": 0,
+    "units": "SI/y-up/CCW",
+    "frictionMix": "sqrt",
+    "restitutionMix": "max",
+    "velocityThreshold": 0
+  },
+  "provenance": {
+    "schemas/scene-v1.schema.json": "87bb096838a0a05e88cad087113263bac032df5776fb910e207811053840218e",
+    "package-lock.json": "e0dbf60286cbedd7ab388ebf08bd4e5d7deb4bb4db638a5beb4f7e05fbc34070",
+    "src/physics/adapters/planck-runtime.ts": "072354b77dfeb4c6defdc86b84f64a4b913d8d2387d1473d233d1654c9f6c713",
+    "src/physics/adapters/planck-construction.ts": "c9260eee552c640e85c47cf3b1fcff93de13bb79e16a04d6fd84c8b6def27cbb",
+    "src/physics/adapters/native-settings.ts": "ce081f80effbc634ef9c6ae5c23296519e56acfdd2b5efe568668da49de53fb5",
+    "src/physics/capabilities.ts": "7a68ba1f70dbf2b1fe402152462ab688c3cf4fb1d065600e6189a2b8fc40d9fc",
+    "qualification/core.ts": "8621932f4d339d5adaf64d3e428c13c6e53b8e40d143b5ac0016c6d5ce5b7faf",
+    "qualification/scenes.ts": "c76d9a5eda6156e0780eb1364538c8e328716f27848b73af8237bf8f37e5a8bd",
+    "tooling/qualify-physics.mjs": "91fec7e885facffc90c61b1b9f865aa935754cd77c3bb7057083660414dc21b4",
+    "src/physics/adapters/qualification-native-probes.ts": "95da2e025b4ce567ddd0c0a289e252693c50909a616114ad1706846b27fcaae9"
+  },
+  "basic": [
+    {
+      "id": "B1-m0.1",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.010218749999994614,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.0020833333333322352,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 3.730349362740526e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 3.802598738777294e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.915218749999996,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.002083333333332416,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.809999999999963,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 3.802598738777294e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "scene": {
+        "schemaVersion": 1,
+        "identity": {
+          "state": "draft"
+        },
+        "title": "E qualification fixture",
+        "description": "Initial conditions only. Engine profile is unqualified; not a benchmark result.",
+        "units": "SI",
+        "world": {
+          "gravity": {
+            "x": 0,
+            "y": -9.81
+          }
+        },
+        "simulation": {
+          "engine": {
+            "name": "planck",
+            "version": "1.5.1",
+            "adapterVersion": "1.0.0",
+            "profile": "planck-1.5.1-si-v1"
+          },
+          "timestepSeconds": 0.008333333333333333,
+          "substeps": 4,
+          "solverIterations": {
+            "position": 12,
+            "velocity": 12,
+            "constraint": 12
+          },
+          "sleeping": false,
+          "seed": 1
+        },
+        "bodies": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Disk 1",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.1
+            },
+            "position": {
+              "x": 0,
+              "y": 20
+            },
+            "velocity": {
+              "x": 0,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 0.1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          }
+        ],
+        "constraints": [],
+        "forces": [],
+        "measurements": [],
+        "studentPolicy": {
+          "controls": []
+        },
+        "view": {
+          "cameraCenter": {
+            "x": 0,
+            "y": 2
+          },
+          "pixelsPerMeter": 100,
+          "vectors": {
+            "velocity": false,
+            "acceleration": false,
+            "appliedForce": false
+          }
+        }
+      },
+      "native": {
+        "nativeSteps": 480,
+        "elapsedSeconds": 0.9999999999999971,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 480
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m0.1.csv",
+        "sha256": "86dfe37ce1da353e73f7e2d0b87072e62779c7c83d4abca722a6a4c877775e5c",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B1-m1",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.010218749999994614,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.0020833333333322352,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 3.730349362740526e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 3.802598738777294e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.915218749999996,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.002083333333332416,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.809999999999963,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 3.802598738777294e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "scene": {
+        "schemaVersion": 1,
+        "identity": {
+          "state": "draft"
+        },
+        "title": "E qualification fixture",
+        "description": "Initial conditions only. Engine profile is unqualified; not a benchmark result.",
+        "units": "SI",
+        "world": {
+          "gravity": {
+            "x": 0,
+            "y": -9.81
+          }
+        },
+        "simulation": {
+          "engine": {
+            "name": "planck",
+            "version": "1.5.1",
+            "adapterVersion": "1.0.0",
+            "profile": "planck-1.5.1-si-v1"
+          },
+          "timestepSeconds": 0.008333333333333333,
+          "substeps": 4,
+          "solverIterations": {
+            "position": 12,
+            "velocity": 12,
+            "constraint": 12
+          },
+          "sleeping": false,
+          "seed": 1
+        },
+        "bodies": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Disk 1",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.1
+            },
+            "position": {
+              "x": 0,
+              "y": 20
+            },
+            "velocity": {
+              "x": 0,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          }
+        ],
+        "constraints": [],
+        "forces": [],
+        "measurements": [],
+        "studentPolicy": {
+          "controls": []
+        },
+        "view": {
+          "cameraCenter": {
+            "x": 0,
+            "y": 2
+          },
+          "pixelsPerMeter": 100,
+          "vectors": {
+            "velocity": false,
+            "acceleration": false,
+            "appliedForce": false
+          }
+        }
+      },
+      "native": {
+        "nativeSteps": 480,
+        "elapsedSeconds": 0.9999999999999971,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 480
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m1.csv",
+        "sha256": "86dfe37ce1da353e73f7e2d0b87072e62779c7c83d4abca722a6a4c877775e5c",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B1-m10",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.010218749999994614,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.0020833333333322352,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 3.730349362740526e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 3.802598738777294e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.915218749999996,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.002083333333332416,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.809999999999963,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 3.802598738777294e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "scene": {
+        "schemaVersion": 1,
+        "identity": {
+          "state": "draft"
+        },
+        "title": "E qualification fixture",
+        "description": "Initial conditions only. Engine profile is unqualified; not a benchmark result.",
+        "units": "SI",
+        "world": {
+          "gravity": {
+            "x": 0,
+            "y": -9.81
+          }
+        },
+        "simulation": {
+          "engine": {
+            "name": "planck",
+            "version": "1.5.1",
+            "adapterVersion": "1.0.0",
+            "profile": "planck-1.5.1-si-v1"
+          },
+          "timestepSeconds": 0.008333333333333333,
+          "substeps": 4,
+          "solverIterations": {
+            "position": 12,
+            "velocity": 12,
+            "constraint": 12
+          },
+          "sleeping": false,
+          "seed": 1
+        },
+        "bodies": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Disk 1",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.1
+            },
+            "position": {
+              "x": 0,
+              "y": 20
+            },
+            "velocity": {
+              "x": 0,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 10
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          }
+        ],
+        "constraints": [],
+        "forces": [],
+        "measurements": [],
+        "studentPolicy": {
+          "controls": []
+        },
+        "view": {
+          "cameraCenter": {
+            "x": 0,
+            "y": 2
+          },
+          "pixelsPerMeter": 100,
+          "vectors": {
+            "velocity": false,
+            "acceleration": false,
+            "appliedForce": false
+          }
+        }
+      },
+      "native": {
+        "nativeSteps": 480,
+        "elapsedSeconds": 0.9999999999999971,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 480
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m10.csv",
+        "sha256": "86dfe37ce1da353e73f7e2d0b87072e62779c7c83d4abca722a6a4c877775e5c",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B2",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.010218749999985732,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.0012773437499982165,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 2.220446049250313e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 2.220446049250313e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": 1.0847812500000131,
+          "reference": 1.095,
+          "tolerance": 0.01,
+          "error": 0.009332191780809903,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -3.8099999999999783,
+          "reference": -3.8100000000000005,
+          "tolerance": 0.01,
+          "error": 5.827942386483761e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint x relative error",
+          "measured": 7.999999999999977,
+          "reference": 8,
+          "tolerance": 0.01,
+          "error": 2.886579864025407e-15,
+          "pass": true
+        },
+        {
+          "name": "apex time relative error",
+          "measured": 0.6116207951070354,
+          "reference": 0.6116207951070336,
+          "tolerance": 0.01,
+          "error": 2.9043434324194095e-15,
+          "pass": true
+        },
+        {
+          "name": "apex height relative error",
+          "measured": 1.8285929687500122,
+          "reference": 1.8348623853211008,
+          "tolerance": 0.01,
+          "error": 0.0034168320312432834,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "scene": {
+        "schemaVersion": 1,
+        "identity": {
+          "state": "draft"
+        },
+        "title": "E qualification fixture",
+        "description": "Initial conditions only. Engine profile is unqualified; not a benchmark result.",
+        "units": "SI",
+        "world": {
+          "gravity": {
+            "x": 0,
+            "y": -9.81
+          }
+        },
+        "simulation": {
+          "engine": {
+            "name": "planck",
+            "version": "1.5.1",
+            "adapterVersion": "1.0.0",
+            "profile": "planck-1.5.1-si-v1"
+          },
+          "timestepSeconds": 0.008333333333333333,
+          "substeps": 4,
+          "solverIterations": {
+            "position": 12,
+            "velocity": 12,
+            "constraint": 12
+          },
+          "sleeping": false,
+          "seed": 1
+        },
+        "bodies": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Disk 1",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.1
+            },
+            "position": {
+              "x": 0,
+              "y": 20
+            },
+            "velocity": {
+              "x": 8,
+              "y": 6
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          }
+        ],
+        "constraints": [],
+        "forces": [],
+        "measurements": [],
+        "studentPolicy": {
+          "controls": []
+        },
+        "view": {
+          "cameraCenter": {
+            "x": 0,
+            "y": 2
+          },
+          "pixelsPerMeter": 100,
+          "vectors": {
+            "velocity": false,
+            "acceleration": false,
+            "appliedForce": false
+          }
+        }
+      },
+      "native": {
+        "nativeSteps": 480,
+        "elapsedSeconds": 0.9999999999999971,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 480
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B2.csv",
+        "sha256": "0fd3d337e2060f5035181d7502e5c2abc421471ad701ccb81d21ce7c51e9a051",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B3-ratio1",
+      "status": "FAIL",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 180,
+          "reference": 180,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v1 absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v2 relative error",
+          "measured": 2,
+          "reference": 2,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum momentum relative drift",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum energy relative drift",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "angular speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "first contact timing",
+          "measured": 0.7541666666666647,
+          "reference": 0.75,
+          "tolerance": 0.01583333333333333,
+          "error": 0.0041666666666646535,
+          "pass": true
+        },
+        {
+          "name": "substep penetration",
+          "measured": 0.004166666666663876,
+          "reference": 0,
+          "tolerance": 0.0025,
+          "error": 0.004166666666663876,
+          "pass": false
+        }
+      ],
+      "failure": null,
+      "scene": {
+        "schemaVersion": 1,
+        "identity": {
+          "state": "draft"
+        },
+        "title": "E qualification fixture",
+        "description": "Initial conditions only. Engine profile is unqualified; not a benchmark result.",
+        "units": "SI",
+        "world": {
+          "gravity": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "simulation": {
+          "engine": {
+            "name": "planck",
+            "version": "1.5.1",
+            "adapterVersion": "1.0.0",
+            "profile": "planck-1.5.1-si-v1"
+          },
+          "timestepSeconds": 0.008333333333333333,
+          "substeps": 4,
+          "solverIterations": {
+            "position": 12,
+            "velocity": 12,
+            "constraint": 12
+          },
+          "sleeping": false,
+          "seed": 1
+        },
+        "bodies": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Disk 1",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.25
+            },
+            "position": {
+              "x": -1,
+              "y": 0
+            },
+            "velocity": {
+              "x": 2,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          },
+          {
+            "id": "00000000-0000-4000-8000-000000000002",
+            "name": "Disk 2",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.25
+            },
+            "position": {
+              "x": 1,
+              "y": 0
+            },
+            "velocity": {
+              "x": 0,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          }
+        ],
+        "constraints": [],
+        "forces": [],
+        "measurements": [],
+        "studentPolicy": {
+          "controls": []
+        },
+        "view": {
+          "cameraCenter": {
+            "x": 0,
+            "y": 2
+          },
+          "pixelsPerMeter": 100,
+          "vectors": {
+            "velocity": false,
+            "acceleration": false,
+            "appliedForce": false
+          }
+        }
+      },
+      "native": {
+        "nativeSteps": 720,
+        "elapsedSeconds": 1.500000000000022,
+        "firstContactSeconds": 0.7541666666666647,
+        "maxPenetration": 0.004166666666663876,
+        "maxContacts": 1,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 720
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B3-ratio1.csv",
+        "sha256": "b281754226e2b2aa1ade49e2e80453ee969b30aae87819fc76cbacd78328084d",
+        "frames": 181
+      }
+    },
+    {
+      "id": "B3-ratio2",
+      "status": "FAIL",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 180,
+          "reference": 180,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v1 relative error",
+          "measured": -0.6666666666666666,
+          "reference": -0.6666666666666666,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v2 relative error",
+          "measured": 1.3333333333333335,
+          "reference": 1.3333333333333333,
+          "tolerance": 0.01,
+          "error": 1.6653345369377348e-16,
+          "pass": true
+        },
+        {
+          "name": "maximum momentum relative drift",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum energy relative drift",
+          "measured": 2.220446049250313e-16,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 1.1102230246251565e-16,
+          "pass": true
+        },
+        {
+          "name": "transverse speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "angular speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "first contact timing",
+          "measured": 0.7541666666666647,
+          "reference": 0.75,
+          "tolerance": 0.01583333333333333,
+          "error": 0.0041666666666646535,
+          "pass": true
+        },
+        {
+          "name": "substep penetration",
+          "measured": 0.004166666666663876,
+          "reference": 0,
+          "tolerance": 0.0025,
+          "error": 0.004166666666663876,
+          "pass": false
+        }
+      ],
+      "failure": null,
+      "scene": {
+        "schemaVersion": 1,
+        "identity": {
+          "state": "draft"
+        },
+        "title": "E qualification fixture",
+        "description": "Initial conditions only. Engine profile is unqualified; not a benchmark result.",
+        "units": "SI",
+        "world": {
+          "gravity": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "simulation": {
+          "engine": {
+            "name": "planck",
+            "version": "1.5.1",
+            "adapterVersion": "1.0.0",
+            "profile": "planck-1.5.1-si-v1"
+          },
+          "timestepSeconds": 0.008333333333333333,
+          "substeps": 4,
+          "solverIterations": {
+            "position": 12,
+            "velocity": 12,
+            "constraint": 12
+          },
+          "sleeping": false,
+          "seed": 1
+        },
+        "bodies": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Disk 1",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.25
+            },
+            "position": {
+              "x": -1,
+              "y": 0
+            },
+            "velocity": {
+              "x": 2,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          },
+          {
+            "id": "00000000-0000-4000-8000-000000000002",
+            "name": "Disk 2",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.25
+            },
+            "position": {
+              "x": 1,
+              "y": 0
+            },
+            "velocity": {
+              "x": 0,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 2
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          }
+        ],
+        "constraints": [],
+        "forces": [],
+        "measurements": [],
+        "studentPolicy": {
+          "controls": []
+        },
+        "view": {
+          "cameraCenter": {
+            "x": 0,
+            "y": 2
+          },
+          "pixelsPerMeter": 100,
+          "vectors": {
+            "velocity": false,
+            "acceleration": false,
+            "appliedForce": false
+          }
+        }
+      },
+      "native": {
+        "nativeSteps": 720,
+        "elapsedSeconds": 1.500000000000022,
+        "firstContactSeconds": 0.7541666666666647,
+        "maxPenetration": 0.004166666666663876,
+        "maxContacts": 1,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 720
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B3-ratio2.csv",
+        "sha256": "0e6e1cb43edbed9acc1702c4f88f88b129fc9cad6b26a23cb0ca323a667da93b",
+        "frames": 181
+      }
+    },
+    {
+      "id": "B3-ratio10",
+      "status": "FAIL",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 180,
+          "reference": 180,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v1 relative error",
+          "measured": -1.6363636363636351,
+          "reference": -1.6363636363636365,
+          "tolerance": 0.01,
+          "error": 8.141635513917814e-16,
+          "pass": true
+        },
+        {
+          "name": "separated v2 relative error",
+          "measured": 0.3636363636363635,
+          "reference": 0.36363636363636365,
+          "tolerance": 0.01,
+          "error": 4.579669976578771e-16,
+          "pass": true
+        },
+        {
+          "name": "maximum momentum relative drift",
+          "measured": 4.440892098500626e-16,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 2.220446049250313e-16,
+          "pass": true
+        },
+        {
+          "name": "maximum energy relative drift",
+          "measured": 2.220446049250313e-16,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 1.1102230246251565e-16,
+          "pass": true
+        },
+        {
+          "name": "transverse speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "angular speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "first contact timing",
+          "measured": 0.7541666666666647,
+          "reference": 0.75,
+          "tolerance": 0.01583333333333333,
+          "error": 0.0041666666666646535,
+          "pass": true
+        },
+        {
+          "name": "substep penetration",
+          "measured": 0.004166666666663876,
+          "reference": 0,
+          "tolerance": 0.0025,
+          "error": 0.004166666666663876,
+          "pass": false
+        }
+      ],
+      "failure": null,
+      "scene": {
+        "schemaVersion": 1,
+        "identity": {
+          "state": "draft"
+        },
+        "title": "E qualification fixture",
+        "description": "Initial conditions only. Engine profile is unqualified; not a benchmark result.",
+        "units": "SI",
+        "world": {
+          "gravity": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "simulation": {
+          "engine": {
+            "name": "planck",
+            "version": "1.5.1",
+            "adapterVersion": "1.0.0",
+            "profile": "planck-1.5.1-si-v1"
+          },
+          "timestepSeconds": 0.008333333333333333,
+          "substeps": 4,
+          "solverIterations": {
+            "position": 12,
+            "velocity": 12,
+            "constraint": 12
+          },
+          "sleeping": false,
+          "seed": 1
+        },
+        "bodies": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Disk 1",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.25
+            },
+            "position": {
+              "x": -1,
+              "y": 0
+            },
+            "velocity": {
+              "x": 2,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          },
+          {
+            "id": "00000000-0000-4000-8000-000000000002",
+            "name": "Disk 2",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.25
+            },
+            "position": {
+              "x": 1,
+              "y": 0
+            },
+            "velocity": {
+              "x": 0,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 10
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          }
+        ],
+        "constraints": [],
+        "forces": [],
+        "measurements": [],
+        "studentPolicy": {
+          "controls": []
+        },
+        "view": {
+          "cameraCenter": {
+            "x": 0,
+            "y": 2
+          },
+          "pixelsPerMeter": 100,
+          "vectors": {
+            "velocity": false,
+            "acceleration": false,
+            "appliedForce": false
+          }
+        }
+      },
+      "native": {
+        "nativeSteps": 720,
+        "elapsedSeconds": 1.500000000000022,
+        "firstContactSeconds": 0.7541666666666647,
+        "maxPenetration": 0.004166666666663876,
+        "maxContacts": 1,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 720
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B3-ratio10.csv",
+        "sha256": "9bc6159d221f1f90d34d219efd975e7bbf88e344f6314aee7fe05bd596a3f026",
+        "frames": 181
+      }
+    },
+    {
+      "id": "B3-ratio100",
+      "status": "FAIL",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 180,
+          "reference": 180,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v1 relative error",
+          "measured": -1.9603960396039621,
+          "reference": -1.9603960396039604,
+          "tolerance": 0.01,
+          "error": 9.061214180779055e-16,
+          "pass": true
+        },
+        {
+          "name": "separated v2 relative error",
+          "measured": 0.03960396039603962,
+          "reference": 0.039603960396039604,
+          "tolerance": 0.01,
+          "error": 3.5041414214731503e-16,
+          "pass": true
+        },
+        {
+          "name": "maximum momentum relative drift",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum energy relative drift",
+          "measured": 2.220446049250313e-16,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 1.1102230246251565e-16,
+          "pass": true
+        },
+        {
+          "name": "transverse speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "angular speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "first contact timing",
+          "measured": 0.7541666666666647,
+          "reference": 0.75,
+          "tolerance": 0.01583333333333333,
+          "error": 0.0041666666666646535,
+          "pass": true
+        },
+        {
+          "name": "substep penetration",
+          "measured": 0.004166666666663876,
+          "reference": 0,
+          "tolerance": 0.0025,
+          "error": 0.004166666666663876,
+          "pass": false
+        }
+      ],
+      "failure": null,
+      "scene": {
+        "schemaVersion": 1,
+        "identity": {
+          "state": "draft"
+        },
+        "title": "E qualification fixture",
+        "description": "Initial conditions only. Engine profile is unqualified; not a benchmark result.",
+        "units": "SI",
+        "world": {
+          "gravity": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "simulation": {
+          "engine": {
+            "name": "planck",
+            "version": "1.5.1",
+            "adapterVersion": "1.0.0",
+            "profile": "planck-1.5.1-si-v1"
+          },
+          "timestepSeconds": 0.008333333333333333,
+          "substeps": 4,
+          "solverIterations": {
+            "position": 12,
+            "velocity": 12,
+            "constraint": 12
+          },
+          "sleeping": false,
+          "seed": 1
+        },
+        "bodies": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Disk 1",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.25
+            },
+            "position": {
+              "x": -1,
+              "y": 0
+            },
+            "velocity": {
+              "x": 2,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          },
+          {
+            "id": "00000000-0000-4000-8000-000000000002",
+            "name": "Disk 2",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.25
+            },
+            "position": {
+              "x": 1,
+              "y": 0
+            },
+            "velocity": {
+              "x": 0,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 100
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          }
+        ],
+        "constraints": [],
+        "forces": [],
+        "measurements": [],
+        "studentPolicy": {
+          "controls": []
+        },
+        "view": {
+          "cameraCenter": {
+            "x": 0,
+            "y": 2
+          },
+          "pixelsPerMeter": 100,
+          "vectors": {
+            "velocity": false,
+            "acceleration": false,
+            "appliedForce": false
+          }
+        }
+      },
+      "native": {
+        "nativeSteps": 720,
+        "elapsedSeconds": 1.500000000000022,
+        "firstContactSeconds": 0.7541666666666647,
+        "maxPenetration": 0.004166666666663876,
+        "maxContacts": 1,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 720
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B3-ratio100.csv",
+        "sha256": "eac1fe05e4f5f106f4fcde17b72e48b4017ff757dd1cd6ef44792cbe94a50753",
+        "frames": 181
+      }
+    }
+  ],
+  "convergence": [
+    {
+      "id": "B1-m0.1",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.04087500000000155,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.008333333333333649,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 2.1316282072803006e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 2.1729135650155968e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.945875000000003,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.00833333333333383,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.810000000000011,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 1.0864567825077984e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 1,
+      "h": 0.008333333333333333,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 120,
+        "elapsedSeconds": 0.9999999999999989,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.008333333333333333": 120
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m0.1-native-h1.csv",
+        "sha256": "0ca4765208e3c150d640668c2d2a7137a73d1d0747d26942242508fa1ac9b0e0",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B1-m0.1",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.020437500000001663,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.004166666666667006,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 2.1316282072803006e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 2.1729135650155968e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.925437500000003,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.004166666666667186,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.80999999999998,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 2.1729135650155968e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 2,
+      "h": 0.004166666666666667,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 240,
+        "elapsedSeconds": 0.9999999999999977,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.004166666666666667": 240
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m0.1-native-h2.csv",
+        "sha256": "04692c09a2d7ba6101de4393e111d4309455eafd72889657fe7ab813b0793dd0",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B1-m0.1",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.010218749999994614,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.0020833333333322352,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 3.730349362740526e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 3.802598738777294e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.915218749999996,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.002083333333332416,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.809999999999963,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 3.802598738777294e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 4,
+      "h": 0.0020833333333333333,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": 0,
+      "native": {
+        "nativeSteps": 480,
+        "elapsedSeconds": 0.9999999999999971,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 480
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m0.1-native-h4.csv",
+        "sha256": "01bba28cf348d0492069084d87d5eec3d53ad96b1422c7f051381dd16dd25357",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B1-m0.1",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.005109374999982208,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.0010416666666630393,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 4.618527782440651e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 4.707979390867127e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.910109374999983,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.0010416666666632204,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.809999999999954,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 4.707979390867127e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 8,
+      "h": 0.0010416666666666667,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 960,
+        "elapsedSeconds": 1.0000000000000233,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0010416666666666667": 960
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m0.1-native-h8.csv",
+        "sha256": "a5db7aa9330ba322dab8c7000db591ca63c22fbbe8a5c5f1698979a7aa0bc249",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B1-m1",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.04087500000000155,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.008333333333333649,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 2.1316282072803006e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 2.1729135650155968e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.945875000000003,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.00833333333333383,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.810000000000011,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 1.0864567825077984e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 1,
+      "h": 0.008333333333333333,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 120,
+        "elapsedSeconds": 0.9999999999999989,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.008333333333333333": 120
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m1-native-h1.csv",
+        "sha256": "0ca4765208e3c150d640668c2d2a7137a73d1d0747d26942242508fa1ac9b0e0",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B1-m1",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.020437500000001663,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.004166666666667006,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 2.1316282072803006e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 2.1729135650155968e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.925437500000003,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.004166666666667186,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.80999999999998,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 2.1729135650155968e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 2,
+      "h": 0.004166666666666667,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 240,
+        "elapsedSeconds": 0.9999999999999977,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.004166666666666667": 240
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m1-native-h2.csv",
+        "sha256": "04692c09a2d7ba6101de4393e111d4309455eafd72889657fe7ab813b0793dd0",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B1-m1",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.010218749999994614,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.0020833333333322352,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 3.730349362740526e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 3.802598738777294e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.915218749999996,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.002083333333332416,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.809999999999963,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 3.802598738777294e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 4,
+      "h": 0.0020833333333333333,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": 0,
+      "native": {
+        "nativeSteps": 480,
+        "elapsedSeconds": 0.9999999999999971,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 480
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m1-native-h4.csv",
+        "sha256": "01bba28cf348d0492069084d87d5eec3d53ad96b1422c7f051381dd16dd25357",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B1-m1",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.005109374999982208,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.0010416666666630393,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 4.618527782440651e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 4.707979390867127e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.910109374999983,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.0010416666666632204,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.809999999999954,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 4.707979390867127e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 8,
+      "h": 0.0010416666666666667,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 960,
+        "elapsedSeconds": 1.0000000000000233,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0010416666666666667": 960
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m1-native-h8.csv",
+        "sha256": "a5db7aa9330ba322dab8c7000db591ca63c22fbbe8a5c5f1698979a7aa0bc249",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B1-m10",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.04087500000000155,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.008333333333333649,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 2.1316282072803006e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 2.1729135650155968e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.945875000000003,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.00833333333333383,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.810000000000011,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 1.0864567825077984e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 1,
+      "h": 0.008333333333333333,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 120,
+        "elapsedSeconds": 0.9999999999999989,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.008333333333333333": 120
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m10-native-h1.csv",
+        "sha256": "0ca4765208e3c150d640668c2d2a7137a73d1d0747d26942242508fa1ac9b0e0",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B1-m10",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.020437500000001663,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.004166666666667006,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 2.1316282072803006e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 2.1729135650155968e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.925437500000003,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.004166666666667186,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.80999999999998,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 2.1729135650155968e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 2,
+      "h": 0.004166666666666667,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 240,
+        "elapsedSeconds": 0.9999999999999977,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.004166666666666667": 240
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m10-native-h2.csv",
+        "sha256": "04692c09a2d7ba6101de4393e111d4309455eafd72889657fe7ab813b0793dd0",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B1-m10",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.010218749999994614,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.0020833333333322352,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 3.730349362740526e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 3.802598738777294e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.915218749999996,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.002083333333332416,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.809999999999963,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 3.802598738777294e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 4,
+      "h": 0.0020833333333333333,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": 0,
+      "native": {
+        "nativeSteps": 480,
+        "elapsedSeconds": 0.9999999999999971,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 480
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m10-native-h4.csv",
+        "sha256": "01bba28cf348d0492069084d87d5eec3d53ad96b1422c7f051381dd16dd25357",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B1-m10",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.005109374999982208,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.0010416666666630393,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 4.618527782440651e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 4.707979390867127e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": -4.910109374999983,
+          "reference": -4.905,
+          "tolerance": 0.01,
+          "error": 0.0010416666666632204,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -9.809999999999954,
+          "reference": -9.81,
+          "tolerance": 0.01,
+          "error": 4.707979390867127e-15,
+          "pass": true
+        },
+        {
+          "name": "transverse position absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "transverse speed absolute error",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 1e-8,
+          "error": 0,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 8,
+      "h": 0.0010416666666666667,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 960,
+        "elapsedSeconds": 1.0000000000000233,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0010416666666666667": 960
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B1-m10-native-h8.csv",
+        "sha256": "a5db7aa9330ba322dab8c7000db591ca63c22fbbe8a5c5f1698979a7aa0bc249",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B2",
+      "status": "FAIL",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.04087500000000688,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.00510937500000086,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 1.0658141036401503e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 1.0658141036401502e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": 1.054124999999992,
+          "reference": 1.095,
+          "tolerance": 0.01,
+          "error": 0.03732876712329497,
+          "pass": false
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -3.81000000000001,
+          "reference": -3.8100000000000005,
+          "tolerance": 0.01,
+          "error": 2.4477358023231794e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint x relative error",
+          "measured": 7.999999999999991,
+          "reference": 8,
+          "tolerance": 0.01,
+          "error": 1.1102230246251565e-15,
+          "pass": true
+        },
+        {
+          "name": "apex time relative error",
+          "measured": 0.6116207951070326,
+          "reference": 0.6116207951070336,
+          "tolerance": 0.01,
+          "error": 1.633693180735918e-15,
+          "pass": true
+        },
+        {
+          "name": "apex height relative error",
+          "measured": 1.809943749999995,
+          "reference": 1.8348623853211008,
+          "tolerance": 0.01,
+          "error": 0.013580656250002618,
+          "pass": false
+        }
+      ],
+      "failure": null,
+      "substeps": 1,
+      "h": 0.008333333333333333,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 120,
+        "elapsedSeconds": 0.9999999999999989,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.008333333333333333": 120
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B2-native-h1.csv",
+        "sha256": "5d28114c3c056d6196c32302679361e1bf21d6d008728da59eaba2f44f67621a",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B2",
+      "status": "FAIL",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.020437499999999886,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.002554687499999986,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 1.0658141036401503e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 1.0658141036401502e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": 1.074562499999999,
+          "reference": 1.095,
+          "tolerance": 0.01,
+          "error": 0.018664383561644748,
+          "pass": false
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -3.810000000000009,
+          "reference": -3.8100000000000005,
+          "tolerance": 0.01,
+          "error": 2.214618106863829e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint x relative error",
+          "measured": 7.999999999999981,
+          "reference": 8,
+          "tolerance": 0.01,
+          "error": 2.3314683517128287e-15,
+          "pass": true
+        },
+        {
+          "name": "apex time relative error",
+          "measured": 0.6116207951070337,
+          "reference": 0.6116207951070336,
+          "tolerance": 0.01,
+          "error": 1.815214645262131e-16,
+          "pass": true
+        },
+        {
+          "name": "apex height relative error",
+          "measured": 1.8223765625000077,
+          "reference": 1.8348623853211008,
+          "tolerance": 0.01,
+          "error": 0.00680477343749575,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 2,
+      "h": 0.004166666666666667,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 240,
+        "elapsedSeconds": 0.9999999999999977,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.004166666666666667": 240
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B2-native-h2.csv",
+        "sha256": "f26f6b7ebd9daec469243147fc68bce420358ffb02eec18d315d1f5a46a0955a",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B2",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.010218749999985732,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.0012773437499982165,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 2.220446049250313e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 2.220446049250313e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": 1.0847812500000131,
+          "reference": 1.095,
+          "tolerance": 0.01,
+          "error": 0.009332191780809903,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -3.8099999999999783,
+          "reference": -3.8100000000000005,
+          "tolerance": 0.01,
+          "error": 5.827942386483761e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint x relative error",
+          "measured": 7.999999999999977,
+          "reference": 8,
+          "tolerance": 0.01,
+          "error": 2.886579864025407e-15,
+          "pass": true
+        },
+        {
+          "name": "apex time relative error",
+          "measured": 0.6116207951070354,
+          "reference": 0.6116207951070336,
+          "tolerance": 0.01,
+          "error": 2.9043434324194095e-15,
+          "pass": true
+        },
+        {
+          "name": "apex height relative error",
+          "measured": 1.8285929687500122,
+          "reference": 1.8348623853211008,
+          "tolerance": 0.01,
+          "error": 0.0034168320312432834,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 4,
+      "h": 0.0020833333333333333,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": 0,
+      "native": {
+        "nativeSteps": 480,
+        "elapsedSeconds": 0.9999999999999971,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 480
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B2-native-h4.csv",
+        "sha256": "18a0edd7c25b3e1c0eaa4bb46191f9bb0bf0723ef05328ac7093719e4604bb89",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B2",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 120,
+          "reference": 120,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory position normalized error",
+          "measured": 0.00510937499997155,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0.0006386718749964437,
+          "pass": true
+        },
+        {
+          "name": "maximum trajectory velocity normalized error",
+          "measured": 3.863576125695545e-14,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 3.8635761256955444e-15,
+          "pass": true
+        },
+        {
+          "name": "endpoint displacement relative error",
+          "measured": 1.0898906250000273,
+          "reference": 1.095,
+          "tolerance": 0.01,
+          "error": 0.004666095890385991,
+          "pass": true
+        },
+        {
+          "name": "endpoint vertical velocity relative error",
+          "measured": -3.809999999999962,
+          "reference": -3.8100000000000005,
+          "tolerance": 0.01,
+          "error": 1.0140619752481744e-14,
+          "pass": true
+        },
+        {
+          "name": "endpoint x relative error",
+          "measured": 8.000000000000187,
+          "reference": 8,
+          "tolerance": 0.01,
+          "error": 2.3314683517128287e-14,
+          "pass": true
+        },
+        {
+          "name": "apex time relative error",
+          "measured": 0.6116207951070362,
+          "reference": 0.6116207951070336,
+          "tolerance": 0.01,
+          "error": 4.174993684102902e-15,
+          "pass": true
+        },
+        {
+          "name": "apex height relative error",
+          "measured": 1.831701171875011,
+          "reference": 1.8348623853211008,
+          "tolerance": 0.01,
+          "error": 0.0017228613281189864,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 8,
+      "h": 0.0010416666666666667,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 960,
+        "elapsedSeconds": 1.0000000000000233,
+        "firstContactSeconds": null,
+        "maxPenetration": null,
+        "maxContacts": 0,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0010416666666666667": 960
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B2-native-h8.csv",
+        "sha256": "d667e9ea17cc86d4ee74b335a26aa0360c3cd761198db168dd091b169f0d6d79",
+        "frames": 121
+      }
+    },
+    {
+      "id": "B3-ratio2",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 180,
+          "reference": 180,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v1 relative error",
+          "measured": -0.6666666666666666,
+          "reference": -0.6666666666666666,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v2 relative error",
+          "measured": 1.3333333333333335,
+          "reference": 1.3333333333333333,
+          "tolerance": 0.01,
+          "error": 1.6653345369377348e-16,
+          "pass": true
+        },
+        {
+          "name": "maximum momentum relative drift",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum energy relative drift",
+          "measured": 2.220446049250313e-16,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 1.1102230246251565e-16,
+          "pass": true
+        },
+        {
+          "name": "transverse speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "angular speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "first contact timing",
+          "measured": 0.7583333333333331,
+          "reference": 0.75,
+          "tolerance": 0.01583333333333333,
+          "error": 0.008333333333333082,
+          "pass": true
+        },
+        {
+          "name": "substep penetration",
+          "measured": 1.3322676295501878e-15,
+          "reference": 0,
+          "tolerance": 0.0025,
+          "error": 1.3322676295501878e-15,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 1,
+      "h": 0.008333333333333333,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 180,
+        "elapsedSeconds": 1.4999999999999971,
+        "firstContactSeconds": 0.7583333333333331,
+        "maxPenetration": 1.3322676295501878e-15,
+        "maxContacts": 1,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.008333333333333333": 180
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B3-ratio2-native-h1.csv",
+        "sha256": "10ac7e86a2ce0af7a963691071da4c5241b7e91f7cbe0943460f24eaa1dc77b0",
+        "frames": 181
+      }
+    },
+    {
+      "id": "B3-ratio2",
+      "status": "FAIL",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 180,
+          "reference": 180,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v1 relative error",
+          "measured": -0.6666666666666666,
+          "reference": -0.6666666666666666,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v2 relative error",
+          "measured": 1.3333333333333335,
+          "reference": 1.3333333333333333,
+          "tolerance": 0.01,
+          "error": 1.6653345369377348e-16,
+          "pass": true
+        },
+        {
+          "name": "maximum momentum relative drift",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum energy relative drift",
+          "measured": 2.220446049250313e-16,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 1.1102230246251565e-16,
+          "pass": true
+        },
+        {
+          "name": "transverse speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "angular speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "first contact timing",
+          "measured": 0.7583333333333319,
+          "reference": 0.75,
+          "tolerance": 0.01583333333333333,
+          "error": 0.00833333333333186,
+          "pass": true
+        },
+        {
+          "name": "substep penetration",
+          "measured": 0.00833333333333297,
+          "reference": 0,
+          "tolerance": 0.0025,
+          "error": 0.00833333333333297,
+          "pass": false
+        }
+      ],
+      "failure": null,
+      "substeps": 2,
+      "h": 0.004166666666666667,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 360,
+        "elapsedSeconds": 1.499999999999996,
+        "firstContactSeconds": 0.7583333333333319,
+        "maxPenetration": 0.00833333333333297,
+        "maxContacts": 1,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.004166666666666667": 360
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B3-ratio2-native-h2.csv",
+        "sha256": "e3b44953895cf0899a17e18f8fa7d6d89611be64b4bc05b5601a350c4968d988",
+        "frames": 181
+      }
+    },
+    {
+      "id": "B3-ratio2",
+      "status": "FAIL",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 180,
+          "reference": 180,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v1 relative error",
+          "measured": -0.6666666666666666,
+          "reference": -0.6666666666666666,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v2 relative error",
+          "measured": 1.3333333333333335,
+          "reference": 1.3333333333333333,
+          "tolerance": 0.01,
+          "error": 1.6653345369377348e-16,
+          "pass": true
+        },
+        {
+          "name": "maximum momentum relative drift",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum energy relative drift",
+          "measured": 2.220446049250313e-16,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 1.1102230246251565e-16,
+          "pass": true
+        },
+        {
+          "name": "transverse speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "angular speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "first contact timing",
+          "measured": 0.7541666666666647,
+          "reference": 0.75,
+          "tolerance": 0.01583333333333333,
+          "error": 0.0041666666666646535,
+          "pass": true
+        },
+        {
+          "name": "substep penetration",
+          "measured": 0.004166666666663876,
+          "reference": 0,
+          "tolerance": 0.0025,
+          "error": 0.004166666666663876,
+          "pass": false
+        }
+      ],
+      "failure": null,
+      "substeps": 4,
+      "h": 0.0020833333333333333,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": 0,
+      "native": {
+        "nativeSteps": 720,
+        "elapsedSeconds": 1.500000000000022,
+        "firstContactSeconds": 0.7541666666666647,
+        "maxPenetration": 0.004166666666663876,
+        "maxContacts": 1,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 720
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B3-ratio2-native-h4.csv",
+        "sha256": "e8ad855a73785b88daef8b8497c8a54b6afe178aa59a148f61cad27cef8b38ce",
+        "frames": 181
+      }
+    },
+    {
+      "id": "B3-ratio2",
+      "status": "PASS",
+      "metrics": [
+        {
+          "name": "completed ticks",
+          "measured": 180,
+          "reference": 180,
+          "tolerance": 0,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v1 relative error",
+          "measured": -0.6666666666666666,
+          "reference": -0.6666666666666666,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "separated v2 relative error",
+          "measured": 1.3333333333333335,
+          "reference": 1.3333333333333333,
+          "tolerance": 0.01,
+          "error": 1.6653345369377348e-16,
+          "pass": true
+        },
+        {
+          "name": "maximum momentum relative drift",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "maximum energy relative drift",
+          "measured": 2.220446049250313e-16,
+          "reference": 0,
+          "tolerance": 0.01,
+          "error": 1.1102230246251565e-16,
+          "pass": true
+        },
+        {
+          "name": "transverse speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "angular speed",
+          "measured": 0,
+          "reference": 0,
+          "tolerance": 0.000001,
+          "error": 0,
+          "pass": true
+        },
+        {
+          "name": "first contact timing",
+          "measured": 0.7520833333333444,
+          "reference": 0.75,
+          "tolerance": 0.01583333333333333,
+          "error": 0.002083333333344428,
+          "pass": true
+        },
+        {
+          "name": "substep penetration",
+          "measured": 0.002083333333329329,
+          "reference": 0,
+          "tolerance": 0.0025,
+          "error": 0.002083333333329329,
+          "pass": true
+        }
+      ],
+      "failure": null,
+      "substeps": 8,
+      "h": 0.0010416666666666667,
+      "path": "fresh native solver convergence on production C construction; NOT an executable registered alternate profile",
+      "selectedProductionNormalizedDifference": null,
+      "native": {
+        "nativeSteps": 1440,
+        "elapsedSeconds": 1.499999999999995,
+        "firstContactSeconds": 0.7520833333333444,
+        "maxPenetration": 0.002083333333329329,
+        "maxContacts": 1,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0010416666666666667": 1440
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/B3-ratio2-native-h8.csv",
+        "sha256": "6c11704041059923b7b5ba00f994d7549b8b77064f9cb8184bfe61de0f7b43f6",
+        "frames": 181
+      }
+    }
+  ],
+  "probes": [
+    {
+      "id": "thin-wall-r0.25",
+      "scene": {
+        "schemaVersion": 1,
+        "identity": {
+          "state": "draft"
+        },
+        "title": "E qualification fixture",
+        "description": "Initial conditions only. Engine profile is unqualified; not a benchmark result.",
+        "units": "SI",
+        "world": {
+          "gravity": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "simulation": {
+          "engine": {
+            "name": "planck",
+            "version": "1.5.1",
+            "adapterVersion": "1.0.0",
+            "profile": "planck-1.5.1-si-v1"
+          },
+          "timestepSeconds": 0.008333333333333333,
+          "substeps": 4,
+          "solverIterations": {
+            "position": 12,
+            "velocity": 12,
+            "constraint": 12
+          },
+          "sleeping": false,
+          "seed": 1
+        },
+        "bodies": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Disk 1",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.25
+            },
+            "position": {
+              "x": -1,
+              "y": 0
+            },
+            "velocity": {
+              "x": 80,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          },
+          {
+            "id": "00000000-0000-4000-8000-000000000002",
+            "name": "Wall 2",
+            "motionType": "static",
+            "shape": {
+              "type": "rectangle",
+              "width": 0.02,
+              "height": 4
+            },
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "velocity": {
+              "x": 0,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          }
+        ],
+        "constraints": [],
+        "forces": [],
+        "measurements": [],
+        "studentPolicy": {
+          "controls": []
+        },
+        "view": {
+          "cameraCenter": {
+            "x": 0,
+            "y": 2
+          },
+          "pixelsPerMeter": 100,
+          "vectors": {
+            "velocity": false,
+            "acceleration": false,
+            "appliedForce": false
+          }
+        }
+      },
+      "completedTicks": 12,
+      "failure": null,
+      "crossed": false,
+      "bounced": true,
+      "penetration": 0,
+      "penetrationTolerance": 0.0025,
+      "status": "PASS",
+      "native": {
+        "nativeSteps": 48,
+        "elapsedSeconds": 0.1000000000000001,
+        "firstContactSeconds": 0.010416666666666666,
+        "maxPenetration": null,
+        "maxContacts": 1,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 48
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/thin-wall-r0.25.csv",
+        "sha256": "bbfd42c0d900a523628277263a50c55c2cbfe49ce01b57275940bb260ebce005",
+        "frames": 13
+      }
+    },
+    {
+      "id": "thin-wall-r0.1",
+      "scene": {
+        "schemaVersion": 1,
+        "identity": {
+          "state": "draft"
+        },
+        "title": "E qualification fixture",
+        "description": "Initial conditions only. Engine profile is unqualified; not a benchmark result.",
+        "units": "SI",
+        "world": {
+          "gravity": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "simulation": {
+          "engine": {
+            "name": "planck",
+            "version": "1.5.1",
+            "adapterVersion": "1.0.0",
+            "profile": "planck-1.5.1-si-v1"
+          },
+          "timestepSeconds": 0.008333333333333333,
+          "substeps": 4,
+          "solverIterations": {
+            "position": 12,
+            "velocity": 12,
+            "constraint": 12
+          },
+          "sleeping": false,
+          "seed": 1
+        },
+        "bodies": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Disk 1",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.1
+            },
+            "position": {
+              "x": -1,
+              "y": 0
+            },
+            "velocity": {
+              "x": 80,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          },
+          {
+            "id": "00000000-0000-4000-8000-000000000002",
+            "name": "Wall 2",
+            "motionType": "static",
+            "shape": {
+              "type": "rectangle",
+              "width": 0.02,
+              "height": 4
+            },
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "velocity": {
+              "x": 0,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          }
+        ],
+        "constraints": [],
+        "forces": [],
+        "measurements": [],
+        "studentPolicy": {
+          "controls": []
+        },
+        "view": {
+          "cameraCenter": {
+            "x": 0,
+            "y": 2
+          },
+          "pixelsPerMeter": 100,
+          "vectors": {
+            "velocity": false,
+            "acceleration": false,
+            "appliedForce": false
+          }
+        }
+      },
+      "completedTicks": 12,
+      "failure": null,
+      "crossed": false,
+      "bounced": true,
+      "penetration": 0,
+      "penetrationTolerance": 0.001,
+      "status": "PASS",
+      "native": {
+        "nativeSteps": 48,
+        "elapsedSeconds": 0.1000000000000001,
+        "firstContactSeconds": 0.012499999999999999,
+        "maxPenetration": null,
+        "maxContacts": 1,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 48
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/thin-wall-r0.1.csv",
+        "sha256": "127d4ba8f044daeb3c4598836e2e5038b66790a7d4f33af734533f0b3e148d48",
+        "frames": 13
+      }
+    },
+    {
+      "id": "thin-wall-r0.01",
+      "scene": {
+        "schemaVersion": 1,
+        "identity": {
+          "state": "draft"
+        },
+        "title": "E qualification fixture",
+        "description": "Initial conditions only. Engine profile is unqualified; not a benchmark result.",
+        "units": "SI",
+        "world": {
+          "gravity": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "simulation": {
+          "engine": {
+            "name": "planck",
+            "version": "1.5.1",
+            "adapterVersion": "1.0.0",
+            "profile": "planck-1.5.1-si-v1"
+          },
+          "timestepSeconds": 0.008333333333333333,
+          "substeps": 4,
+          "solverIterations": {
+            "position": 12,
+            "velocity": 12,
+            "constraint": 12
+          },
+          "sleeping": false,
+          "seed": 1
+        },
+        "bodies": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Disk 1",
+            "motionType": "dynamic",
+            "shape": {
+              "type": "circle",
+              "radius": 0.01
+            },
+            "position": {
+              "x": -1,
+              "y": 0
+            },
+            "velocity": {
+              "x": 80,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          },
+          {
+            "id": "00000000-0000-4000-8000-000000000002",
+            "name": "Wall 2",
+            "motionType": "static",
+            "shape": {
+              "type": "rectangle",
+              "width": 0.02,
+              "height": 4
+            },
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "velocity": {
+              "x": 0,
+              "y": 0
+            },
+            "angle": 0,
+            "angularVelocity": 0,
+            "massModel": {
+              "mode": "mass",
+              "mass": 1
+            },
+            "material": {
+              "friction": 0,
+              "staticFriction": 0,
+              "restitution": 1
+            }
+          }
+        ],
+        "constraints": [],
+        "forces": [],
+        "measurements": [],
+        "studentPolicy": {
+          "controls": []
+        },
+        "view": {
+          "cameraCenter": {
+            "x": 0,
+            "y": 2
+          },
+          "pixelsPerMeter": 100,
+          "vectors": {
+            "velocity": false,
+            "acceleration": false,
+            "appliedForce": false
+          }
+        }
+      },
+      "completedTicks": 12,
+      "failure": null,
+      "crossed": false,
+      "bounced": true,
+      "penetration": 0,
+      "penetrationTolerance": 0.0001,
+      "status": "PASS",
+      "native": {
+        "nativeSteps": 48,
+        "elapsedSeconds": 0.1000000000000001,
+        "firstContactSeconds": 0.012499999999999999,
+        "maxPenetration": null,
+        "maxContacts": 1,
+        "worlds": 1,
+        "bodiesRemainingAfterDispose": 0,
+        "stepsByH": {
+          "0.0020833333333333333": 48
+        }
+      },
+      "trajectory": {
+        "path": "qualification/results/thin-wall-r0.01.csv",
+        "sha256": "c39059c20f70b54a276d659fa7aabc3e651d7612d2978dc90620aaa19fbbe739",
+        "frames": 13
+      }
+    }
+  ],
+  "replay": [
+    {
+      "id": "B1-m0.1",
+      "absolute": 0,
+      "tolerance": 1e-10,
+      "pass": true
+    },
+    {
+      "id": "B1-m1",
+      "absolute": 0,
+      "tolerance": 1e-10,
+      "pass": true
+    },
+    {
+      "id": "B1-m10",
+      "absolute": 0,
+      "tolerance": 1e-10,
+      "pass": true
+    },
+    {
+      "id": "B2",
+      "absolute": 0,
+      "tolerance": 1e-10,
+      "pass": true
+    },
+    {
+      "id": "B3-ratio1",
+      "absolute": 0,
+      "tolerance": 1e-10,
+      "pass": true
+    },
+    {
+      "id": "B3-ratio2",
+      "absolute": 0,
+      "tolerance": 1e-10,
+      "pass": true
+    },
+    {
+      "id": "B3-ratio10",
+      "absolute": 0,
+      "tolerance": 1e-10,
+      "pass": true
+    },
+    {
+      "id": "B3-ratio100",
+      "absolute": 0,
+      "tolerance": 1e-10,
+      "pass": true
+    }
+  ],
+  "lifecycle": {
+    "exposedGc": true,
+    "cycles": {
+      "normal": 100,
+      "locked": 30
+    },
+    "normalBodiesRemaining": 0,
+    "nativeWorldsStillAlive": {
+      "normal": 0,
+      "locked": 0
+    },
+    "before": {
+      "rss": 367378432,
+      "heapTotal": 168972288,
+      "heapUsed": 27374712,
+      "external": 24862584,
+      "arrayBuffers": 294603
+    },
+    "after": {
+      "rss": 369201152,
+      "heapTotal": 162680832,
+      "heapUsed": 26359768,
+      "external": 24242925,
+      "arrayBuffers": 294603
+    },
+    "limitation": "Observed forced-GC ownership release; nondeterministic reclamation is not a general memory-bound certificate."
+  },
+  "longRun": {
+    "native": {
+      "nativeSteps": 288000,
+      "elapsedSeconds": 600.0000000017873,
+      "firstContactSeconds": 1.252083333333343,
+      "maxPenetration": null,
+      "maxContacts": 224,
+      "worlds": 1,
+      "bodiesRemainingAfterDispose": 0,
+      "stepsByH": {
+        "0.0020833333333333333": 288000
+      }
+    },
+    "scene": {
+      "schemaVersion": 1,
+      "identity": {
+        "state": "draft"
+      },
+      "title": "E qualification fixture",
+      "description": "Initial conditions only. Engine profile is unqualified; not a benchmark result.",
+      "units": "SI",
+      "world": {
+        "gravity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "simulation": {
+        "engine": {
+          "name": "planck",
+          "version": "1.5.1",
+          "adapterVersion": "1.0.0",
+          "profile": "planck-1.5.1-si-v1"
+        },
+        "timestepSeconds": 0.008333333333333333,
+        "substeps": 4,
+        "solverIterations": {
+          "position": 12,
+          "velocity": 12,
+          "constraint": 12
+        },
+        "sleeping": false,
+        "seed": 1
+      },
+      "bodies": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "name": "Disk 1",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -2.2,
+            "y": -1.4
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000002",
+          "name": "Disk 2",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.8000000000000003,
+            "y": -1.4
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000003",
+          "name": "Disk 3",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.4000000000000001,
+            "y": -1.4
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000004",
+          "name": "Disk 4",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1,
+            "y": -1.4
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000005",
+          "name": "Disk 5",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.6000000000000001,
+            "y": -1.4
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000006",
+          "name": "Disk 6",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.20000000000000018,
+            "y": -1.4
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000007",
+          "name": "Disk 7",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.20000000000000018,
+            "y": -1.4
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000008",
+          "name": "Disk 8",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.6000000000000001,
+            "y": -1.4
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000009",
+          "name": "Disk 9",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1,
+            "y": -1.4
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000010",
+          "name": "Disk 10",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.4,
+            "y": -1.4
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000011",
+          "name": "Disk 11",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.7999999999999998,
+            "y": -1.4
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000012",
+          "name": "Disk 12",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 2.2,
+            "y": -1.4
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000013",
+          "name": "Disk 13",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -2.2,
+            "y": -0.9999999999999999
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000014",
+          "name": "Disk 14",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.8000000000000003,
+            "y": -0.9999999999999999
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000015",
+          "name": "Disk 15",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.4000000000000001,
+            "y": -0.9999999999999999
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000016",
+          "name": "Disk 16",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1,
+            "y": -0.9999999999999999
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000017",
+          "name": "Disk 17",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.6000000000000001,
+            "y": -0.9999999999999999
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000018",
+          "name": "Disk 18",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.20000000000000018,
+            "y": -0.9999999999999999
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000019",
+          "name": "Disk 19",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.20000000000000018,
+            "y": -0.9999999999999999
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000020",
+          "name": "Disk 20",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.6000000000000001,
+            "y": -0.9999999999999999
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000021",
+          "name": "Disk 21",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1,
+            "y": -0.9999999999999999
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000022",
+          "name": "Disk 22",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.4,
+            "y": -0.9999999999999999
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000023",
+          "name": "Disk 23",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.7999999999999998,
+            "y": -0.9999999999999999
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000024",
+          "name": "Disk 24",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 2.2,
+            "y": -0.9999999999999999
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000025",
+          "name": "Disk 25",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -2.2,
+            "y": -0.5999999999999999
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000026",
+          "name": "Disk 26",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.8000000000000003,
+            "y": -0.5999999999999999
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000027",
+          "name": "Disk 27",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.4000000000000001,
+            "y": -0.5999999999999999
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000028",
+          "name": "Disk 28",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1,
+            "y": -0.5999999999999999
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000029",
+          "name": "Disk 29",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.6000000000000001,
+            "y": -0.5999999999999999
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000030",
+          "name": "Disk 30",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.20000000000000018,
+            "y": -0.5999999999999999
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000031",
+          "name": "Disk 31",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.20000000000000018,
+            "y": -0.5999999999999999
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000032",
+          "name": "Disk 32",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.6000000000000001,
+            "y": -0.5999999999999999
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000033",
+          "name": "Disk 33",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1,
+            "y": -0.5999999999999999
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000034",
+          "name": "Disk 34",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.4,
+            "y": -0.5999999999999999
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000035",
+          "name": "Disk 35",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.7999999999999998,
+            "y": -0.5999999999999999
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000036",
+          "name": "Disk 36",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 2.2,
+            "y": -0.5999999999999999
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000037",
+          "name": "Disk 37",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -2.2,
+            "y": -0.19999999999999973
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000038",
+          "name": "Disk 38",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.8000000000000003,
+            "y": -0.19999999999999973
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000039",
+          "name": "Disk 39",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.4000000000000001,
+            "y": -0.19999999999999973
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000040",
+          "name": "Disk 40",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1,
+            "y": -0.19999999999999973
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000041",
+          "name": "Disk 41",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.6000000000000001,
+            "y": -0.19999999999999973
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000042",
+          "name": "Disk 42",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.20000000000000018,
+            "y": -0.19999999999999973
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000043",
+          "name": "Disk 43",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.20000000000000018,
+            "y": -0.19999999999999973
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000044",
+          "name": "Disk 44",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.6000000000000001,
+            "y": -0.19999999999999973
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000045",
+          "name": "Disk 45",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1,
+            "y": -0.19999999999999973
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000046",
+          "name": "Disk 46",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.4,
+            "y": -0.19999999999999973
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000047",
+          "name": "Disk 47",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.7999999999999998,
+            "y": -0.19999999999999973
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000048",
+          "name": "Disk 48",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 2.2,
+            "y": -0.19999999999999973
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000049",
+          "name": "Disk 49",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -2.2,
+            "y": 0.20000000000000018
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000050",
+          "name": "Disk 50",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.8000000000000003,
+            "y": 0.20000000000000018
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000051",
+          "name": "Disk 51",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.4000000000000001,
+            "y": 0.20000000000000018
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000052",
+          "name": "Disk 52",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1,
+            "y": 0.20000000000000018
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000053",
+          "name": "Disk 53",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.6000000000000001,
+            "y": 0.20000000000000018
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000054",
+          "name": "Disk 54",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.20000000000000018,
+            "y": 0.20000000000000018
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000055",
+          "name": "Disk 55",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.20000000000000018,
+            "y": 0.20000000000000018
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000056",
+          "name": "Disk 56",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.6000000000000001,
+            "y": 0.20000000000000018
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000057",
+          "name": "Disk 57",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1,
+            "y": 0.20000000000000018
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000058",
+          "name": "Disk 58",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.4,
+            "y": 0.20000000000000018
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000059",
+          "name": "Disk 59",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.7999999999999998,
+            "y": 0.20000000000000018
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000060",
+          "name": "Disk 60",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 2.2,
+            "y": 0.20000000000000018
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000061",
+          "name": "Disk 61",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -2.2,
+            "y": 0.6000000000000001
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000062",
+          "name": "Disk 62",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.8000000000000003,
+            "y": 0.6000000000000001
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000063",
+          "name": "Disk 63",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.4000000000000001,
+            "y": 0.6000000000000001
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000064",
+          "name": "Disk 64",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1,
+            "y": 0.6000000000000001
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000065",
+          "name": "Disk 65",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.6000000000000001,
+            "y": 0.6000000000000001
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000066",
+          "name": "Disk 66",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.20000000000000018,
+            "y": 0.6000000000000001
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000067",
+          "name": "Disk 67",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.20000000000000018,
+            "y": 0.6000000000000001
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000068",
+          "name": "Disk 68",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.6000000000000001,
+            "y": 0.6000000000000001
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000069",
+          "name": "Disk 69",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1,
+            "y": 0.6000000000000001
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000070",
+          "name": "Disk 70",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.4,
+            "y": 0.6000000000000001
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000071",
+          "name": "Disk 71",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.7999999999999998,
+            "y": 0.6000000000000001
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000072",
+          "name": "Disk 72",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 2.2,
+            "y": 0.6000000000000001
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000073",
+          "name": "Disk 73",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -2.2,
+            "y": 1.0000000000000004
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000074",
+          "name": "Disk 74",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.8000000000000003,
+            "y": 1.0000000000000004
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000075",
+          "name": "Disk 75",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.4000000000000001,
+            "y": 1.0000000000000004
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000076",
+          "name": "Disk 76",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1,
+            "y": 1.0000000000000004
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000077",
+          "name": "Disk 77",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.6000000000000001,
+            "y": 1.0000000000000004
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000078",
+          "name": "Disk 78",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.20000000000000018,
+            "y": 1.0000000000000004
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000079",
+          "name": "Disk 79",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.20000000000000018,
+            "y": 1.0000000000000004
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000080",
+          "name": "Disk 80",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.6000000000000001,
+            "y": 1.0000000000000004
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000081",
+          "name": "Disk 81",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1,
+            "y": 1.0000000000000004
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000082",
+          "name": "Disk 82",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.4,
+            "y": 1.0000000000000004
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000083",
+          "name": "Disk 83",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.7999999999999998,
+            "y": 1.0000000000000004
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000084",
+          "name": "Disk 84",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 2.2,
+            "y": 1.0000000000000004
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": 0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000085",
+          "name": "Disk 85",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -2.2,
+            "y": 1.4000000000000004
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000086",
+          "name": "Disk 86",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.8000000000000003,
+            "y": 1.4000000000000004
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000087",
+          "name": "Disk 87",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1.4000000000000001,
+            "y": 1.4000000000000004
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000088",
+          "name": "Disk 88",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -1,
+            "y": 1.4000000000000004
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000089",
+          "name": "Disk 89",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.6000000000000001,
+            "y": 1.4000000000000004
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000090",
+          "name": "Disk 90",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": -0.20000000000000018,
+            "y": 1.4000000000000004
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000091",
+          "name": "Disk 91",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.20000000000000018,
+            "y": 1.4000000000000004
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000092",
+          "name": "Disk 92",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 0.6000000000000001,
+            "y": 1.4000000000000004
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000093",
+          "name": "Disk 93",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1,
+            "y": 1.4000000000000004
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000094",
+          "name": "Disk 94",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.4,
+            "y": 1.4000000000000004
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000095",
+          "name": "Disk 95",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 1.7999999999999998,
+            "y": 1.4000000000000004
+          },
+          "velocity": {
+            "x": 0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000096",
+          "name": "Disk 96",
+          "motionType": "dynamic",
+          "shape": {
+            "type": "circle",
+            "radius": 0.1
+          },
+          "position": {
+            "x": 2.2,
+            "y": 1.4000000000000004
+          },
+          "velocity": {
+            "x": -0.08,
+            "y": -0.06
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000097",
+          "name": "Wall 97",
+          "motionType": "static",
+          "shape": {
+            "type": "rectangle",
+            "width": 0.1,
+            "height": 10
+          },
+          "position": {
+            "x": -5,
+            "y": 0
+          },
+          "velocity": {
+            "x": 0,
+            "y": 0
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000098",
+          "name": "Wall 98",
+          "motionType": "static",
+          "shape": {
+            "type": "rectangle",
+            "width": 0.1,
+            "height": 10
+          },
+          "position": {
+            "x": 5,
+            "y": 0
+          },
+          "velocity": {
+            "x": 0,
+            "y": 0
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000099",
+          "name": "Wall 99",
+          "motionType": "static",
+          "shape": {
+            "type": "rectangle",
+            "width": 10,
+            "height": 0.1
+          },
+          "position": {
+            "x": 0,
+            "y": -5
+          },
+          "velocity": {
+            "x": 0,
+            "y": 0
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000100",
+          "name": "Wall 100",
+          "motionType": "static",
+          "shape": {
+            "type": "rectangle",
+            "width": 10,
+            "height": 0.1
+          },
+          "position": {
+            "x": 0,
+            "y": 5
+          },
+          "velocity": {
+            "x": 0,
+            "y": 0
+          },
+          "angle": 0,
+          "angularVelocity": 0,
+          "massModel": {
+            "mode": "mass",
+            "mass": 1
+          },
+          "material": {
+            "friction": 0,
+            "staticFriction": 0,
+            "restitution": 1
+          }
+        }
+      ],
+      "constraints": [],
+      "forces": [],
+      "measurements": [],
+      "studentPolicy": {
+        "controls": []
+      },
+      "view": {
+        "cameraCenter": {
+          "x": 0,
+          "y": 2
+        },
+        "pixelsPerMeter": 100,
+        "vectors": {
+          "velocity": false,
+          "acceleration": false,
+          "appliedForce": false
+        }
+      }
+    },
+    "requestedSeconds": 600,
+    "completedTicks": 72000,
+    "failure": null,
+    "wallSeconds": 78.51328974900001,
+    "p95TickMs": 1.6367520000057993,
+    "targetTickMs": 8.333333333333334,
+    "performancePass": true,
+    "initialEnergy": 0.4800000000000003,
+    "maxSampledRelativeEnergyDrift": 0,
+    "exploratoryEnergyTolerance": 0.01,
+    "energyPass": true,
+    "sampleEveryTicks": 1200,
+    "maxRetainedFrames": 61,
+    "trajectory": {
+      "path": "qualification/results/long-run.csv",
+      "sha256": "41991f124bf32bb12daea3a720fd21dc2fae7aa2e692c7e14b380383f38df96c",
+      "frames": 61
+    },
+    "limitations": "CPU runtime tick timing, not rendering FPS. 100 bodies incl. four static walls; no constraints/graphs; energy sampled each 10 s, no intermediate drift claim.",
+    "replay": {
+      "completedTicks": 72000,
+      "failure": null,
+      "wallSeconds": 71.74538622399999,
+      "normalizedError": 0,
+      "tolerance": 1e-10,
+      "sampling": "every 1200 ticks (10 s), not an all-tick long-run guarantee",
+      "pass": true
+    }
+  },
+  "executionReady": false,
+  "publicInitializationBlocked": true,
+  "clampObservability": {
+    "status": "UNQUALIFIED",
+    "evidence": "Production runtime rejects predicted/observed envelope and native displacement clamp indicators; native solver has no per-clamp event.",
+    "source": "planck/src/dynamics/Solver.ts: discrete and TOI velocity caps",
+    "limitation": "A transient internal CCD/TOI clamp that leaves no final-state evidence is not proven observable. No blanket contact-envelope execution certificate."
+  },
+  "basicStatus": "FAIL",
+  "releaseQualification": "INCOMPLETE: independently accepted E, device/browser matrix and full standard envelope still required; see failures/limitations"
+}

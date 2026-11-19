@@ -1,0 +1,47 @@
+[
+  {
+    "command": "npm run typecheck",
+    "exitCode": 0,
+    "seconds": 3.633
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "seconds": 1.465
+  },
+  {
+    "command": "npm test",
+    "exitCode": 1,
+    "seconds": 7.553
+  },
+  {
+    "command": "npm run test:m0",
+    "exitCode": 0,
+    "seconds": 0.355
+  },
+  {
+    "command": "npm run test:poc",
+    "exitCode": 0,
+    "seconds": 0.57
+  },
+  {
+    "command": "npm run build",
+    "exitCode": 0,
+    "seconds": 3.471
+  },
+  {
+    "command": "npm run test:pages",
+    "exitCode": 0,
+    "seconds": 0.31
+  },
+  {
+    "command": "npm run qualify:physics -- --strict",
+    "exitCode": 2,
+    "result": "B3 substep audits FAIL; general clamp observability UNQUALIFIED"
+  },
+  {
+    "command": "npm run qualify:browser -- --strict",
+    "exitCode": 1,
+    "result": "Chromium repeats B3 audit failures; WebKit UNAVAILABLE"
+  }
+]
