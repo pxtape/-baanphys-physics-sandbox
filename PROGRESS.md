@@ -4,7 +4,7 @@ Updated: 2026-11-19.
 
 ## Current state
 
-**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B capability policy is implemented on feat/m1-03b-capability-validation for review; C–E remain unstarted. Historical records below describe their original checkpoints.
+**M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B capability policy is ACCEPTED and merged (PR #3, 1250efd); C is planned only and C–E remain unstarted. Historical records below describe their original checkpoints.
 
 - Repository: https://github.com/pxtape/-baanphys-physics-sandbox
 - Live foundation preview: https://pxtape.github.io/-baanphys-physics-sandbox/
@@ -274,3 +274,43 @@ separate contract facade, narrow diagnostic/result exports, profile gate wording
 physics README, M1_TASKS.md and this record. Main/Pages remain unchanged. Await
 acceptance before any merge or C/D/E work; runtime and numerical qualification,
 real Safari/iPad and long-duration stress remain unexecuted risks.
+
+
+## M1-03B independent final acceptance — 2026-11-19
+
+Reviewed exact PR #3 head 95cbd750e88e9020f9b4654f50f88cce8db150e1 against every
+M1-03B_PLAN.md criterion. Exact-head push/PR runs 44505942005/44505952936 passed;
+no unresolved review threads. Findings: zero CRITICAL, zero MAJOR. One MINOR
+maintenance warning exists in prior architecture tooling (deprecated TSImportType
+argument access); it is non-failing and unrelated to policy correctness.
+
+Verified geometry/material/unsupported-feature gates; continuous independent
+control extrema and interacting gravity/mass/velocity/ratio bounds; conservative
+force and torque sums; finite-value checks; immutable source/IDs; deterministic
+bounded diagnostics independent of rejection state. The checker revalidates a
+fresh snapshot on every call, never trusts an old report and never constructs
+native objects. profileCompatible and policyCompatible do not imply execution;
+executionReady stays false. Existing numerical limits are provisional restrictions,
+not continuous accuracy certificates, exactly as documented.
+
+Re-ran typecheck/generated sync, lint, 270 automated tests, 25 M0 fixtures, 13
+PoC verification tests and production build successfully. Also executed a temporary
+Vite browser-target bundle harness with 14 adversarial probes: extreme continuous
+ranges; derived inertia underflow; NaN/Infinity; all measurement display modes;
+opposing forces with reinforcing torque; unknown feature key; stale immutable
+report after edit; accessor without invocation; cycle; and diagnostic saturation.
+All rejected safely as expected. No confirmed issue required new regression tests
+or production edits. These probes execute bundled JS in Node, not a browser/device.
+
+PR #3 merged normally as 1250efd7dc90fac6d33289254df3004a98090ebb.
+Main CI and Pages run 44506580035 passed and deployment API confirmed the same
+SHA. Public index, JS and CSS returned HTTP 200/correct MIME; assets matched
+local build and repeat index fetch/refresh was identical. No new browser/Safari/
+iPad qualification. Documentation follow-ups have separate deployment records;
+retain the code merge SHA above as acceptance provenance.
+
+Added M1-03C_PLAN.md: explicit uniform-lamina mass/inertia, private native world/
+fixture construction, stable UUID order, SI initial-state mapping, explicit native
+mass/density/COM handling, source isolation, geometry verification and transactional
+cleanup. Public execution remains blocked until D/E; C tests must not masquerade
+as trajectory qualification. No C/D/E code was implemented. Await approval.
