@@ -76,3 +76,57 @@ canonical creation order, frozen/caller-owned source, interleaved sessions,
 injected body/fixture/mass failures at first/middle/final objects, world failure,
 native creation failure, double disposal and preflight rejection. No numerical
 stepping, replay, production benchmarks or real Safari/iPad pass is claimed.
+
+## Settings-drift blocker resolution (PR #4 follow-up)
+
+Root cause: the earlier harness checked settings only once before allocation and
+checked polygon vertices without checking skin radius. The exact linearSlop drift
+reproduction now rejects immediately after the world checkpoint, before creating
+an incorrectly skinned fixture. Shared `nativeSettingsMatch` is read-only and
+used after world/body/fixture/mass checkpoints, at the explicit pre-publication
+checkpoint, and once more after final fixture auditing. A settings mismatch
+returns NATIVE_SETTINGS_MISMATCH and disposes the temporary world without changing
+global values. Polygon fixtures must retain radius .01 as well as exact vertices;
+all completed fixtures are audited again before session publication. Circle radii
+and centres remain checked against authored geometry.
+
+`native-settings.ts` pins every property of Planck 1.5.1 Settings (22 values) and
+all SettingsInternal accessors (27, including scaled/squared derived values).
+Coverage tests compare actual exported property names with the approved manifest,
+then inject mismatches for each entry. SettingsInternal is a runtime export missing
+from upstream's .d.ts; access is reflected only inside the native adapter boundary,
+with no added native type/handle in public interfaces.
+
+| Group | Approved native values |
+| --- | --- |
+| Scale/manifolds/vertices | lengthUnitsPerMeter=1; maxManifoldPoints=2; maxPolygonVertices=12 (BaanPhys policy remains 3–8) |
+| Broad phase | aabbExtension=.1; aabbMultiplier=2 |
+| Contact geometry | linearSlop=.005; angularSlop=(2/180)*pi; polygonRadius=.01 |
+| CCD/distance | maxSubSteps=8; maxTOIContacts=32; maxTOIIterations=20; maxDistanceIterations=20 |
+| Restitution/correction | velocityThreshold=0; maxLinearCorrection=.2; maxAngularCorrection=(8/180)*pi |
+| Motion/correction | maxTranslation=2; maxRotation=pi/2; baumgarte=.2; toiBaugarte=.75 |
+| Sleep (guarded although disabled) | timeToSleep=.5; linearSleepTolerance=.01; angularSleepTolerance=(2/180)*pi |
+
+All values retain upstream defaults except the previously approved zero restitution
+threshold. Trusted bootstrap permits exactly the upstream threshold 1 -> approved
+0 transition once, after other native values match; this is initial configuration,
+not error recovery. Later drift is rejected, including threshold drift back to 1.
+Scene data cannot select or override these values. Read-only validation errors
+(including malformed setting getters) fail closed. Test teardown alone restores
+test-induced drift. Production failure cleanup releases bodies/references only.
+
+Planck shares module-global settings across worlds: this change does NOT provide
+per-world settings isolation. Cleanup of a failed new world does not destroy or
+mutate a prior world's bodies; however the foreign global mutation remains present
+until its owner resolves it. Checkpoint checks cannot prove that a hostile consumer
+never changed and restored globals between observations. Shared native-module
+ownership is a required integration constraint, not a sandbox/security boundary.
+
+**M1-03D requirement (documentation only):** use the same read-only guard before
+each tick/substep and after native stepping, before publishing snapshots. On drift,
+stop/fail closed without returning a successful qualified frame, silently restoring
+globals, advancing reported time as successful, or continuing on a potentially
+modified state. Define safe terminal/reset behavior, coordinate settings ownership
+across all active worlds, and test cross-world drift/cleanup independently. Native
+settings checks do not replace atomic tick-input validation or envelope monitoring.
+No stepping/runtime-drift implementation is included in this fix.

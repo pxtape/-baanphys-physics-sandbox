@@ -6,6 +6,6 @@ export interface InitialWorldSession {
   snapshot(): PhysicsResult<SimulationSnapshot>;
   dispose(): void;
 }
-export type ConstructionCheckpoint = 'world' | 'body' | 'fixture' | 'mass';
+export type ConstructionCheckpoint = 'world' | 'body' | 'fixture' | 'mass' | 'publish';
 /** Trusted test instrumentation only; receives no engine handles or source data. */
 export type ConstructionObserver = (stage: ConstructionCheckpoint, index: number) => void;

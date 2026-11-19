@@ -239,3 +239,28 @@ policy remains 3–8. Architecture/limits notes corrected; no supported-feature,
 schema, solver, threshold or benchmark change. Global native settings and
 future fixture-reset/current-state checks remain documented risks. Stop for PR
 review; do not merge/deploy or start D/E.
+
+
+## M1-03C settings blocker resolution — 2026-11-19
+
+Integrated the previously uncommitted settings-review.test.ts reproduction.
+Root cause: only pre-allocation global validation and vertex-only polygon audit.
+Added one read-only settings guard covering all 22 native Settings values and 27
+SettingsInternal accessors, reused at world/body/fixture/mass/pre-publication
+checkpoints and after final fixture auditing. Polygon skin/radius is checked in
+addition to source vertices; every completed fixture is audited before publication.
+Mismatch rejects with NATIVE_SETTINGS_MISMATCH and cleans all temporary bodies,
+without restoring globals or leaking a partial session. Existing worlds retain
+their bodies/snapshots; native settings are still shared module state.
+
+80 targeted regression cases pass: exact linearSlop drift, every native/internal
+mismatch before allocation, each native mismatch before publication, all stage
+checkpoints, local polygon-skin corruption with identical vertices, final audit,
+source preservation and independent-session cleanup. All 372 automated tests,
+generated consistency/typecheck, lint, 25 M0 fixtures, 13 PoC verification tests
+and build pass. Existing numerical/property checks remain unchanged. Detailed
+settings manifest/ownership and future M1-03D fail-closed stepping obligations:
+src/physics/adapters/CONSTRUCTION.md. Test teardown alone restores injected drift.
+
+Fix submitted on the existing PR #4 branch; final acceptance remains pending.
+No merge, deployment, schema/threshold/settings change or M1-03D implementation.
