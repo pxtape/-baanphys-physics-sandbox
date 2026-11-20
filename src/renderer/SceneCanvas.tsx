@@ -6,6 +6,7 @@ import {
 import type { BodyTransform, Point } from "./manipulation";
 import type { Body } from "../domain/scene-v1.generated";
 import { anchorPosition } from "../domain/anchors";
+import { JointOverlay } from "./JointOverlay";
 import { useRef, useState } from "react";
 import type { SceneDocument } from "../domain/scene";
 import { toScreen, toWorld, fitSceneView } from "./camera";
@@ -42,7 +43,16 @@ interface Props {
   onGestureEnd?: () => void;
   onSelect: (id: string | null) => void;
   onMove: (id: string, x: number, y: number) => void;
-  onPivot: (id: string, point: Point) => void;
+  selectedJoint: string | null;
+  onSelectJoint: (id: string) => void;
+  onMoveAnchor: (
+    id: string,
+    side: "anchorA" | "anchorB",
+    point: Point,
+    target?: string | null,
+  ) => void;
+  onMoveJoint: (id: string, a: Point, b: Point) => void;
+  onDeleteJoint: () => void;
   onTransform: (id: string, value: BodyTransform) => void;
   onForce: (
     id: string,
@@ -61,7 +71,11 @@ export function SceneCanvas({
   acceleration,
   onSelect,
   onMove,
-  onPivot,
+  selectedJoint,
+  onSelectJoint,
+  onMoveAnchor,
+  onMoveJoint,
+  onDeleteJoint,
   onTransform,
   onForce,
   showVelocity = false,
@@ -96,11 +110,14 @@ export function SceneCanvas({
     y: number;
     pointer: number;
   } | null>(null);
-  const pivotDrag = useRef<{
+  const jointDrag = useRef<{
     id: string;
-    dx: number;
-    dy: number;
+    side: "anchorA" | "anchorB" | undefined;
+    start: Point;
+    a: Point;
+    b: Point;
     pointer: number;
+    moved: boolean;
   } | null>(null);
   const forceDrag = useRef<{
     id: string;
@@ -197,7 +214,7 @@ export function SceneCanvas({
             drag.current ||
             pan.current ||
             forceDrag.current ||
-            pivotDrag.current ||
+            jointDrag.current ||
             drawDrag.current
           )
             return;
@@ -234,28 +251,37 @@ export function SceneCanvas({
             onConnect(node?.getAttribute("data-body") ?? null, pointer(e));
             return;
           }
-          const pivotNode = (e.target as Element).closest("[data-pivot-id]");
-          if (pivotNode && !locked) {
+          const jointNode = (e.target as Element).closest("[data-joint]");
+          if (jointNode) {
             const c = scene.constraints.find(
-              (c) => c.id === pivotNode.getAttribute("data-pivot-id"),
+              (c) => c.id === jointNode.getAttribute("data-joint"),
             );
             if (!c) return;
-            const a =
-              c.anchorA.type === "world"
-                ? c.anchorA
-                : c.anchorB.type === "world"
-                  ? c.anchorB
-                  : null;
-            if (!a) return;
-            const p = pointer(e);
-            pivotDrag.current = {
+            onSelectJoint(c.id);
+            if (locked) return;
+            const endpoint = (e.target as Element)
+                .closest("[data-joint-anchor]")
+                ?.getAttribute("data-joint-anchor"),
+              side =
+                endpoint === "anchorA" || endpoint === "anchorB"
+                  ? endpoint
+                  : c.type === "hinge"
+                    ? c.anchorA.type === "world"
+                      ? "anchorA"
+                      : "anchorB"
+                    : undefined;
+            jointDrag.current = {
               id: c.id,
-              dx: a.point.x - p.x,
-              dy: a.point.y - p.y,
+              side,
+              start: pointer(e),
+              a: anchorPosition(scene, c.anchorA),
+              b: anchorPosition(scene, c.anchorB),
               pointer: e.pointerId,
+              moved: false,
             };
             onGestureStart?.();
             e.currentTarget.setPointerCapture(e.pointerId);
+            e.preventDefault();
             return;
           }
           const handleNode = (e.target as Element).closest(
@@ -341,13 +367,25 @@ export function SceneCanvas({
             return;
           }
           if (
-            pivotDrag.current &&
+            jointDrag.current &&
             !locked &&
-            pivotDrag.current.pointer === e.pointerId
+            jointDrag.current.pointer === e.pointerId
           ) {
-            const p = pointer(e),
-              d = pivotDrag.current;
-            onPivot(d.id, { x: p.x + d.dx, y: p.y + d.dy });
+            const d = jointDrag.current,
+              p = pointer(e),
+              dx = p.x - d.start.x,
+              dy = p.y - d.start.y;
+            if (Math.hypot(dx, dy) < 0.005 && !d.moved) return;
+            d.moved = true;
+            if (d.side) {
+              const base = d.side === "anchorA" ? d.a : d.b;
+              onMoveAnchor(d.id, d.side, { x: base.x + dx, y: base.y + dy });
+            } else
+              onMoveJoint(
+                d.id,
+                { x: d.a.x + dx, y: d.a.y + dy },
+                { x: d.b.x + dx, y: d.b.y + dy },
+              );
             return;
           }
           if (
@@ -393,8 +431,25 @@ export function SceneCanvas({
               onDraw(d.kind, d.start, pointer(e));
           }
 
-          if (pivotDrag.current?.pointer === e.pointerId) {
-            pivotDrag.current = null;
+          if (jointDrag.current?.pointer === e.pointerId) {
+            const d = jointDrag.current;
+            if (d.side && d.moved && !locked) {
+              const p = pointer(e),
+                base = d.side === "anchorA" ? d.a : d.b,
+                target = document
+                  .elementsFromPoint(e.clientX, e.clientY)
+                  .map((node) =>
+                    node.closest("[data-body]")?.getAttribute("data-body"),
+                  )
+                  .find(Boolean);
+              onMoveAnchor(
+                d.id,
+                d.side,
+                { x: base.x + p.x - d.start.x, y: base.y + p.y - d.start.y },
+                target ?? undefined,
+              );
+            }
+            jointDrag.current = null;
             onGestureEnd?.();
           }
           if (forceDrag.current?.pointer === e.pointerId) {
@@ -413,8 +468,8 @@ export function SceneCanvas({
           drawDrag.current = null;
           setDrawPreview(null);
 
-          if (pivotDrag.current) {
-            pivotDrag.current = null;
+          if (jointDrag.current) {
+            jointDrag.current = null;
             onGestureEnd?.();
           }
           if (forceDrag.current) {
@@ -536,67 +591,6 @@ export function SceneCanvas({
             pointerEvents="none"
           />
         )}
-        {scene.constraints.map((c) => {
-          const aw = anchorPosition(scene, c.anchorA, poses),
-            bw = anchorPosition(scene, c.anchorB, poses),
-            a = toScreen(aw),
-            b = toScreen(bw),
-            slack =
-              c.type === "rope" &&
-              Math.hypot(aw.x - bw.x, aw.y - bw.y) < c.maxLength - 0.005;
-          return (
-            <g key={c.id} className="joint-indicator" pointerEvents="none">
-              {c.type === "spring" ? (
-                <polyline
-                  fill="none"
-                  stroke="#b37367"
-                  strokeWidth="2"
-                  points={Array.from({ length: 17 }, (_, i) => {
-                    const f = i / 16,
-                      d = Math.hypot(b.x - a.x, b.y - a.y),
-                      offset = i < 2 || i > 14 ? 0 : i % 2 ? 5 : -5;
-                    return `${a.x + (b.x - a.x) * f - ((b.y - a.y) / (d || 1)) * offset},${a.y + (b.y - a.y) * f + ((b.x - a.x) / (d || 1)) * offset}`;
-                  }).join(" ")}
-                />
-              ) : (
-                <line
-                  x1={a.x}
-                  y1={a.y}
-                  x2={b.x}
-                  y2={b.y}
-                  stroke={c.type === "rope" ? "#ad873d" : "#576fbd"}
-                  strokeWidth="3"
-                  strokeDasharray={c.type === "rope" ? "6 4" : undefined}
-                />
-              )}
-              <circle
-                cx={b.x}
-                cy={b.y}
-                r={c.type === "hinge" ? 7 : 4}
-                fill="white"
-                stroke="#576fbd"
-                strokeWidth="2"
-              />
-              <circle cx={a.x} cy={a.y} r="3" fill="#576fbd" />
-              <text
-                x={(a.x + b.x) / 2 + 9}
-                y={(a.y + b.y) / 2 - 9}
-                fontSize="11"
-                fill="#6f7c93"
-              >
-                {c.type === "rope"
-                  ? slack
-                    ? "Slack rope"
-                    : "Taut rope"
-                  : c.type === "rod"
-                    ? "Rod"
-                    : c.type === "spring"
-                      ? `Spring ${c.springConstant} N/m`
-                      : "Hinge"}
-              </text>
-            </g>
-          );
-        })}
         {scene.bodies.map((body) => {
           const pose = poses.get(body.id) ?? body,
             p = toScreen(pose.position),
@@ -793,42 +787,15 @@ export function SceneCanvas({
                 </g>
               );
             })}
-        {!locked &&
-          !connection &&
-          !drawing &&
-          scene.constraints.map((c) => {
-            const world =
-                c.anchorA.type === "world"
-                  ? c.anchorA
-                  : c.anchorB.type === "world"
-                    ? c.anchorB
-                    : null,
-              body =
-                c.anchorA.type === "body"
-                  ? c.anchorA
-                  : c.anchorB.type === "body"
-                    ? c.anchorB
-                    : null;
-            if (!world || body?.bodyId !== selected) return null;
-            const p = toScreen(world.point);
-            return (
-              <g key={c.id} className="pivot-tool">
-                <circle
-                  data-pivot-id={c.id}
-                  aria-label="Drag fixed world pivot"
-                  cx={p.x}
-                  cy={p.y}
-                  r="10"
-                >
-                  <title>Move world pivot and attached body</title>
-                </circle>
-                <path
-                  d={`M${p.x - 4} ${p.y}h8M${p.x} ${p.y - 4}v8`}
-                  pointerEvents="none"
-                />
-              </g>
-            );
-          })}
+        <JointOverlay
+          scene={scene}
+          poses={poses}
+          selected={selectedJoint}
+          editable={!locked && !connection && !drawing}
+          zoom={view.zoom}
+          onSelect={onSelectJoint}
+          onAnchor={onMoveAnchor}
+        />
         {!locked &&
           !connection &&
           !drawing &&
@@ -965,6 +932,31 @@ export function SceneCanvas({
             );
           })()}
       </svg>
+      {selectedJoint && !connection && !drawing && (
+        <div
+          className="joint-canvas-toolbar"
+          aria-label="Selected connector tools"
+        >
+          <strong>
+            {scene.constraints.find((c) => c.id === selectedJoint)?.name}
+          </strong>
+          <span>
+            {locked
+              ? "Reset to edit"
+              : scene.constraints.find((c) => c.id === selectedJoint)?.type ===
+                  "hinge"
+                ? "Drag pivot to reposition"
+                : "Drag ends or middle to reposition"}
+          </span>
+          <button
+            disabled={locked}
+            onClick={onDeleteJoint}
+            aria-label="Delete selected connector"
+          >
+            Delete
+          </button>
+        </div>
+      )}
     </div>
   );
 }

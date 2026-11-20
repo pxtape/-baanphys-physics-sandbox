@@ -175,10 +175,19 @@ and magnitude; drag the amber circle to move its body-local application point.
 The display scale is capped; numeric Newton components remain authoritative.
 Force handles edit initial conditions and are locked during preview.
 
-Quick + Hinge / + Rod / + Rope buttons attach the selected dynamic body to a
-world anchor. Drag its blue crosshair to move the anchor and body together;
-Fixed-pivot drag instead moves a body around the anchor. Numeric joint fields
-remain available. All these mechanisms are experimental, not numerically certified.
+Quick + Hinge / + Rod / + Rope / + Spring attaches the selected movable body to
+an initial world anchor and selects the connector. Connectors appear above bodies
+in the object list and render on top of them. Click a connector directly:
+- Drag a hinge pivot to reposition its mounting point while bodies stay in place.
+- Drag A/B to move an endpoint; drop on another body to reconnect it.
+- Drag the line/middle grip to translate both attachment points without moving bodies.
+Rod/rope endpoint dragging sets length; whole-connector movement preserves rope
+slack. Spring rest length stays unchanged (use the optional current-span button
+to reset it). Empty-space drops retain the existing attachment. All gestures are
+undoable, IDs stay stable, and Delete removes only the selected connector.
+Arrow keys nudge a focused endpoint; optional precise values/connections remain
+collapsed in the inspector. Reset the preview before editing.
+All these mechanisms are experimental, not numerically certified.
 
 Fit scene brings bodies and fixed anchors into view. During preview, Follow
 preview centres the selected body's actual solver position. Pan/Home/Fit stop
@@ -190,8 +199,8 @@ Use Hinge/Rod/Rope tool in the blue toolbar: click a movable body, then another
 body or empty space. Rod/rope clicks set the two anchors and initial length;
 for a hinge the second click sets the shared pivot. Cancel or Escape exits.
 Move whole mechanism translates connected bodies and their world pivots together;
-Fixed-pivot drag is a separate mode. Each gesture is undoable. Select either body
-to inspect/reconnect its joints or allow contact between linked bodies. Conflicting
+Fixed-pivot drag is a separate body-movement mode. Select the connector itself
+to reposition attachments; its optional inspector also controls linked-body contact. Conflicting
 single-link geometry edits are rejected rather than repaired silently.
 Try Double pendulum and Linked ropes in the examples menu. These use the actual
 native joints in the public sandbox.

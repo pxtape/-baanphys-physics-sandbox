@@ -43,8 +43,15 @@ and graph read ay=−9.81 m/s². Drawing/Undo and CSV were reviewed in Chromium.
 No automated suites were added; typecheck/lint/build are the CI checks.
 
 Remaining gaps: arbitrary polygon drawing, air resistance, pulleys/gears/slots/
-motors, live parameter sliders, richer joint-anchor editing and multi-body graph
-comparison. Air/advanced mechanism models need explicit data/physics contracts;
+motors, live parameter sliders and multi-body graph comparison. Air/advanced mechanism models need explicit data/physics contracts;
 none are approximated by relabelling rods, solver stiffness or damping. Scene
 saving remains deferred. Login, licenses and role locks from the reference are
 intentionally not copied: this stays an open public sandbox, including iframes.
+
+## Canvas-first connector editing
+
+Hinge pivots and rod/rope/spring ends are now directly selectable/draggable on top
+of bodies. Connector translation edits local/world attachment coordinates without
+changing body poses; endpoint drops can reconnect to another body. Commands pass
+through existing immutable Scene v1 validation, preserve UUIDs, and form one undo
+gesture. Numeric fields are optional. Physics models/settings are unchanged.
