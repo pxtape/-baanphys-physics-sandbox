@@ -613,3 +613,12 @@ Desktop inspector scrolls independently; selection/preview exposes measurements
 at its top. 455 unit tests, generated/type checks, lint, build/Pages and full
 editor/collision Chromium flows pass. Browser regression preserves existing drag
 assertion and scrolls its target into view before operating it. Screenshots refreshed.
+
+Usability PR #18 merged as 55a7cc007d21dc18bc4921eb6c52ce50ea0ef6da;
+main/Pages 44602658592 passed. MVP-first milestones now supersede the historical
+roadmap: Core Sandbox → Usable Mechanisms → Measurements → Classroom Trial.
+Fit scene and Follow preview operate only on renderer camera state; follow uses
+actual solver snapshots, manual pan ends follow, and stopping follow retains view.
+457 tests, generated/type checks, lint, build/Pages and editor/collision browser
+flows pass. Chromium verified off-screen recovery, COM tracking, no camera jump
+and unchanged authored positions. Public execution/profile/schema remain unchanged.
