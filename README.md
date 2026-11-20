@@ -184,3 +184,16 @@ remain available. All these mechanisms are experimental, not numerically certifi
 Fit scene brings bodies and fixed anchors into view. During preview, Follow
 preview centres the selected body's actual solver position. Pan/Home/Fit stop
 following; camera movement never changes authored data or physics.
+
+## MVP2 mechanism authoring
+
+Use Hinge/Rod/Rope tool in the blue toolbar: click a movable body, then another
+body or empty space. Rod/rope clicks set the two anchors and initial length;
+for a hinge the second click sets the shared pivot. Cancel or Escape exits.
+Move whole mechanism translates connected bodies and their world pivots together;
+Fixed-pivot drag is a separate mode. Each gesture is undoable. Select either body
+to inspect/reconnect its joints or allow contact between linked bodies. Conflicting
+single-link geometry edits are rejected rather than repaired silently.
+Try Double pendulum and Linked ropes in the examples menu. These use the actual
+native joints in the opted-in teacher preview. Public execution stays disabled;
+springs/pulleys and certified numerical mechanism accuracy remain unsupported.

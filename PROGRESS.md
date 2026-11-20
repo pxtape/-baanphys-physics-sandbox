@@ -2,7 +2,19 @@
 
 Updated: 2026-11-20.
 
-## MVP1 restart — current direction
+## MVP2 — connected mechanisms
+
+User accepted functional MVP1 and authorized MVP2. Added two-click hinge/rod/rope
+creation, whole-mechanism/pivot translation, joint editing from either endpoint,
+linked-contact toggle, Double pendulum and Linked ropes examples. All edits keep
+Scene v1 IDs and pass existing runtime validation; no solver/profile/schema change.
+Typecheck/generated consistency, lint and build passed. Chromium review exercised
+native motion in both examples, all connection tools, invalid self-link/cancel,
+group drag/Undo, endpoint-B edits, linked-contact Undo and post-edit native stepping.
+No browser errors in these flows; no automated suites recreated. Mechanisms remain
+experimental; public initialization stays blocked and springs/pulleys unsupported.
+
+## MVP1 restart (previous milestone)
 
 User explicitly chose: delete tests and continue with the existing application.
 Removed 21 automated test/verification files, test commands and CI test stages;

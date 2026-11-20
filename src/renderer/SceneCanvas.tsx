@@ -20,6 +20,15 @@ interface Props {
   selected: string | null;
   poses: ReadonlyMap<string, Pose>;
   locked: boolean;
+  connection: {
+    readonly type: "hinge" | "rod" | "rope";
+    readonly start: {
+      readonly type: "body";
+      readonly bodyId: string;
+      readonly localPoint: Point;
+    } | null;
+  } | null;
+  onConnect: (id: string | null, point: Point) => void;
   showVelocity?: boolean;
   onGestureStart?: () => void;
   onGestureEnd?: () => void;
@@ -37,6 +46,8 @@ export function SceneCanvas({
   selected,
   poses,
   locked,
+  connection,
+  onConnect,
   onSelect,
   onMove,
   onPivot,
@@ -49,6 +60,7 @@ export function SceneCanvas({
   const [view, setView] = useState({ zoom: 1, x: 0, y: 0 }),
     [panMode, setPanMode] = useState(false);
   const [follow, setFollow] = useState(false);
+  const [hoverPoint, setHoverPoint] = useState<Point | null>(null);
   const followed = follow && locked && selected ? poses.get(selected) : null,
     centre = followed ? toScreen(followed.position) : null,
     cameraX = centre ? centre.x - 500 : view.x,
@@ -144,13 +156,17 @@ export function SceneCanvas({
         >
           Follow preview
         </button>
-        <button aria-pressed={panMode} onClick={() => setPanMode((p) => !p)}>
+        <button
+          disabled={!!connection}
+          aria-pressed={panMode && !connection}
+          onClick={() => setPanMode((p) => !p)}
+        >
           Pan view
         </button>
         <span>{Math.round(view.zoom * 100)}%</span>
       </div>
       <svg
-        className="scene-canvas"
+        className={`scene-canvas ${connection ? "connecting" : ""}`}
         viewBox={`${left} ${top} ${1000 / view.zoom} ${600 / view.zoom}`}
         aria-label="Physics scene canvas"
         role="group"
@@ -162,7 +178,7 @@ export function SceneCanvas({
             pivotDrag.current
           )
             return;
-          if (panMode || e.button === 1) {
+          if ((panMode && !connection) || e.button === 1) {
             const inverse = e.currentTarget.getScreenCTM()?.inverse();
             if (!inverse) return;
             const point = new DOMPoint(e.clientX, e.clientY).matrixTransform(
@@ -182,6 +198,11 @@ export function SceneCanvas({
             return;
           }
           if (e.button !== 0) return;
+          if (connection && !locked) {
+            const node = (e.target as Element).closest("[data-body]");
+            onConnect(node?.getAttribute("data-body") ?? null, pointer(e));
+            return;
+          }
           const pivotNode = (e.target as Element).closest("[data-pivot-id]");
           if (pivotNode && !locked) {
             const c = scene.constraints.find(
@@ -257,6 +278,11 @@ export function SceneCanvas({
           e.currentTarget.setPointerCapture(e.pointerId);
         }}
         onPointerMove={(e) => {
+          if (connection && !locked && !pan.current) {
+            setHoverPoint(pointer(e));
+            return;
+          }
+
           if (pan.current && pan.current.pointer === e.pointerId) {
             const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(
                 pan.current.inverse,
@@ -489,6 +515,7 @@ export function SceneCanvas({
                 }
                 if (
                   !locked &&
+                  !connection &&
                   ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(
                     e.key,
                   )
@@ -601,7 +628,7 @@ export function SceneCanvas({
               >
                 {m.toFixed(1)} N
               </text>
-              {!locked && selected === b.id && (
+              {!locked && !connection && selected === b.id && (
                 <>
                   <circle
                     className="force-handle"
@@ -665,6 +692,7 @@ export function SceneCanvas({
               );
             })}
         {!locked &&
+          !connection &&
           scene.constraints.map((c) => {
             const world =
                 c.anchorA.type === "world"
@@ -699,6 +727,7 @@ export function SceneCanvas({
             );
           })}
         {!locked &&
+          !connection &&
           (() => {
             const b = scene.bodies.find((q) => q.id === selected);
             if (!b) return null;
@@ -757,6 +786,22 @@ export function SceneCanvas({
                       : "Resize — centre remains fixed"}
                   </title>
                 </rect>
+              </g>
+            );
+          })()}
+        {connection?.start &&
+          !locked &&
+          scene.bodies.some((b) => b.id === connection.start!.bodyId) &&
+          (() => {
+            const start = toScreen(anchorPosition(scene, connection.start)),
+              end = toScreen(
+                hoverPoint ?? anchorPosition(scene, connection.start),
+              );
+            return (
+              <g className="connection-guide" pointerEvents="none">
+                <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} />
+                <circle cx={start.x} cy={start.y} r="5" />
+                <circle cx={end.x} cy={end.y} r="6" />
               </g>
             );
           })()}
