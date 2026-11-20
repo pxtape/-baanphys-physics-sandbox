@@ -13,8 +13,8 @@ authorized. Do not add per-layer approval gates or extensive planning documents.
 | MVP-3 — Useful measurements | Observe positions, velocities, applied forces/torque, bounded trails/graphs and basic energy measurements from actual snapshots with units and model limitations. No invented contact-force/tension readings. |
 | MVP-4 — Classroom trial | Complete representative desktop/tablet public workflows, fix interaction/performance failures and verify real Safari/iPad when available. Publish reproducible examples and known limitations. |
 
-Current focus: MVP-3 live measurements, following shipped core and native
-hinge/rod/rope authoring. Add sampled trails, SI graphs, kinetic energy and CSV. Save/Load, cloud,
+Current focus: close reference gaps across MVP1–3 before MVP4: direct drawing,
+SI Hooke springs/damping, acceleration and momentum. Research/evidence: docs/interactive-physics-gap-review.md. Save/Load, cloud,
 authentication and public embeds remain deferred. Preserve application code; use typecheck/lint/build and practical browser review instead of the removed test suites.
 M1-03E is still unqualified: public sandbox playback is authorized for everyone without role/iframe gates,
 executionReady=false, and all sandbox collisions/mechanisms remain experimental.

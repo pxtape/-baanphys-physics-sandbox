@@ -1,4 +1,4 @@
-/** Native mechanics exist only inside the explicit teacher construction path. */
+/** Native mechanics exist only inside the explicit experimental construction path. */
 import { RevoluteJoint, DistanceJoint, RopeJoint } from "planck";
 import type { World, Body } from "planck";
 import type { SceneDocument, SceneConstraint } from "../../domain/scene";
@@ -22,10 +22,32 @@ export function attachExperimentalJoints(
     });
     return { body: ground, point: { ...a.point } };
   }
+  const ids = new Map([...bodies].map(([id, body]) => [body, id])),
+    blockedPairs = new Set<string>();
+  const pair = (a: string, b: string) => [a, b].sort().join("|");
+  for (const c of scene.constraints)
+    if (
+      c.type === "spring" &&
+      !c.collideConnected &&
+      c.anchorA.type === "body" &&
+      c.anchorB.type === "body"
+    )
+      blockedPairs.add(
+        pair(c.anchorA.bodyId.toLowerCase(), c.anchorB.bodyId.toLowerCase()),
+      );
+  if (blockedPairs.size)
+    world.on("pre-solve", (contact) => {
+      verify();
+      const a = ids.get(contact.getFixtureA().getBody()),
+        b = ids.get(contact.getFixtureB().getBody());
+      if (a && b && blockedPairs.has(pair(a, b))) contact.setEnabled(false);
+      verify();
+    });
   for (const c of [...scene.constraints].sort((a, b) =>
     a.id.toLowerCase() < b.id.toLowerCase() ? -1 : 1,
   )) {
     verify();
+    if (c.type === "spring") continue; // Hooke forces are applied per substep, not a soft distance joint.
     const a = endpoint(c.anchorA),
       b = endpoint(c.anchorB);
     const def = {

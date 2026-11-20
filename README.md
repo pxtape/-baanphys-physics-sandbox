@@ -49,7 +49,7 @@ errors remain possible; no collision/rolling accuracy is certified. Applied-forc
 controls use body-local application points with world-fixed vectors. Off-centre
 forces and force couples generate real torque (which varies with orientation).
 Experimental native hinges, rigid massless rods and unilateral ropes are available;
-these are not accuracy-certified. Springs and pulleys remain unsupported.
+these are not accuracy-certified. SI Hooke springs with axial damping are experimental; pulleys remain unsupported.
 
 The public GitHub Pages sandbox supports **Play/Step directly for everyone**.
 No local server, cloud-workspace access, login, teacher/student mode or opt-in
@@ -195,7 +195,7 @@ to inspect/reconnect its joints or allow contact between linked bodies. Conflict
 single-link geometry edits are rejected rather than repaired silently.
 Try Double pendulum and Linked ropes in the examples menu. These use the actual
 native joints in the public sandbox.
-springs/pulleys and certified numerical mechanism accuracy remain unsupported.
+pulleys and certified numerical mechanism accuracy remain unsupported.
 
 ## Live measurements (MVP3)
 
@@ -208,3 +208,17 @@ Kinetic energy is ½mv² + ½Iω² using the same explicit SI mass/inertia as th
 runtime. It excludes potential energy, work and any conservation guarantee.
 Export CSV downloads the selected observable's current buffer with simulation
 time in seconds and SI units; it does not save a scene or upload anything.
+
+## MVP1–3 reference gap fill
+
+Draw circle/rectangle/floor tools let you drag geometry directly on the canvas.
+Circle starts at its centre; rectangle/floor start at a corner. Undo removes the
+complete creation. Spring tool connects two anchors with real Hooke/dashpot loads:
+edit rest length (m), spring constant (N/m) and damping (N·s/m). Try Spring oscillator
+or Damped oscillator. Compression below 10% rest length or excessive stiffness/
+loads is rejected/stopped; limits are provisional, not accuracy certification.
+Acceleration vector/meter and ax/ay graphs use Δv/Δt over the last logical tick.
+Contact peaks are tick-averaged, not instantaneous contact forces. Momentum x/y
+and angular-velocity graphs/CSV are also available. Initial acceleration is unknown
+until the first Step; no zero value is fabricated.
+Research, measured short cases and remaining gaps: [gap review](docs/interactive-physics-gap-review.md).

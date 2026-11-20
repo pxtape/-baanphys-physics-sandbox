@@ -106,6 +106,8 @@ export const SCENE_PRESETS = [
   { id: "rope", title: "Rope pendulum" },
   { id: "double-pendulum", title: "Double pendulum" },
   { id: "rope-chain", title: "Linked ropes" },
+  { id: "spring", title: "Spring oscillator" },
+  { id: "damped-spring", title: "Damped oscillator" },
 ] as const;
 export type ScenePreset = (typeof SCENE_PRESETS)[number]["id"];
 export function newScene(preset: ScenePreset = "free-fall"): SceneDocument {
@@ -313,6 +315,27 @@ export function newScene(preset: ScenePreset = "free-fall"): SceneDocument {
     });
     s.bodies = [...links, makeBody("floor")];
     s.world.gravity = { x: 0, y: -9.81 };
+  }
+  if (preset === "spring" || preset === "damped-spring") {
+    const b = makeBody("circle");
+    b.name = "Oscillating mass";
+    b.shape = { type: "circle", radius: 0.2 };
+    b.position = { x: 0, y: 3 };
+    s.bodies = [b, makeBody("floor")];
+    s.world.gravity = { x: 0, y: 0 };
+    s.constraints = [
+      {
+        id: objectId(),
+        name: "Hooke spring",
+        type: "spring",
+        anchorA: { type: "body", bodyId: b.id, localPoint: { x: 0, y: 0 } },
+        anchorB: { type: "world", point: { x: 0, y: 6 } },
+        restLength: 2.5,
+        springConstant: 10,
+        dampingCoefficient: preset === "damped-spring" ? 0.8 : 0,
+        collideConnected: false,
+      },
+    ];
   }
   s.measurements = [];
   s.studentPolicy.controls = [];
@@ -610,4 +633,31 @@ export function translateMechanism(
     },
     false,
   );
+}
+
+export function drawBody(
+  scene: SceneDocument,
+  kind: "circle" | "rectangle" | "floor",
+  start: { x: number; y: number },
+  end: { x: number; y: number },
+) {
+  const b = makeBody(kind);
+  if (kind === "circle") {
+    b.position = { ...start };
+    b.shape = {
+      type: "circle",
+      radius: Math.hypot(end.x - start.x, end.y - start.y),
+    };
+  } else {
+    b.position = { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 };
+    b.shape = {
+      type: "rectangle",
+      width: Math.abs(end.x - start.x),
+      height: Math.abs(end.y - start.y),
+    };
+  }
+  const result = editScene(scene, (s) => {
+    s.bodies.push(b);
+  });
+  return result.ok ? { ...result, bodyId: b.id } : result;
 }

@@ -2,6 +2,16 @@
 
 Updated: 2026-11-20.
 
+## MVP1–3 reference gap fill
+
+Revisited the supplied product page and official Web documentation. Added direct
+canvas drawing, real SI Hooke springs/axial damping and oscillator examples,
+last-tick acceleration meters/vectors/graphs, momentum and angular-velocity graphs.
+Fixed engine identity/timestep/iterations, Scene v1 and numerical thresholds stay
+unchanged. No roles/opt-in or automated suites added. Spring ranges/stability
+restrictions are provisional; runtime aggregate guards remain active. Actual
+short-case errors and remaining gaps: docs/interactive-physics-gap-review.md.
+
 ## MVP3 — live measurements
 
 Added bounded logical-tick sampling, selected-body motion trails, x/y/velocity/
