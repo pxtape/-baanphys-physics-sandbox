@@ -1,6 +1,4 @@
-/** Explicit experimental teacher workspace only. Not exported from physics/index.
- * Does not qualify or enable the public adapter. Production builds default OFF.
- */
+/** Public experimental sandbox runtime. Does not claim numerical qualification. */
 import type { SceneDocument, SceneBody } from "../domain/scene";
 import { validateScene } from "../schema";
 import type {
@@ -21,7 +19,7 @@ const blocked = (message: string): PhysicsResult<never> => ({
       "FEATURE_NOT_QUALIFIED",
       "",
       message,
-      "Reset and edit initial conditions. Collision accuracy and public/student execution remain unqualified.",
+      "Reset and edit initial conditions. Numerical accuracy remains unqualified.",
     ),
   ],
 });
@@ -77,27 +75,17 @@ export function possibleContact(
     ),
   );
 }
-export function createTeacherPreview(
+export function createExperimentalPreview(
   input: SceneDocument,
-  teacherOptIn: boolean,
   options: { collisions?: boolean } = {},
 ): PhysicsResult<PhysicsRuntime> {
-  if (
-    (!import.meta.env.DEV &&
-      import.meta.env.VITE_ENABLE_TEACHER_PREVIEW !== "true") ||
-    teacherOptIn !== true ||
-    (typeof window !== "undefined" && window.self !== window.top)
-  )
-    return blocked(
-      "Experimental preview requires a top-level teacher workspace, a teacher-enabled build and explicit opt-in.",
-    );
   const v = validateScene(input);
   if (!v.ok)
     return blocked(
       "Invalid authored scene. Correct the scene before previewing.",
     );
   const scene = v.scene;
-  // Explicit teacher UI choice, never an authored profile/qualification flag.
+  // Explicit sandbox UI choice, never an authored profile/qualification flag.
   const collisions = options.collisions === true;
   const duration = collisions ? 30 : 5;
   if (
@@ -116,7 +104,7 @@ export function createTeacherPreview(
     scene.bodies.some((b) => Math.hypot(b.velocity.x, b.velocity.y) > 20)
   )
     return blocked(
-      "Free-flight supports circles/rectangles; experimental collisions also support validated centred convex polygons. Gravity ≤20 m/s², initial speed ≤20 m/s and, in collision mode, initial spin ≤20 rad/s. Forces require experimental collision mode. Only experimental hinges, rods and ropes are available; student controls remain unavailable.",
+      "Free-flight supports circles/rectangles; experimental collisions also support validated centred convex polygons. Gravity ≤20 m/s², initial speed ≤20 m/s and, in collision mode, initial spin ≤20 rad/s. Forces require experimental collision mode. Only experimental hinges, rods and ropes are available; parameterized scene controls remain unavailable.",
     );
   const made =
     collisions && scene.constraints.length
@@ -143,7 +131,7 @@ export function createTeacherPreview(
           "Preview ended. Reset to reconstruct initial conditions.",
         );
       if (!Array.isArray(inputs) || inputs.length)
-        return blocked("Live forces are unavailable in the teacher preview.");
+        return blocked("Live forces are unavailable in this sandbox.");
       const frame = runtime.snapshot();
       if (!frame.ok) {
         this.dispose();

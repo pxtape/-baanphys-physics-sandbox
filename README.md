@@ -1,12 +1,12 @@
 # BaanPhys Physics Sandbox
 
-A working teacher editor for circles, rectangles and static floors, with selection,
+A public physics sandbox for circles, rectangles and static floors, with selection,
 dragging, SI property editing, gravity, velocity and live measurements. Uses the
 accepted Scene v1 domain and Planck.js **1.5.1** runtime.
 
-**Experimental preview only:** M1-03E remains blocked. Local teacher preview
-offers explicitly labelled, uncertified collisions through the real Planck solver.
-The certified/public adapter remains blocked. No certified collision, rolling, rope or pulley behavior is offered.
+**Experimental physics:** numerical qualification remains incomplete. The browser
+sandbox runs real Planck collisions and mechanisms with clear limitations.
+The existing qualification API remains unqualified; it is not a user-access gate. No certified collision, rolling, rope or pulley behavior is offered.
 
 ## Run locally
 
@@ -30,12 +30,12 @@ server, not a production deployment. In a restricted execution environment,
 binding a port may require the environment's network permission. Normal local
 development does not require special sandbox permissions.
 
-## Try the teacher MVP
+## Try the sandbox
 
-1. Open the local URL above. Choose a fall, collision, sliding, force/torque or hinge/rope pendulum example, or add objects.
+1. Open the live GitHub Pages site or the local URL above. Choose a fall, collision, sliding, force/torque or hinge/rope pendulum example, or add objects.
 2. Select an object in the scene/list. Drag it, use arrow keys (Shift: 0.5 m), or
    edit SI fields; blur/Enter commits a field. Invalid values leave the scene intact.
-3. Check **Enable experimental preview**, then Play/Pause, Step (1/120 s), or Reset.
+3. Press Play/Pause, Step (1/120 s), or Reset.
    Reset restores authored conditions and unlocks editing. Set Friction and
    Restitution on both bodies and the floor; resize/rotate before running.
 
@@ -51,12 +51,11 @@ forces and force couples generate real torque (which varies with orientation).
 Experimental native hinges, rigid massless rods and unilateral ropes are available;
 these are not accuracy-certified. Springs and pulleys remain unsupported.
 
-Default `npm run build` provides authoring with preview **disabled**. Development
-builds enable the explicit teacher opt-in; an intentionally controlled teacher build
-can set `VITE_ENABLE_TEACHER_PREVIEW=true`. Do not publish an enabled build to public
-Pages. This is a workspace/build boundary, not authenticated roles; no backend auth
-is implemented. Embedded/student surfaces reject execution, and the public adapter
-still reports executionReady=false. Main/Pages are unchanged until acceptance.
+The public GitHub Pages sandbox supports **Play/Step directly for everyone**.
+No local server, cloud-workspace access, login, teacher/student mode or opt-in
+checkbox is required. Simulation starts only on Play/Step. The same sandbox
+works in an iframe; there is no privileged user mode. Numerical accuracy remains
+experimental, with validation/settings/limits unchanged and no certification claim.
 
 Undo/Redo groups each drag into one action. Duplicate copies a body and its forces
 with fresh IDs (not joints). Ctrl/⌘ Z, Ctrl/⌘ D and Delete work outside fields.
@@ -77,11 +76,11 @@ npm run preview
 ```
 
 Production preview: **http://localhost:4173/-baanphys-physics-sandbox/**.
-For teacher physics, run `npm run dev`, opt in, add bodies/floor and try
+On the live site (or `npm run dev`), add bodies/floor and try
 Play/Pause/Reset/Step, property edits, collisions and forces. Review new behavior
 in the browser; do not recreate the old test matrix unless requested.
 Historical benchmark data and limitations remain available. Removing tests does
-not qualify physics: teacher execution stays experimental and public playback off.
+not qualify physics: sandbox execution stays experimental; removing tests does not certify accuracy.
 Screenshots: [docs/preview](docs/preview).
 
 ## Manual review of this task
@@ -195,5 +194,5 @@ Fixed-pivot drag is a separate mode. Each gesture is undoable. Select either bod
 to inspect/reconnect its joints or allow contact between linked bodies. Conflicting
 single-link geometry edits are rejected rather than repaired silently.
 Try Double pendulum and Linked ropes in the examples menu. These use the actual
-native joints in the opted-in teacher preview. Public execution stays disabled;
+native joints in the public sandbox.
 springs/pulleys and certified numerical mechanism accuracy remain unsupported.

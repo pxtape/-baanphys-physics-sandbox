@@ -16,7 +16,7 @@ authorized. Do not add per-layer approval gates or extensive planning documents.
 Current focus: MVP-2, authorized after functional MVP1 acceptance. Deliver
 canvas connections, connected-group editing and working joint/rope examples. Save/Load, cloud,
 authentication and public embeds remain deferred. Preserve application code; use typecheck/lint/build and practical browser review instead of the removed test suites.
-M1-03E is still unqualified: public execution remains disabled by default,
+M1-03E is still unqualified: public sandbox playback is authorized for everyone without role/iframe gates,
 executionReady=false, and all teacher collisions/mechanisms remain experimental.
 Do not alter Scene v1, production settings or numerical thresholds for these goals.
 
