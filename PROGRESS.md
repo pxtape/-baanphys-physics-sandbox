@@ -2,6 +2,20 @@
 
 Updated: 2026-11-20.
 
+## MVP3 — live measurements
+
+Added bounded logical-tick sampling, selected-body motion trails, x/y/velocity/
+speed/kinetic-energy graphs and CSV export. Sampling is every four logical ticks,
+up to 600 stored snapshots plus the current tick; Reset clears data and switching
+bodies retains their recorded history. No physics settings/schema/role changes.
+Typecheck/generated consistency, lint and production build pass. Chromium review
+confirmed Step gives two graph points, graph/readout velocity and K agreement,
+trail capture, Reset clearing and selection-history retention. An independent
+rotating rectangle check (m=2,w=2,h=1,omega=2) showed 1.667 J, matching 5/3 J
+within display rounding. CSV review captured time_s,vy_m_per_s with the native
+first-step value -0.08175 m/s at 0.008333333333333333 s; export is disabled before
+a run. These are measurement sanity checks, not numerical qualification.
+
 ## Public sandbox — same access for everyone
 
 User explicitly removed teacher/student distinctions and local/cloud-only access.

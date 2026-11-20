@@ -1,3 +1,5 @@
+import { MeasurementGraph } from "./MeasurementGraph";
+import { SnapshotLog, kineticEnergy } from "../measurements/samples";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { physicalProperties } from "../physics/physical-properties";
 import { anchorPosition, localPoint } from "../domain/anchors";
@@ -83,6 +85,9 @@ export function App() {
   const [history] = useState(() => new SceneHistory());
   const [, refreshHistory] = useState(0);
   const [showVelocity, setShowVelocity] = useState(false);
+  const [showTrail, setShowTrail] = useState(true);
+  const [showGraph, setShowGraph] = useState(false);
+  const sampleLog = useRef(new SnapshotLog());
   const [fixedPivots, setFixedPivots] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [moveAssembly, setMoveAssembly] = useState(true);
@@ -114,6 +119,23 @@ export function App() {
     () => new Map(frame?.bodies.map((b) => [b.id, b]) ?? []),
     [frame],
   );
+  const samples = useMemo(() => sampleLog.current.read(frame), [frame]);
+  const bodyProperties = useMemo(
+    () => (body ? physicalProperties(body) : null),
+    [body],
+  );
+  const energy =
+    body && bodyProperties?.ok
+      ? kineticEnergy(bodyProperties.value, live ?? body)
+      : null;
+  const trail = useMemo(() => {
+    if (!showTrail || !selected) return [];
+    const index = samples[0]?.bodies.findIndex((b) => b.id === selected) ?? -1;
+    return samples.flatMap((s) => {
+      const b = s.bodies[index];
+      return b?.id === selected ? [b.position] : [];
+    });
+  }, [samples, selected, showTrail]);
   const stepOnce = useCallback(() => {
     const r = runtime.current?.step([]);
     if (!r) return false;
@@ -122,6 +144,7 @@ export function App() {
       setNotice(r.diagnostics[0]!.message);
       return false;
     }
+    sampleLog.current.record(r.value);
     setFrame(r.value);
     return true;
   }, []);
@@ -466,6 +489,7 @@ export function App() {
     setConnection(null);
     runtime.current?.dispose();
     runtime.current = null;
+    sampleLog.current.clear();
     setFrame(null);
     setMode("edit");
     setNotice("");
@@ -482,7 +506,10 @@ export function App() {
       }
       runtime.current = created.value;
       const initial = created.value.snapshot();
-      if (initial.ok) setFrame(initial.value);
+      if (initial.ok) {
+        sampleLog.current.record(initial.value);
+        setFrame(initial.value);
+      }
     }
     setNotice("");
     setMode(single ? "paused" : "running");
@@ -575,6 +602,18 @@ export function App() {
           onClick={() => setShowVelocity((v) => !v)}
         >
           Velocity vectors
+        </button>
+        <button
+          aria-pressed={showTrail}
+          onClick={() => setShowTrail((v) => !v)}
+        >
+          Motion trail
+        </button>
+        <button
+          aria-pressed={showGraph}
+          onClick={() => setShowGraph((v) => !v)}
+        >
+          Measurement graph
         </button>
         {(["hinge", "rod", "rope"] as const).map((type) => (
           <button
@@ -750,6 +789,7 @@ export function App() {
             poses={poses}
             locked={locked}
             showVelocity={showVelocity}
+            trail={trail}
             onGestureStart={() => history.begin(sceneRef.current)}
             onGestureEnd={() => {
               history.end(sceneRef.current);
@@ -828,6 +868,7 @@ export function App() {
               {(frame?.timeSeconds ?? 0).toFixed(3)} <small>s</small>
             </output>
           </div>
+          {showGraph && <MeasurementGraph body={body} samples={samples} />}
           <div className="preview-notice">
             <span className="experiment-icon">!</span>
             <div>
@@ -920,6 +961,15 @@ export function App() {
                     </dd>
                   </div>
                 </dl>
+                <output className="kinetic-readout" aria-label="Kinetic energy">
+                  Kinetic energy: {energy ? energy.total.toFixed(3) : "—"} J
+                </output>
+                {energy && (
+                  <small className="energy-parts">
+                    Translation {energy.translation.toFixed(3)} J · rotation{" "}
+                    {energy.rotation.toFixed(3)} J
+                  </small>
+                )}
               </section>
               <label className="name-field">
                 Object name

@@ -1,6 +1,6 @@
 # Project-wide development rules
 
-These rules apply to all project files beneath this directory. Follow explicit user instructions when they differ. Current stage is MVP2 experimental mechanisms, following the accepted MVP1 working app. The user explicitly requested removal of the old automated test suites. Prioritize visible core sandbox behavior; do not rebuild the app from scratch.
+These rules apply to all project files beneath this directory. Follow explicit user instructions when they differ. Current stage is MVP3 live measurements on the working MVP1/MVP2 public sandbox. The user explicitly requested removal of the old automated test suites. Prioritize visible core sandbox behavior; do not rebuild the app from scratch.
 
 ## Sources of truth
 

@@ -1,5 +1,8 @@
 # M1 implementation backlog and acceptance
 
+Active MVP3 work: tick-sampled motion trails, SI graphs, body kinetic energy and
+CSV from the existing public sandbox. No new automated suites or role gates.
+
 MVP2 is authorized: native experimental mechanism authoring and connected-body
 editing on the accepted MVP1 app. No new automated suites or qualification claims.
 

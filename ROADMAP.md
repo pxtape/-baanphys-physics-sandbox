@@ -8,16 +8,16 @@ authorized. Do not add per-layer approval gates or extensive planning documents.
 
 | Milestone | Working result / done when |
 | --- | --- |
-| MVP-1 — Core sandbox | Create/select/drag/rotate/resize bodies; gravity, materials, forces/torque; native collisions; Play/Pause/Reset/Step/slow motion; Undo/Redo and camera tools work together in the teacher preview. Existing features are the baseline; restart delivery around practical teacher create/edit/play workflows, checked in the browser. |
-| MVP-2 — Usable mechanisms | Build connected hinge/rod/rope scenes easily and provide working examples. Existing native joints are implemented. Next work improves connected-body editing; ideal pulleys require an explicit versioned scene contract and native implementation, never a rope approximation. |
+| MVP-1 — Core sandbox | Create/select/drag/rotate/resize bodies; gravity, materials, forces/torque; native collisions; Play/Pause/Reset/Step/slow motion; Undo/Redo and camera tools work together in the public sandbox. Existing features are the baseline; restart delivery around practical teacher create/edit/play workflows, checked in the browser. |
+| MVP-2 — Usable mechanisms | Build connected hinge/rod/rope scenes easily and provide working examples. Native joints, connected-body editing and working examples are implemented; ideal pulleys require an explicit versioned scene contract and native implementation, never a rope approximation. |
 | MVP-3 — Useful measurements | Observe positions, velocities, applied forces/torque, bounded trails/graphs and basic energy measurements from actual snapshots with units and model limitations. No invented contact-force/tension readings. |
-| MVP-4 — Classroom trial | Complete representative desktop/tablet teacher workflows, fix interaction/performance failures and verify real Safari/iPad when available. Publish reproducible examples and known limitations. |
+| MVP-4 — Classroom trial | Complete representative desktop/tablet public workflows, fix interaction/performance failures and verify real Safari/iPad when available. Publish reproducible examples and known limitations. |
 
-Current focus: MVP-2, authorized after functional MVP1 acceptance. Deliver
-canvas connections, connected-group editing and working joint/rope examples. Save/Load, cloud,
+Current focus: MVP-3 live measurements, following shipped core and native
+hinge/rod/rope authoring. Add sampled trails, SI graphs, kinetic energy and CSV. Save/Load, cloud,
 authentication and public embeds remain deferred. Preserve application code; use typecheck/lint/build and practical browser review instead of the removed test suites.
 M1-03E is still unqualified: public sandbox playback is authorized for everyone without role/iframe gates,
-executionReady=false, and all teacher collisions/mechanisms remain experimental.
+executionReady=false, and all sandbox collisions/mechanisms remain experimental.
 Do not alter Scene v1, production settings or numerical thresholds for these goals.
 
 ## Historical roadmap (retained for traceability)
