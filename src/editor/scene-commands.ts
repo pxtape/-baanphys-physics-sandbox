@@ -113,7 +113,7 @@ export function newScene(preset: ScenePreset = "free-fall"): SceneDocument {
   s.identity = { state: "draft" };
   s.title = SCENE_PRESETS.find((p) => p.id === preset)!.title;
   s.description =
-    "Teacher-authored initial conditions. Experimental teacher simulation; collision accuracy is not certified.";
+    "Authored initial conditions. Experimental simulation; collision accuracy is not certified.";
   s.simulation = {
     ...structuredClone(PLANCK_SETTINGS),
     engine: { ...PLANCK_IDENTITY },

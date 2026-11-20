@@ -71,5 +71,5 @@ npm run preview
 
 Preview: http://localhost:4173/-baanphys-physics-sandbox/.
 Green main builds deploy through GitHub Pages. Open/refresh the live page and
-check asset loading after deployment. Public experimental execution stays off.
+check asset loading after deployment. Experimental Play/Step is enabled for everyone without login, role or iframe restrictions.
 Earlier deployment records above are historical evidence, not current test gates.

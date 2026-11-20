@@ -2,6 +2,17 @@
 
 Updated: 2026-11-20.
 
+## Public sandbox — same access for everyone
+
+User explicitly removed teacher/student distinctions and local/cloud-only access.
+Public Play/Step works immediately, including iframe/query surfaces; no login,
+build opt-in flag or consent checkbox gates. Renamed the runtime bridge to
+experimental-preview. Experimental labels, runtime validation, fixed settings and
+numerical limits remain; no numerical qualification is implied.
+Typecheck/generated consistency, lint and production build passed. Production
+browser review confirmed immediate Play, native floor rebound, mechanism Step,
+identical access with the old mode query and iframe Step; no browser errors.
+
 ## MVP2 — connected mechanisms
 
 User accepted functional MVP1 and authorized MVP2. Added two-click hinge/rod/rope

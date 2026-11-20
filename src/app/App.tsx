@@ -6,7 +6,7 @@ import type { ConnectionTool, JointKind } from "../editor/mechanisms";
 import { SceneHistory } from "../editor/history";
 import type { SceneV1 } from "../domain/scene-v1.generated";
 import type { PhysicsRuntime, SimulationSnapshot } from "../physics";
-import { createTeacherPreview } from "../physics/teacher-preview";
+import { createExperimentalPreview } from "../physics/experimental-preview";
 import {
   newScene,
   editScene,
@@ -75,12 +75,6 @@ function NumberField({
     </label>
   );
 }
-const teacherEnabled =
-  import.meta.env.DEV || import.meta.env.VITE_ENABLE_TEACHER_PREVIEW === "true";
-const studentSurface =
-  window.self !== window.top ||
-  new URLSearchParams(window.location.search).get("mode") === "student" ||
-  window.location.pathname.includes("/player");
 export function App() {
   const [scene, setScene] = useState(() => newScene()),
     [selected, setSelected] = useState<string | null>(
@@ -99,8 +93,7 @@ export function App() {
     [mode, setMode] = useState<"edit" | "running" | "paused" | "stopped">(
       "edit",
     );
-  const [optIn, setOptIn] = useState(false),
-    [notice, setNotice] = useState("");
+  const [notice, setNotice] = useState("");
   const [collisionMode, setCollisionMode] = useState(true);
   const runtime = useRef<PhysicsRuntime | null>(null),
     locked = frame !== null;
@@ -479,14 +472,8 @@ export function App() {
   }
   function start(single = false) {
     setConnection(null);
-    if (!teacherEnabled || !optIn || studentSurface) {
-      setNotice(
-        "Enable the experimental teacher preview first. Public and student execution remain blocked.",
-      );
-      return;
-    }
     if (!runtime.current) {
-      const created = createTeacherPreview(scene, optIn, {
+      const created = createExperimentalPreview(scene, {
         collisions: collisionMode,
       });
       if (!created.ok) {
@@ -512,16 +499,6 @@ export function App() {
     setSelected(s.bodies[0]!.id);
     setNotice("");
   }
-  if (studentSurface)
-    return (
-      <main className="student-block">
-        <h1>Student playback is not available yet.</h1>
-        <p>
-          The public physics adapter remains blocked pending numerical
-          qualification. This experimental workspace cannot run in an embed.
-        </p>
-      </main>
-    );
   return (
     <div className="application">
       <header className="topbar">
@@ -531,7 +508,7 @@ export function App() {
           <span className="brand-detail">/ Physics Sandbox</span>
         </a>
         <div className="topbar-meta">
-          <span className="teacher-badge">TEACHER WORKSPACE</span>
+          <span className="workspace-badge">PUBLIC SANDBOX</span>
           <span className="draft-badge">● Unsaved draft</span>
         </div>
       </header>
@@ -817,7 +794,7 @@ export function App() {
                 aria-label={
                   mode === "running" ? "Pause simulation" : "Play simulation"
                 }
-                disabled={!teacherEnabled || !optIn || mode === "stopped"}
+                disabled={mode === "stopped"}
                 onClick={() =>
                   mode === "running" ? setMode("paused") : start()
                 }
@@ -826,12 +803,7 @@ export function App() {
               </button>
               <button
                 aria-label="Step simulation"
-                disabled={
-                  !teacherEnabled ||
-                  !optIn ||
-                  mode === "running" ||
-                  mode === "stopped"
-                }
+                disabled={mode === "running" || mode === "stopped"}
                 onClick={() => start(true)}
               >
                 Step <span>1/120 s</span>
@@ -885,22 +857,6 @@ export function App() {
                   </option>
                 </select>
               </label>
-              {teacherEnabled ? (
-                <label className="opt-in">
-                  <input
-                    type="checkbox"
-                    checked={optIn}
-                    disabled={locked}
-                    onChange={(e) => setOptIn(e.target.checked)}
-                  />
-                  Enable experimental preview in this teacher workspace
-                </label>
-              ) : (
-                <p>
-                  Preview is disabled in the public build. Use the local teacher
-                  development workspace.
-                </p>
-              )}
             </div>
           </div>
           {notice && (
@@ -1546,7 +1502,7 @@ export function App() {
       </main>
       <footer className="footer">
         <span>Authored scene and preview state stay separate.</span>
-        <span>Planck 1.5.1 · fixed 120 Hz · teacher experiment</span>
+        <span>Planck 1.5.1 · fixed 120 Hz · experimental sandbox</span>
       </footer>
     </div>
   );

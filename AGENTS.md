@@ -27,7 +27,7 @@ Read SPEC.md, ARCHITECTURE.md, ROADMAP.md, TEST_PLAN.md and SCENE_FORMAT.md befo
 ## Change and verification discipline
 
 - Inspect existing files/instructions and preserve unrelated user changes. Prefer small reviewable modules and pure functions over speculative frameworks. Do not deploy or publish without authorization.
-- Do not recreate automated suites or broad test matrices unless requested. Keep runtime scene validation and experimental/public execution restrictions intact.
+- Do not recreate automated suites or broad test matrices unless requested. Keep runtime scene validation and experimental labels intact. Public sandbox playback is authorized for everyone, including iframes. Do not introduce teacher/student access gates, login requirements or opt-in locks. Physics remains experimental.
 - TEST_PLAN.md and prior numerical results are historical references. Do not weaken numerical thresholds or relabel failed/unqualified physics as passed.
 - Run typecheck, lint and build; review changed user flows in a browser. Report actual checks briefly. No automated test gate is required for the current MVP work.
 - Performance work must preserve declared physics settings. Profile before moving to Canvas/Workers. Provide keyboard/touch alternatives and accessible object descriptions.

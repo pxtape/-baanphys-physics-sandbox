@@ -1,5 +1,9 @@
 # Architecture
 
+Current MVP access policy: the sandbox is public and identical for all users,
+including iframe use. Historical teacher/student access gates below are inactive.
+Experimental numerical status is a disclosure, not a user permission.
+
 Status: M0 design updated by M0.5 validation. Isolated PoC code exists; no production runtime/editor modules exist yet. Requirements are in SPEC.md; engine findings in ENGINE_FEASIBILITY.md. Save/reload/embed belongs in the first end-to-end slice, ahead of full M5 integration.
 
 ## Module boundaries
