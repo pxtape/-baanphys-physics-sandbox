@@ -1042,3 +1042,79 @@ h3 {
   margin: 2px 0 0;
   flex-shrink: 0;
 }
+
+.measurement-graph {
+  margin: 0 16px 16px;
+  padding: 12px;
+  border: 1px solid #e1deed;
+  border-radius: 8px;
+  background: #fcfbff;
+}
+.graph-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: #58677b;
+}
+.graph-heading label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.graph-heading select {
+  max-width: 190px;
+  padding: 6px;
+  font-size: 11px;
+}
+.graph-heading output {
+  font-variant-numeric: tabular-nums;
+  color: #7866a4;
+}
+.measurement-graph svg {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+}
+.measurement-graph svg text {
+  font-size: 10px;
+  fill: #84909c;
+}
+.graph-grid {
+  stroke: #ebe7f2;
+  stroke-width: 1;
+}
+.graph-axis {
+  stroke: #b9b2c9;
+  stroke-width: 1;
+}
+.measurement-line {
+  stroke: #7c68b4;
+  stroke-width: 2;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+.graph-note,
+.graph-empty {
+  font-size: 10px;
+  color: #8b849a;
+  line-height: 1.5;
+}
+.graph-empty {
+  padding: 25px 0;
+  text-align: center;
+}
+.kinetic-readout {
+  display: block;
+  font-size: 12px;
+  color: #7866a4;
+  padding: 12px 0 4px;
+}
+.energy-parts {
+  display: block;
+  font-size: 10px;
+  color: #8a95a0;
+  line-height: 1.5;
+}

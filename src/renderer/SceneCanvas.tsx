@@ -30,6 +30,7 @@ interface Props {
   } | null;
   onConnect: (id: string | null, point: Point) => void;
   showVelocity?: boolean;
+  trail: readonly Point[];
   onGestureStart?: () => void;
   onGestureEnd?: () => void;
   onSelect: (id: string | null) => void;
@@ -54,6 +55,7 @@ export function SceneCanvas({
   onTransform,
   onForce,
   showVelocity = false,
+  trail,
   onGestureStart,
   onGestureEnd,
 }: Props) {
@@ -451,6 +453,23 @@ export function SceneCanvas({
         <text x="513" y="27" className="axis-title">
           y ↑
         </text>
+        {trail.length > 1 && (
+          <polyline
+            className="motion-trail"
+            points={trail
+              .map((p) => {
+                const q = toScreen(p);
+                return `${q.x},${q.y}`;
+              })
+              .join(" ")}
+            fill="none"
+            stroke="#9a85c4"
+            strokeWidth="2"
+            strokeDasharray="3 3"
+            vectorEffect="non-scaling-stroke"
+            pointerEvents="none"
+          />
+        )}
         {scene.constraints.map((c) => {
           const aw = anchorPosition(scene, c.anchorA, poses),
             bw = anchorPosition(scene, c.anchorB, poses),

@@ -196,3 +196,15 @@ single-link geometry edits are rejected rather than repaired silently.
 Try Double pendulum and Linked ropes in the examples menu. These use the actual
 native joints in the public sandbox.
 springs/pulleys and certified numerical mechanism accuracy remain unsupported.
+
+## Live measurements (MVP3)
+
+Motion trail shows the selected body's sampled centre-of-mass path. Open
+Measurement graph to choose x/y position, velocity components, speed or kinetic
+energy. Samples come from solver logical ticks every four ticks (30 Hz), plus the
+latest tick for Step/current readings. Up to 600 snapshots are retained (~20 s);
+selecting another body shows its recorded history. Reset clears the run.
+Kinetic energy is ½mv² + ½Iω² using the same explicit SI mass/inertia as the
+runtime. It excludes potential energy, work and any conservation guarantee.
+Export CSV downloads the selected observable's current buffer with simulation
+time in seconds and SI units; it does not save a scene or upload anything.
