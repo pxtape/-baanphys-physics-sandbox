@@ -104,7 +104,7 @@ export function createExperimentalPreview(
     scene.bodies.some((b) => Math.hypot(b.velocity.x, b.velocity.y) > 20)
   )
     return blocked(
-      "Free-flight supports circles/rectangles; experimental collisions also support validated centred convex polygons. Gravity ≤20 m/s², initial speed ≤20 m/s and, in collision mode, initial spin ≤20 rad/s. Forces require experimental collision mode. Only experimental hinges, rods and ropes are available; parameterized scene controls remain unavailable.",
+      "Free-flight supports circles/rectangles; experimental collisions also support validated centred convex polygons. Gravity ≤20 m/s², initial speed ≤20 m/s and, in collision mode, initial spin ≤20 rad/s. Forces require experimental collision mode. Experimental hinges, rods, ropes and SI Hooke springs are available; parameterized scene controls remain unavailable.",
     );
   const made =
     collisions && scene.constraints.length

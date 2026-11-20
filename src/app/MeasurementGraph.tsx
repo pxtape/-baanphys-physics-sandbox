@@ -11,13 +11,23 @@ const quantities = {
   vy: { label: "Velocity y", unit: "m/s" },
   speed: { label: "Speed", unit: "m/s" },
   energy: { label: "Kinetic energy", unit: "J" },
+  ax: { label: "Acceleration x (tick average)", unit: "m/s²" },
+  ay: { label: "Acceleration y (tick average)", unit: "m/s²" },
+  px: { label: "Momentum x", unit: "kg·m/s" },
+  py: { label: "Momentum y", unit: "kg·m/s" },
+  omega: { label: "Angular velocity", unit: "rad/s" },
 } as const;
 export function MeasurementGraph({
   body,
   samples,
+  acceleration,
 }: {
   body: SceneBody | undefined;
   samples: readonly SimulationSnapshot[];
+  acceleration: (
+    snapshot: SimulationSnapshot,
+    id: string,
+  ) => { x: number; y: number } | undefined;
 }) {
   const [quantity, setQuantity] = useState<keyof typeof quantities>("y");
   const properties = useMemo(
@@ -27,9 +37,27 @@ export function MeasurementGraph({
   const data = useMemo(() => {
     if (!body) return [];
     const index = samples[0]?.bodies.findIndex((b) => b.id === body.id) ?? -1;
-    return samples.map((s) => {
+    return samples.flatMap((s) => {
       const b = s.bodies[index];
-      if (!b || b.id !== body.id) return { t: s.timeSeconds, v: NaN };
+      if (!b || b.id !== body.id) return [{ t: s.timeSeconds, v: NaN }];
+      if (quantity === "ax" || quantity === "ay") {
+        const a = acceleration(s, body.id);
+        return a
+          ? [{ t: s.timeSeconds, v: quantity === "ax" ? a.x : a.y }]
+          : []; // t=0 has no measured interval.
+      }
+      if (quantity === "omega")
+        return [{ t: s.timeSeconds, v: b.angularVelocity }];
+      if (quantity === "px" || quantity === "py")
+        return [
+          {
+            t: s.timeSeconds,
+            v: properties?.ok
+              ? properties.value.mass *
+                (quantity === "px" ? b.velocity.x : b.velocity.y)
+              : NaN,
+          },
+        ];
       const v =
         quantity === "x"
           ? b.position.x
@@ -44,9 +72,9 @@ export function MeasurementGraph({
                   : properties?.ok
                     ? (kineticEnergy(properties.value, b)?.total ?? NaN)
                     : NaN;
-      return { t: s.timeSeconds, v };
+      return [{ t: s.timeSeconds, v }];
     });
-  }, [body, samples, quantity, properties]);
+  }, [body, samples, quantity, properties, acceleration]);
   const q = quantities[quantity],
     valid = data.length > 0 && data.every((p) => Number.isFinite(p.v)),
     low = valid ? Math.min(...data.map((p) => p.v)) : 0,
@@ -74,7 +102,7 @@ export function MeasurementGraph({
   function exportCsv() {
     if (!valid || !body) return;
     const csv = [
-      `time_s,${quantity}_${q.unit.replace("/", "_per_")}`,
+      `time_s,${quantity}_${q.unit.replace("/", "_per_").replace("²", "2").replace("·", "_")}`,
       ...data.map((p) => `${p.t},${p.v}`),
     ].join("\r\n");
     const url = URL.createObjectURL(
@@ -173,6 +201,8 @@ export function MeasurementGraph({
       <p className="graph-note">
         30 Hz from solver ticks + latest tick · up to 600 stored samples (~20 s)
         · Reset clears the run.{" "}
+        {(quantity === "ax" || quantity === "ay") &&
+          "Acceleration is Δv/Δt over the last logical tick; collisions give tick-averaged peaks, not instantaneous contact force. "}
         {quantity === "energy"
           ? "K = ½mv² + ½Iω² for this body; excludes potential energy and work."
           : "Trails connect sampled positions; graphs do not predict motion."}

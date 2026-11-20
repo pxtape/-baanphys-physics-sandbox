@@ -136,3 +136,11 @@ exceptions, settings drift, terminal cleanup, reentrancy, disposal, snapshot/sou
 immutability, world isolation and fresh-runtime replay. Existing 372 tests are
 preserved. Real Safari/iPad, long-run stress/performance and full production
 numerical qualification remain future evidence gates.
+
+Experimental SI springs: `physics/springs.ts` computes Hooke/dashpot Newton loads
+from current anchor positions and velocities; these join saved/transient loads in
+the existing conservative envelope before each native substep. No native soft
+spring parameters or damping settings are substituted. Too-compressed springs or
+out-of-envelope motion terminate without a new committed frame. Contact suppression
+for spring pairs is private to that world. Provisional bounds and measured short
+cases: docs/interactive-physics-gap-review.md; no numerical qualification is implied.

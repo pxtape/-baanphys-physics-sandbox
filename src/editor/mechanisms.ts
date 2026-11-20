@@ -3,7 +3,7 @@ import type { Constraint } from "../domain/scene-v1.generated";
 import { anchorPosition, localPoint } from "../domain/anchors";
 import { editScene, objectId } from "./scene-commands";
 
-export type JointKind = "hinge" | "rod" | "rope";
+export type JointKind = "hinge" | "rod" | "rope" | "spring";
 export type Anchor = SceneConstraint["anchorA"];
 export type BodyAnchor = Extract<Anchor, { type: "body" }>;
 export interface ConnectionTool {
@@ -59,7 +59,15 @@ export function connectAnchors(
       ? { ...base, type }
       : type === "rod"
         ? { ...base, type, length: distance }
-        : { ...base, type, maxLength: distance };
+        : type === "rope"
+          ? { ...base, type, maxLength: distance }
+          : {
+              ...base,
+              type,
+              restLength: distance,
+              springConstant: 10,
+              dampingCoefficient: 0,
+            };
   return editScene(scene, (s) => {
     s.constraints.push(joint);
   });

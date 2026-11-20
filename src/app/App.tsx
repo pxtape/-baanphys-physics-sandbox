@@ -21,6 +21,7 @@ import {
   moveWorldPivot,
   translateMechanism,
   SCENE_PRESETS,
+  drawBody,
 } from "../editor/scene-commands";
 import type { ObjectKind, ScenePreset } from "../editor/scene-commands";
 import { SceneCanvas } from "../renderer/SceneCanvas";
@@ -86,6 +87,10 @@ export function App() {
   const [, refreshHistory] = useState(0);
   const [showVelocity, setShowVelocity] = useState(false);
   const [showTrail, setShowTrail] = useState(true);
+  const [showAcceleration, setShowAcceleration] = useState(false);
+  const [drawing, setDrawing] = useState<
+    "circle" | "rectangle" | "floor" | null
+  >(null);
   const [showGraph, setShowGraph] = useState(false);
   const sampleLog = useRef(new SnapshotLog());
   const [fixedPivots, setFixedPivots] = useState(false);
@@ -128,6 +133,13 @@ export function App() {
     body && bodyProperties?.ok
       ? kineticEnergy(bodyProperties.value, live ?? body)
       : null;
+  const accelerationFor = useCallback(
+    (s: SimulationSnapshot, id: string) =>
+      sampleLog.current.acceleration(s, id),
+    [],
+  );
+  const liveAcceleration =
+    frame && selected ? accelerationFor(frame, selected) : undefined;
   const trail = useMemo(() => {
     if (!showTrail || !selected) return [];
     const index = samples[0]?.bodies.findIndex((b) => b.id === selected) ?? -1;
@@ -272,10 +284,11 @@ export function App() {
       )
         return;
       if (locked) return;
-      if (connection) {
+      if (connection || drawing) {
         if (e.key === "Escape") {
           e.preventDefault();
           setConnection(null);
+          setDrawing(null);
           setNotice("");
         }
         return;
@@ -296,7 +309,7 @@ export function App() {
     };
     document.addEventListener("keydown", key);
     return () => document.removeEventListener("keydown", key);
-  }, [scene, selected, locked, connection]);
+  }, [scene, selected, locked, connection, drawing]);
   function connectAt(id: string | null, point: { x: number; y: number }) {
     if (!connection || locked) return;
     const target = sceneRef.current.bodies.find((b) => b.id === id);
@@ -338,7 +351,7 @@ export function App() {
       setCollisionMode(true);
     }
   }
-  function addJoint(type: "hinge" | "rod" | "rope") {
+  function addJoint(type: JointKind) {
     if (!body || body.motionType !== "dynamic") return;
     change((s) => {
       const local = {
@@ -373,7 +386,15 @@ export function App() {
           ? { ...base, type }
           : type === "rod"
             ? { ...base, type, length: 2 }
-            : { ...base, type, maxLength: 2 },
+            : type === "rope"
+              ? { ...base, type, maxLength: 2 }
+              : {
+                  ...base,
+                  type,
+                  restLength: 2,
+                  springConstant: 10,
+                  dampingCoefficient: 0,
+                },
       );
     });
   }
@@ -487,6 +508,7 @@ export function App() {
   }
   function reset() {
     setConnection(null);
+    setDrawing(null);
     runtime.current?.dispose();
     runtime.current = null;
     sampleLog.current.clear();
@@ -496,6 +518,7 @@ export function App() {
   }
   function start(single = false) {
     setConnection(null);
+    setDrawing(null);
     if (!runtime.current) {
       const created = createExperimentalPreview(scene, {
         collisions: collisionMode,
@@ -518,8 +541,10 @@ export function App() {
   function preset(name: ScenePreset) {
     if (locked) return;
     setConnection(null);
+    setDrawing(null);
     const s = newScene(name);
     if (s.constraints.length) setCollisionMode(true);
+    if (name === "spring" || name === "damped-spring") setShowGraph(true);
     history.record(sceneRef.current, s);
     sceneRef.current = s;
     setScene(s);
@@ -604,6 +629,12 @@ export function App() {
           Velocity vectors
         </button>
         <button
+          aria-pressed={showAcceleration}
+          onClick={() => setShowAcceleration((v) => !v)}
+        >
+          Acceleration vector
+        </button>
+        <button
           aria-pressed={showTrail}
           onClick={() => setShowTrail((v) => !v)}
         >
@@ -615,7 +646,7 @@ export function App() {
         >
           Measurement graph
         </button>
-        {(["hinge", "rod", "rope"] as const).map((type) => (
+        {(["hinge", "rod", "rope", "spring"] as const).map((type) => (
           <button
             key={type}
             disabled={locked || body?.motionType !== "dynamic"}
@@ -630,8 +661,40 @@ export function App() {
         </span>
       </div>
       <div className="mechanism-toolbar" aria-label="Mechanism tools">
+        <strong>Draw on canvas</strong>
+        {(["circle", "rectangle", "floor"] as const).map((kind) => (
+          <button
+            key={kind}
+            disabled={locked}
+            aria-pressed={drawing === kind}
+            onClick={() => {
+              setDrawing(kind);
+              setConnection(null);
+              setNotice("");
+            }}
+          >
+            Draw {kind}
+          </button>
+        ))}
+        {drawing && (
+          <>
+            <span role="status">
+              {drawing === "circle"
+                ? "Drag from centre to radius."
+                : "Drag between opposite corners."}
+            </span>
+            <button
+              onClick={() => {
+                setDrawing(null);
+                setNotice("");
+              }}
+            >
+              Cancel drawing
+            </button>
+          </>
+        )}
         <strong>Connect on canvas</strong>
-        {(["hinge", "rod", "rope"] as JointKind[]).map((type) => (
+        {(["hinge", "rod", "rope", "spring"] as JointKind[]).map((type) => (
           <button
             key={type}
             disabled={locked}
@@ -784,6 +847,16 @@ export function App() {
           <SceneCanvas
             scene={scene}
             connection={connection}
+            drawing={drawing}
+            onDraw={(kind, start, end) => {
+              if (locked) return;
+              const result = drawBody(sceneRef.current, kind, start, end);
+              if (acceptScene(result) && result.ok) {
+                setSelected(result.bodyId);
+                setDrawing(null);
+              }
+            }}
+            acceleration={showAcceleration ? liveAcceleration : undefined}
             onConnect={connectAt}
             selected={selected}
             poses={poses}
@@ -868,7 +941,13 @@ export function App() {
               {(frame?.timeSeconds ?? 0).toFixed(3)} <small>s</small>
             </output>
           </div>
-          {showGraph && <MeasurementGraph body={body} samples={samples} />}
+          {showGraph && (
+            <MeasurementGraph
+              body={body}
+              samples={samples}
+              acceleration={accelerationFor}
+            />
+          )}
           <div className="preview-notice">
             <span className="experiment-icon">!</span>
             <div>
@@ -877,7 +956,7 @@ export function App() {
               </strong>
               <p>
                 {collisionMode
-                  ? "Real solver contacts and bouncing; overlap, tunnelling and numerical errors are possible. Forces, contacts and native hinges/rods/ropes are experimental; numerical accuracy is not certified."
+                  ? "Real solver contacts and bouncing; overlap, tunnelling and numerical errors are possible. Forces, contacts and hinges/rods/ropes and Hooke springs are experimental; numerical accuracy is not certified."
                   : "Free flight stops before possible contact. Collision accuracy remains unqualified."}
               </p>
               <label className="preview-model">
@@ -961,6 +1040,30 @@ export function App() {
                     </dd>
                   </div>
                 </dl>
+                <output
+                  className="acceleration-readout"
+                  aria-label="Acceleration"
+                >
+                  Acceleration:{" "}
+                  {liveAcceleration
+                    ? `${liveAcceleration.x.toFixed(3)}, ${liveAcceleration.y.toFixed(3)} m/s²`
+                    : "— (needs a completed tick)"}
+                </output>
+                {bodyProperties?.ok && (
+                  <output className="momentum-readout" aria-label="Momentum">
+                    Momentum:{" "}
+                    {(
+                      bodyProperties.value.mass *
+                      (live?.velocity.x ?? body.velocity.x)
+                    ).toFixed(3)}
+                    ,{" "}
+                    {(
+                      bodyProperties.value.mass *
+                      (live?.velocity.y ?? body.velocity.y)
+                    ).toFixed(3)}{" "}
+                    kg·m/s
+                  </output>
+                )}
                 <output className="kinetic-readout" aria-label="Kinetic energy">
                   Kinetic energy: {energy ? energy.total.toFixed(3) : "—"} J
                 </output>
@@ -1361,10 +1464,11 @@ export function App() {
                     </button>
                   </div>
                   <p className="material-hint">
-                    Native hinges and massless rod/rope constraints; not
-                    certified. Moving a body carries its world anchor.
-                    World-anchor edits move the attached body; shortening a link
-                    repositions it. Springs/pulleys are not implemented.
+                    Hinges, massless rod/rope constraints and physical Hooke
+                    springs; not certified. Moving a body carries its world
+                    anchor. World-anchor edits move the attached body;
+                    shortening a link repositions it. Springs use F = k(L−L₀) +
+                    c·dL/dt in SI each substep. Pulleys are not implemented.
                   </p>
                   {scene.constraints
                     .filter(
@@ -1448,6 +1552,45 @@ export function App() {
                               disabled={locked}
                               onCommit={(n) => jointLength(c.id, n)}
                             />
+                          )}
+                          {c.type === "spring" && (
+                            <>
+                              <NumberField
+                                label={`Joint ${i + 1} rest length`}
+                                unit="m"
+                                value={c.restLength}
+                                disabled={locked}
+                                onCommit={(v) =>
+                                  changeJoint(c.id, (j) => {
+                                    if (j.type === "spring") j.restLength = v;
+                                  })
+                                }
+                              />
+                              <NumberField
+                                label={`Joint ${i + 1} spring constant`}
+                                unit="N/m"
+                                value={c.springConstant}
+                                disabled={locked}
+                                onCommit={(v) =>
+                                  changeJoint(c.id, (j) => {
+                                    if (j.type === "spring")
+                                      j.springConstant = v;
+                                  })
+                                }
+                              />
+                              <NumberField
+                                label={`Joint ${i + 1} damping`}
+                                unit="N·s/m"
+                                value={c.dampingCoefficient}
+                                disabled={locked}
+                                onCommit={(v) =>
+                                  changeJoint(c.id, (j) => {
+                                    if (j.type === "spring")
+                                      j.dampingCoefficient = v;
+                                  })
+                                }
+                              />
+                            </>
                           )}
                           <label className="joint-contact">
                             <input

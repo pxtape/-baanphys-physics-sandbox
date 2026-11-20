@@ -45,7 +45,7 @@ export function constructInitialWorld(input: SceneDocument, observe?: Constructi
 export function constructSteppingRuntime(input: SceneDocument, permissions: RuntimePermissions = { allowTickForces: false }): PhysicsResult<InternalRuntime> {
   return constructWorld(input, undefined, { allowTickForces: permissions?.allowTickForces === true });
 }
-/** Teacher-only experimental path; certified construction still rejects joints. */
+/** Explicit experimental path; certified construction still rejects joints. */
 export function constructExperimentalMechanismRuntime(input: SceneDocument): PhysicsResult<InternalRuntime> {
   return constructWorld(input, undefined, { allowTickForces: false }, true);
 }

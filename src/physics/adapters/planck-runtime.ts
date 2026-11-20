@@ -7,6 +7,7 @@ import { physicalProperties } from '../physical-properties';
 import { PLANCK_IDENTITY, PLANCK_SETTINGS, physicsDiagnostic } from '../profile';
 import { CAPABILITY_LIMITS as L, NATIVE_ENVELOPE as N } from '../limits';
 import { validateTickInputs, tickFailure } from '../validate-tick-inputs';
+import { springLoads } from '../springs';
 import { nativeSettingsMatch } from './native-settings';
 
 interface Entry { readonly id: string; readonly native: Body }
@@ -17,6 +18,7 @@ const canonical = (a: string, b: string) => a.toLowerCase() < b.toLowerCase() ? 
 /** Adapter-private native ownership; no native object leaves the session. */
 export function createSteppingSession(world: World | undefined, scene: SceneDocument, entries: readonly Entry[], release: () => void, auditGeometry: () => boolean, permissions: RuntimePermissions): InternalRuntime {
   const allowed = permissions.allowTickForces === true;
+  const hasSprings = scene.constraints.some(c=>c.type==='spring');
   const saved: readonly Load[] = [...scene.forces].sort((a, b) => canonical(a.id, b.id));
   const targets = new Map(entries.map(e => [e.id.toLowerCase(), e.native]));
   const properties = scene.bodies.map(b => {
@@ -79,6 +81,12 @@ export function createSteppingSession(world: World | undefined, scene: SceneDocu
     }
     return true;
   };
+  const withSprings=(states:readonly BodySnapshot[],loads:readonly Load[]):readonly Load[]=>{
+    if(!hasSprings)return loads;
+    const result=springLoads(scene,states);
+    if(!result.ok)throw new Unsafe('NUMERICAL_UNSAFE',result.message);
+    return [...loads,...result.loads];
+  };
   const unavailable = (): PhysicsResult<never> | undefined => terminal ? failure('RUNTIME_TERMINAL', 'This runtime is permanently failed.') : disposed ? failure('RUNTIME_DISPOSED', 'This runtime has been disposed.') : busy ? failure('RUNTIME_BUSY', 'Reentrant access during a tick is not allowed.') : undefined;
   return Object.freeze({
     snapshot(): PhysicsResult<SimulationSnapshot> {
@@ -95,19 +103,20 @@ export function createSteppingSession(world: World | undefined, scene: SceneDocu
         if (!validated.ok) return validated;
         const transient: readonly TickInput[] = validated.value;
         settings();
-        if (!envelope(before, saved)) throw new Unsafe('NUMERICAL_UNSAFE');
+        if (!envelope(before, withSprings(before,saved))) throw new Unsafe('NUMERICAL_UNSAFE');
         const loads: readonly Load[] = [...saved, ...transient];
-        if (!envelope(before, loads)) return tickFailure('TICK_INPUT_INVALID', '', 'Persisted and transient loads together exceed current-state aggregate force/torque/motion limits.');
+        if (!envelope(before, withSprings(before,loads))) return tickFailure('TICK_INPUT_INVALID', '', 'Persisted and transient loads together exceed current-state aggregate force/torque/motion limits.');
         for (let substep = 0; substep < 4; substep++) {
           settings(); if (!auditGeometry()) throw new Unsafe('NATIVE_GEOMETRY_ALTERED');
-          const previous = readBodies(); if (!envelope(previous, loads)) throw new Unsafe('NUMERICAL_UNSAFE');
-          for (const f of loads) {
+          const previous = readBodies(), substepLoads=withSprings(previous,loads); if (!envelope(previous, substepLoads)) throw new Unsafe('NUMERICAL_UNSAFE','Spring/saved force or motion exceeded the numerical envelope. Reset and reduce extension, k/c or applied loads.');
+          for (const f of substepLoads) {
             settings(); const body = targets.get(f.bodyId.toLowerCase())!;
             body.applyForce({ ...f.vector }, body.getWorldPoint({ ...f.localPoint }), true);
             settings();
           }
           settings(); world!.step(h, 12, 12); settings();
           const current = readBodies();
+          if (hasSprings && !envelope(current, withSprings(current,loads))) throw new Unsafe('NUMERICAL_UNSAFE','Spring loads/motion left the supported envelope after a substep. Reset and reduce k/c, extension or applied force.');
           current.forEach((state, i) => {
             const old = previous[i]!;
             const translation = Math.hypot(state.position.x - old.position.x, state.position.y - old.position.y);
@@ -120,10 +129,10 @@ export function createSteppingSession(world: World | undefined, scene: SceneDocu
         committed = next; tick = next.tick;
         return Object.freeze({ ok: true as const, value: next });
       } catch (error) {
-        return stop(error instanceof Unsafe ? error.code : 'NUMERICAL_UNSAFE', 'Native/settings/numerical failure; the failed tick produced no committed frame.');
+        return stop(!nativeSettingsMatch() ? 'NATIVE_SETTINGS_MISMATCH' : error instanceof Unsafe ? error.code : 'NUMERICAL_UNSAFE', error instanceof Unsafe && error.message ? error.message : 'Native/settings/numerical failure; the failed tick produced no committed frame.');
       } finally { busy = false; }
     },
     dispose,
   });
 }
-class Unsafe extends Error { constructor(readonly code: PhysicsDiagnosticCode) { super(code); } }
+class Unsafe extends Error { constructor(readonly code: PhysicsDiagnosticCode, message='') { super(message); } }

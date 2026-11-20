@@ -21,7 +21,7 @@ interface Props {
   poses: ReadonlyMap<string, Pose>;
   locked: boolean;
   connection: {
-    readonly type: "hinge" | "rod" | "rope";
+    readonly type: "hinge" | "rod" | "rope" | "spring";
     readonly start: {
       readonly type: "body";
       readonly bodyId: string;
@@ -29,6 +29,13 @@ interface Props {
     } | null;
   } | null;
   onConnect: (id: string | null, point: Point) => void;
+  drawing: "circle" | "rectangle" | "floor" | null;
+  onDraw: (
+    kind: "circle" | "rectangle" | "floor",
+    start: Point,
+    end: Point,
+  ) => void;
+  acceleration: Point | undefined;
   showVelocity?: boolean;
   trail: readonly Point[];
   onGestureStart?: () => void;
@@ -49,6 +56,9 @@ export function SceneCanvas({
   locked,
   connection,
   onConnect,
+  drawing,
+  onDraw,
+  acceleration,
   onSelect,
   onMove,
   onPivot,
@@ -62,6 +72,16 @@ export function SceneCanvas({
   const [view, setView] = useState({ zoom: 1, x: 0, y: 0 }),
     [panMode, setPanMode] = useState(false);
   const [follow, setFollow] = useState(false);
+  const drawDrag = useRef<{
+    kind: "circle" | "rectangle" | "floor";
+    start: Point;
+    pointer: number;
+  } | null>(null);
+  const [drawPreview, setDrawPreview] = useState<{
+    kind: "circle" | "rectangle" | "floor";
+    start: Point;
+    end: Point;
+  } | null>(null);
   const [hoverPoint, setHoverPoint] = useState<Point | null>(null);
   const followed = follow && locked && selected ? poses.get(selected) : null,
     centre = followed ? toScreen(followed.position) : null,
@@ -159,8 +179,8 @@ export function SceneCanvas({
           Follow preview
         </button>
         <button
-          disabled={!!connection}
-          aria-pressed={panMode && !connection}
+          disabled={!!connection || !!drawing}
+          aria-pressed={panMode && !connection && !drawing}
           onClick={() => setPanMode((p) => !p)}
         >
           Pan view
@@ -168,7 +188,7 @@ export function SceneCanvas({
         <span>{Math.round(view.zoom * 100)}%</span>
       </div>
       <svg
-        className={`scene-canvas ${connection ? "connecting" : ""}`}
+        className={`scene-canvas ${connection || drawing ? "connecting" : ""}`}
         viewBox={`${left} ${top} ${1000 / view.zoom} ${600 / view.zoom}`}
         aria-label="Physics scene canvas"
         role="group"
@@ -177,10 +197,11 @@ export function SceneCanvas({
             drag.current ||
             pan.current ||
             forceDrag.current ||
-            pivotDrag.current
+            pivotDrag.current ||
+            drawDrag.current
           )
             return;
-          if ((panMode && !connection) || e.button === 1) {
+          if ((panMode && !connection && !drawing) || e.button === 1) {
             const inverse = e.currentTarget.getScreenCTM()?.inverse();
             if (!inverse) return;
             const point = new DOMPoint(e.clientX, e.clientY).matrixTransform(
@@ -200,6 +221,14 @@ export function SceneCanvas({
             return;
           }
           if (e.button !== 0) return;
+          if (drawing && !locked) {
+            const start = pointer(e);
+            drawDrag.current = { kind: drawing, start, pointer: e.pointerId };
+            setDrawPreview({ kind: drawing, start, end: start });
+            e.currentTarget.setPointerCapture(e.pointerId);
+            return;
+          }
+
           if (connection && !locked) {
             const node = (e.target as Element).closest("[data-body]");
             onConnect(node?.getAttribute("data-body") ?? null, pointer(e));
@@ -280,6 +309,20 @@ export function SceneCanvas({
           e.currentTarget.setPointerCapture(e.pointerId);
         }}
         onPointerMove={(e) => {
+          if (
+            drawDrag.current &&
+            drawing &&
+            !locked &&
+            drawDrag.current.pointer === e.pointerId
+          ) {
+            setDrawPreview({
+              kind: drawDrag.current.kind,
+              start: drawDrag.current.start,
+              end: pointer(e),
+            });
+            return;
+          }
+
           if (connection && !locked && !pan.current) {
             setHoverPoint(pointer(e));
             return;
@@ -342,6 +385,14 @@ export function SceneCanvas({
             );
         }}
         onPointerUp={(e) => {
+          if (drawDrag.current?.pointer === e.pointerId) {
+            const d = drawDrag.current;
+            drawDrag.current = null;
+            setDrawPreview(null);
+            if (drawing === d.kind && !locked)
+              onDraw(d.kind, d.start, pointer(e));
+          }
+
           if (pivotDrag.current?.pointer === e.pointerId) {
             pivotDrag.current = null;
             onGestureEnd?.();
@@ -359,6 +410,9 @@ export function SceneCanvas({
             e.currentTarget.releasePointerCapture(e.pointerId);
         }}
         onPointerCancel={() => {
+          drawDrag.current = null;
+          setDrawPreview(null);
+
           if (pivotDrag.current) {
             pivotDrag.current = null;
             onGestureEnd?.();
@@ -375,6 +429,18 @@ export function SceneCanvas({
         }}
       >
         <defs>
+          <marker
+            id="acceleration-head"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="5"
+            markerHeight="5"
+            orient="auto"
+          >
+            <path d="M0 0L10 5L0 10z" fill="#bb657a" />
+          </marker>
+
           <marker
             id="velocity-head"
             viewBox="0 0 10 10"
@@ -480,15 +546,29 @@ export function SceneCanvas({
               Math.hypot(aw.x - bw.x, aw.y - bw.y) < c.maxLength - 0.005;
           return (
             <g key={c.id} className="joint-indicator" pointerEvents="none">
-              <line
-                x1={a.x}
-                y1={a.y}
-                x2={b.x}
-                y2={b.y}
-                stroke={c.type === "rope" ? "#ad873d" : "#576fbd"}
-                strokeWidth="3"
-                strokeDasharray={c.type === "rope" ? "6 4" : undefined}
-              />
+              {c.type === "spring" ? (
+                <polyline
+                  fill="none"
+                  stroke="#b37367"
+                  strokeWidth="2"
+                  points={Array.from({ length: 17 }, (_, i) => {
+                    const f = i / 16,
+                      d = Math.hypot(b.x - a.x, b.y - a.y),
+                      offset = i < 2 || i > 14 ? 0 : i % 2 ? 5 : -5;
+                    return `${a.x + (b.x - a.x) * f - ((b.y - a.y) / (d || 1)) * offset},${a.y + (b.y - a.y) * f + ((b.x - a.x) / (d || 1)) * offset}`;
+                  }).join(" ")}
+                />
+              ) : (
+                <line
+                  x1={a.x}
+                  y1={a.y}
+                  x2={b.x}
+                  y2={b.y}
+                  stroke={c.type === "rope" ? "#ad873d" : "#576fbd"}
+                  strokeWidth="3"
+                  strokeDasharray={c.type === "rope" ? "6 4" : undefined}
+                />
+              )}
               <circle
                 cx={b.x}
                 cy={b.y}
@@ -510,7 +590,9 @@ export function SceneCanvas({
                     : "Taut rope"
                   : c.type === "rod"
                     ? "Rod"
-                    : "Hinge"}
+                    : c.type === "spring"
+                      ? `Spring ${c.springConstant} N/m`
+                      : "Hinge"}
               </text>
             </g>
           );
@@ -535,6 +617,7 @@ export function SceneCanvas({
                 if (
                   !locked &&
                   !connection &&
+                  !drawing &&
                   ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(
                     e.key,
                   )
@@ -647,7 +730,7 @@ export function SceneCanvas({
               >
                 {m.toFixed(1)} N
               </text>
-              {!locked && !connection && selected === b.id && (
+              {!locked && !connection && !drawing && selected === b.id && (
                 <>
                   <circle
                     className="force-handle"
@@ -712,6 +795,7 @@ export function SceneCanvas({
             })}
         {!locked &&
           !connection &&
+          !drawing &&
           scene.constraints.map((c) => {
             const world =
                 c.anchorA.type === "world"
@@ -747,6 +831,7 @@ export function SceneCanvas({
           })}
         {!locked &&
           !connection &&
+          !drawing &&
           (() => {
             const b = scene.bodies.find((q) => q.id === selected);
             if (!b) return null;
@@ -821,6 +906,61 @@ export function SceneCanvas({
                 <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} />
                 <circle cx={start.x} cy={start.y} r="5" />
                 <circle cx={end.x} cy={end.y} r="6" />
+              </g>
+            );
+          })()}
+        {drawing &&
+          drawPreview &&
+          (() => {
+            const a = toScreen(drawPreview.start),
+              b = toScreen(drawPreview.end);
+            return (
+              <g className="draw-preview" pointerEvents="none">
+                {drawing === "circle" ? (
+                  <circle
+                    cx={a.x}
+                    cy={a.y}
+                    r={Math.hypot(b.x - a.x, b.y - a.y)}
+                  />
+                ) : (
+                  <rect
+                    x={Math.min(a.x, b.x)}
+                    y={Math.min(a.y, b.y)}
+                    width={Math.abs(b.x - a.x)}
+                    height={Math.abs(b.y - a.y)}
+                  />
+                )}
+              </g>
+            );
+          })()}
+        {acceleration &&
+          selected &&
+          (() => {
+            const body = scene.bodies.find((b) => b.id === selected);
+            if (!body) return null;
+            const pose = poses.get(selected) ?? body,
+              p = toScreen(pose.position),
+              m = Math.hypot(acceleration.x, acceleration.y),
+              scale = m ? Math.min(4, 100 / m) : 4;
+            return (
+              <g className="acceleration-arrow" pointerEvents="none">
+                <line
+                  x1={p.x}
+                  y1={p.y}
+                  x2={p.x + acceleration.x * scale}
+                  y2={p.y - acceleration.y * scale}
+                  stroke="#bb657a"
+                  strokeWidth="2"
+                  markerEnd="url(#acceleration-head)"
+                />
+                <text
+                  x={p.x + acceleration.x * scale + 6}
+                  y={p.y - acceleration.y * scale - 5}
+                  fontSize="11"
+                  fill="#a65469"
+                >
+                  {m.toFixed(2)} m/s² (Δv/Δt)
+                </text>
               </g>
             );
           })()}
