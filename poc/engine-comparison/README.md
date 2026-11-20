@@ -8,15 +8,16 @@ From this directory:
 npm ci --ignore-scripts
 npm run benchmark
 npm run stress
-npm test
 ```
 
-Run `python tests/check_m0.py` from the repository root for the existing M0 schema checks (requires Python jsonschema 4.x). Benchmark commands measure candidates and deliberately return results containing FAIL/UNSUPPORTED; **a successful command exit is not a physics pass**. `npm test` verifies the reference, conversions, replay, provenance and the selected Planck basic gates; it does not declare rolling or Matter qualified.
+The automated verification suite was removed for the MVP1 restart. Recorded
+benchmark data and manual experiment sources are retained as historical evidence.
+Benchmark commands may report FAIL/UNSUPPORTED; command success does not qualify
+physics or enable public execution.
 
 - `adapters.mjs`: native-engine boundary, SI conversions, mass/inertia and explicit contact settings.
 - `benchmark.mjs`: fixtures, independent analytical/RK4 references, frozen tolerances, timestep sweep, replay, CPU-only load probe, trajectory writer.
 - `stress.mjs`: low-speed elasticity and high-speed/thin-floor probes, with raw states in stress.json.
-- `verification.test.mjs`: executable independent checks and source/trajectory SHA-256 assertions.
 - `results/results.json`: all benchmark metrics, error definitions, tolerances, statuses, exact settings and machine identity.
 - `results/*.csv`: sampled raw states for each executed comparison (logical ticks, all bodies).
 - `results/stress.json`: additional boundary probes.

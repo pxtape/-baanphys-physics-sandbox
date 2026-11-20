@@ -25,34 +25,16 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            poc/engine-comparison/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install application dependencies
         run: npm ci
       - name: Typecheck
         run: npm run typecheck
       - name: Lint and architecture boundaries
         run: npm run lint
-      - name: Application tests
-        run: npm test
-      - name: Set up Python for existing schema checks
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
-        with:
-          python-version: '3.12'
-      - name: Install schema-check dependency
-        run: python -m pip install 'jsonschema==4.26.0'
-      - name: Existing M0 schema tests
-        run: npm run test:m0
-      - name: Install isolated PoC dependencies
-        run: npm --prefix poc/engine-comparison ci --ignore-scripts
-      - name: Existing physics evidence and replay verification
-        run: npm run test:poc
       - name: Production build
         run: npm run build
-      - name: Verify project path, built assets and refresh
-        run: npm run test:pages
-      - name: Upload verified Pages artifact
+      - name: Upload built Pages artifact
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:

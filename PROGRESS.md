@@ -1,8 +1,21 @@
 # Progress
 
-Updated: 2026-11-19.
+Updated: 2026-11-20.
 
-## Current state
+## MVP1 restart — current direction
+
+User explicitly chose: delete tests and continue with the existing application.
+Removed 21 automated test/verification files, test commands and CI test stages;
+uninstalled Vitest/Playwright test-only dependencies. CI retains Node 24/npm ci,
+typecheck, lint and production build. Runtime validation, native settings, Scene v1,
+experimental labels and public execution lockout are unchanged. Historical
+benchmark sources/results and earlier evidence are retained in files/Git history.
+MVP1 now focuses on practical create/edit/play teacher workflows.
+Typecheck/generated consistency, lint and build passed. Browser review confirmed
+adding a third body, mass=2 editing, Step=0.008 s, Play/Pause, Reset=0.000 s and
+retained authored mass, with no browser errors. No automated tests were run.
+
+## Historical state
 
 **M1-02 ACCEPTED AND MERGED.** PR #1 merged as 00fe21a5df232d9bde879323baebdc9be00edf89 after exact-head review of dfdaa65f45c20a877bb49d4ed5f2a5396866727c. Main CI/Pages passed. M1-03A is ACCEPTED and merged (PR #2, 15a8f48); B capability policy is ACCEPTED and merged (PR #3, 1250efd); C is ACCEPTED and merged (PR #4, 68d856e); D is ACCEPTED and merged (PR #5, e3fa893); E is authorized for implementation on a separate feature branch. Historical records below describe their original checkpoints.
 
