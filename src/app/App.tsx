@@ -1,9 +1,15 @@
+import { NumberField } from "./NumberField";
+import { JointInspector } from "./JointInspector";
 import { MeasurementGraph } from "./MeasurementGraph";
 import { SnapshotLog, kineticEnergy } from "../measurements/samples";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { physicalProperties } from "../physics/physical-properties";
 import { anchorPosition, localPoint } from "../domain/anchors";
-import { connectAnchors, targetSide } from "../editor/mechanisms";
+import {
+  connectAnchors,
+  moveJointAnchor,
+  moveJoint,
+} from "../editor/mechanisms";
 import type { ConnectionTool, JointKind } from "../editor/mechanisms";
 import { SceneHistory } from "../editor/history";
 import type { SceneV1 } from "../domain/scene-v1.generated";
@@ -18,7 +24,6 @@ import {
   positionBody,
   setBodyMotion,
   setMassMode,
-  moveWorldPivot,
   translateMechanism,
   SCENE_PRESETS,
   drawBody,
@@ -26,63 +31,22 @@ import {
 import type { ObjectKind, ScenePreset } from "../editor/scene-commands";
 import { SceneCanvas } from "../renderer/SceneCanvas";
 
-function NumberField({
-  label,
-  value,
-  unit,
-  onCommit,
-  disabled = false,
-  step = 0.1,
-}: {
-  label: string;
-  value: number;
-  unit: string;
-  onCommit: (n: number) => boolean;
-  disabled?: boolean;
-  step?: number;
-}) {
-  const [draft, setDraft] = useState(String(value));
-  const cancelBlur = useRef(false);
-  useEffect(() => setDraft(String(Number(value.toFixed(5)))), [value]);
-  return (
-    <label className="number-field">
-      <span>
-        {label} <small>{unit}</small>
-      </span>
-      <input
-        type="number"
-        aria-label={label}
-        step={step}
-        disabled={disabled}
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") e.currentTarget.blur();
-          if (e.key === "Escape") {
-            e.preventDefault();
-            cancelBlur.current = true;
-            setDraft(String(value));
-            e.currentTarget.blur();
-          }
-        }}
-        onBlur={() => {
-          if (cancelBlur.current) {
-            cancelBlur.current = false;
-            setDraft(String(value));
-            return;
-          }
-          const n = draft.trim() ? Number(draft) : NaN;
-          if (!Number.isFinite(n) || !onCommit(n)) setDraft(String(value));
-        }}
-      />
-    </label>
-  );
-}
 export function App() {
   const [scene, setScene] = useState(() => newScene()),
     [selected, setSelected] = useState<string | null>(
       () => scene.bodies[0]!.id,
     );
+  const [selectedJoint, setSelectedJoint] = useState<string | null>(null);
+  function selectBody(id: string | null) {
+    setSelectedJoint(null);
+    setSelected(id);
+  }
+  function selectJoint(id: string) {
+    setSelected(null);
+    setSelectedJoint(id);
+    setConnection(null);
+    setDrawing(null);
+  }
   const [history] = useState(() => new SceneHistory());
   const [, refreshHistory] = useState(0);
   const [showVelocity, setShowVelocity] = useState(false);
@@ -109,7 +73,7 @@ export function App() {
     locked = frame !== null;
   useEffect(() => {
     inspectorRef.current?.scrollTo({ top: 0 });
-  }, [selected, locked]);
+  }, [selected, selectedJoint, locked]);
   useEffect(() => {
     if (
       locked ||
@@ -118,6 +82,11 @@ export function App() {
     )
       setConnection(null);
   }, [locked, scene, connection]);
+  useEffect(() => {
+    if (selectedJoint && !scene.constraints.some((c) => c.id === selectedJoint))
+      setSelectedJoint(null);
+  }, [selectedJoint, scene]);
+  const joint = scene.constraints.find((c) => c.id === selectedJoint);
   const body = scene.bodies.find((b) => b.id === selected),
     live = frame?.bodies.find((b) => b.id === selected);
   const poses = useMemo(
@@ -239,6 +208,19 @@ export function App() {
     );
     sceneRef.current = next;
     setScene(next);
+    const restoredJoint = next.constraints.find(
+      (c) => !current.constraints.some((p) => p.id === c.id),
+    );
+    if (
+      restoredJoint ||
+      (selectedJoint && next.constraints.some((c) => c.id === selectedJoint))
+    ) {
+      setSelectedJoint(restoredJoint?.id ?? selectedJoint);
+      setSelected(null);
+      setNotice("");
+      return;
+    }
+    setSelectedJoint(null);
     setSelected(
       (id) =>
         added?.id ??
@@ -258,9 +240,18 @@ export function App() {
     history.record(sceneRef.current, result.scene);
     sceneRef.current = result.scene;
     setScene(result.scene);
-    setSelected(result.bodyId);
+    selectBody(result.bodyId);
   }
   function deleteSelected() {
+    if (selectedJoint) {
+      if (
+        change((s) => {
+          s.constraints = s.constraints.filter((c) => c.id !== selectedJoint);
+        })
+      )
+        setSelectedJoint(null);
+      return;
+    }
     if (!selected) return;
     if (
       change((s) => {
@@ -309,7 +300,7 @@ export function App() {
     };
     document.addEventListener("keydown", key);
     return () => document.removeEventListener("keydown", key);
-  }, [scene, selected, locked, connection, drawing]);
+  }, [scene, selected, selectedJoint, locked, connection, drawing]);
   function connectAt(id: string | null, point: { x: number; y: number }) {
     if (!connection || locked) return;
     const target = sceneRef.current.bodies.find((b) => b.id === id);
@@ -318,7 +309,7 @@ export function App() {
         setNotice("Choose a movable body first.");
         return;
       }
-      setSelected(target.id);
+      selectBody(target.id);
       setConnection({
         type: connection.type,
         start: {
@@ -337,23 +328,22 @@ export function App() {
           localPoint: localPoint(target, point),
         }
       : { type: "world" as const, point };
-    if (
-      acceptScene(
-        connectAnchors(
-          sceneRef.current,
-          connection.type,
-          connection.start,
-          endpoint,
-        ),
-      )
-    ) {
+    const result = connectAnchors(
+      sceneRef.current,
+      connection.type,
+      connection.start,
+      endpoint,
+    );
+    if (acceptScene(result) && result.ok) {
       setConnection(null);
       setCollisionMode(true);
+      selectJoint(result.scene.constraints.at(-1)!.id);
     }
   }
   function addJoint(type: JointKind) {
     if (!body || body.motionType !== "dynamic") return;
-    change((s) => {
+    let createdId = "";
+    const added = change((s) => {
       const local = {
         x: 0,
         y:
@@ -373,7 +363,7 @@ export function App() {
         p = anchorPosition(s, anchorA);
       const base = {
         id: objectId(),
-        name: type === "hinge" ? "Hinge" : type === "rod" ? "Rod" : "Rope",
+        name: type[0]!.toUpperCase() + type.slice(1),
         anchorA,
         anchorB: {
           type: "world" as const,
@@ -381,6 +371,7 @@ export function App() {
         },
         collideConnected: false,
       };
+      createdId = base.id;
       s.constraints.push(
         type === "hinge"
           ? { ...base, type }
@@ -397,72 +388,7 @@ export function App() {
                 },
       );
     });
-  }
-  function changeJoint(
-    id: string,
-    edit: (c: SceneV1["constraints"][number], s: SceneV1) => void,
-  ) {
-    return change((s) => {
-      const c = s.constraints.find((c) => c.id === id);
-      if (c) edit(c, s);
-    });
-  }
-  function jointLength(id: string, length: number) {
-    if (!Number.isFinite(length) || length < 0.05 || length > 50) {
-      setNotice("Experimental link length must be 0.05–50 m.");
-      return false;
-    }
-    return changeJoint(id, (c, s) => {
-      if (c.type !== "rod" && c.type !== "rope") return;
-      const side = targetSide(c, body!.id),
-        own = side === "anchorA" ? "anchorB" : "anchorA",
-        owner = c[own];
-      const a = anchorPosition(s, owner),
-        b = anchorPosition(s, c[side]),
-        d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (
-        owner.type === "body" &&
-        (c.type === "rod" || length < d) &&
-        d > 1e-12
-      ) {
-        const target = owner.bodyId,
-          body = s.bodies.find((b) => b.id === target)!;
-        body.position.x += (a.x - b.x) * (length / d - 1);
-        body.position.y += (a.y - b.y) * (length / d - 1);
-      }
-      if (c.type === "rod") c.length = length;
-      else c.maxLength = length;
-    });
-  }
-  function jointWorldPoint(id: string, axis: "x" | "y", value: number) {
-    if (locked || !body) return false;
-    const c = sceneRef.current.constraints.find((c) => c.id === id)!;
-    const anchor = c[targetSide(c, body.id)];
-    if (anchor.type !== "world") return false;
-    return acceptScene(
-      moveWorldPivot(sceneRef.current, id, { ...anchor.point, [axis]: value }),
-    );
-  }
-  function connectJoint(id: string, target: string) {
-    if (!body) return;
-    changeJoint(id, (c, s) => {
-      const side = targetSide(c, body.id),
-        own = side === "anchorA" ? "anchorB" : "anchorA";
-      const p = anchorPosition(s, c[own]),
-        old = anchorPosition(s, c[side]),
-        b = s.bodies.find((b) => b.id === target);
-      c[side] = b
-        ? {
-            type: "body",
-            bodyId: b.id,
-            localPoint: c.type === "hinge" ? localPoint(b, p) : { x: 0, y: 0 },
-          }
-        : { type: "world", point: c.type === "hinge" ? p : old };
-      const q = anchorPosition(s, c[side]),
-        length = Math.hypot(p.x - q.x, p.y - q.y);
-      if (c.type === "rod") c.length = length;
-      if (c.type === "rope") c.maxLength = length;
-    });
+    if (added && createdId) selectJoint(createdId);
   }
   function addForce(couple = false) {
     if (!body || body.motionType !== "dynamic") return;
@@ -504,7 +430,7 @@ export function App() {
       added.position.y -= scene.bodies.filter(
         (b) => b.motionType === "static",
       ).length;
-    if (change((s) => s.bodies.push(added))) setSelected(added.id);
+    if (change((s) => s.bodies.push(added))) selectBody(added.id);
   }
   function reset() {
     setConnection(null);
@@ -548,7 +474,7 @@ export function App() {
     history.record(sceneRef.current, s);
     sceneRef.current = s;
     setScene(s);
-    setSelected(s.bodies[0]!.id);
+    selectBody(s.bodies[0]!.id);
     setNotice("");
   }
   return (
@@ -742,7 +668,9 @@ export function App() {
         <aside className="tools-panel">
           <div className="panel-heading">
             <h2>Objects</h2>
-            <span className="count">{scene.bodies.length}</span>
+            <span className="count">
+              {scene.bodies.length + scene.constraints.length}
+            </span>
           </div>
           <p className="muted">Add an object, then place it in the scene.</p>
           <div className="add-tools">
@@ -768,13 +696,30 @@ export function App() {
             </button>
           </div>
           <div className="scene-list" aria-label="Scene objects">
+            {scene.constraints.map((c) => (
+              <button
+                key={c.id}
+                className={`object-row constraint-row ${selectedJoint === c.id ? "active" : ""}`}
+                aria-label={`Select joint ${c.name}`}
+                aria-pressed={selectedJoint === c.id}
+                onClick={() => selectJoint(c.id)}
+              >
+                <span className="object-glyph">
+                  {c.type === "hinge" ? "⊙" : c.type === "spring" ? "∿" : "⟷"}
+                </span>
+                <span>
+                  {c.name}
+                  <small>{c.type} · connector</small>
+                </span>
+              </button>
+            ))}
             {scene.bodies.map((b) => (
               <button
                 key={b.id}
                 className={
                   selected === b.id ? "object-row active" : "object-row"
                 }
-                onClick={() => setSelected(b.id)}
+                onClick={() => selectBody(b.id)}
                 aria-pressed={selected === b.id}
               >
                 <span>
@@ -852,7 +797,7 @@ export function App() {
               if (locked) return;
               const result = drawBody(sceneRef.current, kind, start, end);
               if (acceptScene(result) && result.ok) {
-                setSelected(result.bodyId);
+                selectBody(result.bodyId);
                 setDrawing(null);
               }
             }}
@@ -868,11 +813,19 @@ export function App() {
               history.end(sceneRef.current);
               refreshHistory((n) => n + 1);
             }}
-            onSelect={setSelected}
-            onPivot={(id, point) => {
+            onSelect={selectBody}
+            selectedJoint={selectedJoint}
+            onSelectJoint={selectJoint}
+            onMoveAnchor={(id, side, point, target) => {
               if (!locked)
-                acceptScene(moveWorldPivot(sceneRef.current, id, point));
+                acceptScene(
+                  moveJointAnchor(sceneRef.current, id, side, point, target),
+                );
             }}
+            onMoveJoint={(id, a, b) => {
+              if (!locked) acceptScene(moveJoint(sceneRef.current, id, a, b));
+            }}
+            onDeleteJoint={deleteSelected}
             onForce={(id, value) =>
               updateForce(id, (f) => {
                 if ("vector" in value) f.vector = { ...value.vector };
@@ -995,7 +948,33 @@ export function App() {
             <h2>Inspector</h2>
             <span className="inspector-tag">SI UNITS</span>
           </div>
-          {body ? (
+          {joint ? (
+            <JointInspector
+              scene={scene}
+              joint={joint}
+              poses={poses}
+              locked={locked}
+              onChange={(edit) =>
+                change((s) => {
+                  const c = s.constraints.find((c) => c.id === joint.id)!;
+                  edit(c);
+                })
+              }
+              onAnchor={(side, point, target) =>
+                !locked &&
+                acceptScene(
+                  moveJointAnchor(
+                    sceneRef.current,
+                    joint.id,
+                    side,
+                    point,
+                    target,
+                  ),
+                )
+              }
+              onDelete={deleteSelected}
+            />
+          ) : body ? (
             <>
               <section className="live-readout">
                 <h3>{live ? "Live measurements" : "Initial measurements"}</h3>
@@ -1432,196 +1411,6 @@ export function App() {
                         </button>
                       </div>
                     ))}
-                </section>
-              )}
-              {(body.motionType === "dynamic" ||
-                scene.constraints.some(
-                  (c) =>
-                    (c.anchorA.type === "body" &&
-                      c.anchorA.bodyId === body.id) ||
-                    (c.anchorB.type === "body" && c.anchorB.bodyId === body.id),
-                )) && (
-                <section className="joint-controls">
-                  <h3>Experimental mechanisms</h3>
-                  <div className="force-buttons">
-                    <button
-                      disabled={locked || body.motionType !== "dynamic"}
-                      onClick={() => addJoint("hinge")}
-                    >
-                      Add hinge
-                    </button>
-                    <button
-                      disabled={locked || body.motionType !== "dynamic"}
-                      onClick={() => addJoint("rod")}
-                    >
-                      Add rod
-                    </button>
-                    <button
-                      disabled={locked || body.motionType !== "dynamic"}
-                      onClick={() => addJoint("rope")}
-                    >
-                      Add rope
-                    </button>
-                  </div>
-                  <p className="material-hint">
-                    Hinges, massless rod/rope constraints and physical Hooke
-                    springs; not certified. Moving a body carries its world
-                    anchor. World-anchor edits move the attached body;
-                    shortening a link repositions it. Springs use F = k(L−L₀) +
-                    c·dL/dt in SI each substep. Pulleys are not implemented.
-                  </p>
-                  {scene.constraints
-                    .filter(
-                      (c) =>
-                        (c.anchorA.type === "body" &&
-                          c.anchorA.bodyId === body.id) ||
-                        (c.anchorB.type === "body" &&
-                          c.anchorB.bodyId === body.id),
-                    )
-                    .map((c, i) => {
-                      const endpoint = c[targetSide(c, body.id)];
-                      return (
-                        <div className="force-card" key={c.id}>
-                          <strong>{c.name}</strong>
-                          <label className="joint-target">
-                            Connect to
-                            <select
-                              aria-label={`Joint ${i + 1} target`}
-                              disabled={locked}
-                              value={
-                                endpoint.type === "world"
-                                  ? "world"
-                                  : endpoint.bodyId
-                              }
-                              onChange={(e) =>
-                                connectJoint(c.id, e.target.value)
-                              }
-                            >
-                              <option
-                                value="world"
-                                disabled={body.motionType !== "dynamic"}
-                              >
-                                World anchor
-                              </option>
-                              {scene.bodies
-                                .filter(
-                                  (b) =>
-                                    b.id !== body.id &&
-                                    (body.motionType === "dynamic" ||
-                                      b.motionType === "dynamic"),
-                                )
-                                .map((b) => (
-                                  <option key={b.id} value={b.id}>
-                                    {b.name}
-                                  </option>
-                                ))}
-                            </select>
-                          </label>
-                          {endpoint.type === "world" && (
-                            <div className="field-pair">
-                              <NumberField
-                                label={`Joint ${i + 1} anchor x`}
-                                unit="m"
-                                value={endpoint.point.x}
-                                disabled={locked}
-                                onCommit={(x) => jointWorldPoint(c.id, "x", x)}
-                              />
-                              <NumberField
-                                label={`Joint ${i + 1} anchor y`}
-                                unit="m"
-                                value={endpoint.point.y}
-                                disabled={locked}
-                                onCommit={(y) => jointWorldPoint(c.id, "y", y)}
-                              />
-                            </div>
-                          )}
-                          {c.type === "rod" && (
-                            <NumberField
-                              label={`Joint ${i + 1} length`}
-                              unit="m"
-                              value={c.length}
-                              disabled={locked}
-                              onCommit={(n) => jointLength(c.id, n)}
-                            />
-                          )}
-                          {c.type === "rope" && (
-                            <NumberField
-                              label={`Joint ${i + 1} max length`}
-                              unit="m"
-                              value={c.maxLength}
-                              disabled={locked}
-                              onCommit={(n) => jointLength(c.id, n)}
-                            />
-                          )}
-                          {c.type === "spring" && (
-                            <>
-                              <NumberField
-                                label={`Joint ${i + 1} rest length`}
-                                unit="m"
-                                value={c.restLength}
-                                disabled={locked}
-                                onCommit={(v) =>
-                                  changeJoint(c.id, (j) => {
-                                    if (j.type === "spring") j.restLength = v;
-                                  })
-                                }
-                              />
-                              <NumberField
-                                label={`Joint ${i + 1} spring constant`}
-                                unit="N/m"
-                                value={c.springConstant}
-                                disabled={locked}
-                                onCommit={(v) =>
-                                  changeJoint(c.id, (j) => {
-                                    if (j.type === "spring")
-                                      j.springConstant = v;
-                                  })
-                                }
-                              />
-                              <NumberField
-                                label={`Joint ${i + 1} damping`}
-                                unit="N·s/m"
-                                value={c.dampingCoefficient}
-                                disabled={locked}
-                                onCommit={(v) =>
-                                  changeJoint(c.id, (j) => {
-                                    if (j.type === "spring")
-                                      j.dampingCoefficient = v;
-                                  })
-                                }
-                              />
-                            </>
-                          )}
-                          <label className="joint-contact">
-                            <input
-                              type="checkbox"
-                              aria-label={`Joint ${i + 1} collide connected`}
-                              checked={c.collideConnected}
-                              disabled={locked}
-                              onChange={(e) => {
-                                const value = e.target.checked;
-                                changeJoint(c.id, (j) => {
-                                  j.collideConnected = value;
-                                });
-                              }}
-                            />{" "}
-                            Allow contact between linked bodies
-                          </label>
-                          <button
-                            disabled={locked}
-                            onClick={() =>
-                              change((s) => {
-                                s.constraints = s.constraints.filter(
-                                  (q) => q.id !== c.id,
-                                );
-                              })
-                            }
-                          >
-                            Remove joint {i + 1}
-                          </button>
-                        </div>
-                      );
-                    })}
                 </section>
               )}
               <h3>Contact material</h3>

@@ -82,3 +82,92 @@ export function targetSide(
     ? "anchorB"
     : "anchorA";
 }
+
+export type AnchorSide = "anchorA" | "anchorB";
+/** Reposition attachment geometry only; preserve joint/body UUIDs and body poses. */
+export function moveJointAnchor(
+  scene: SceneDocument,
+  id: string,
+  side: AnchorSide,
+  point: { x: number; y: number },
+  attachTo?: string | null,
+) {
+  const source = scene.constraints.find((c) => c.id === id);
+  if (!source)
+    return { ok: false as const, message: "Select an existing joint." };
+  return editScene(
+    scene,
+    (s) => {
+      const c = s.constraints.find((c) => c.id === id)!,
+        other: AnchorSide = side === "anchorA" ? "anchorB" : "anchorA";
+      let reference = c[side];
+      // Dropping on a body reconnects. Empty space retains the current attachment.
+      if (attachTo) {
+        const target = s.bodies.find((b) => b.id === attachTo);
+        if (
+          target &&
+          !(c[other].type === "body" && c[other].bodyId === target.id)
+        )
+          reference = {
+            type: "body",
+            bodyId: target.id,
+            localPoint: { x: 0, y: 0 },
+          };
+      } else if (attachTo === null) reference = { type: "world", point };
+      const at = (a: typeof reference) =>
+        a.type === "world"
+          ? { type: "world" as const, point: { ...point } }
+          : {
+              type: "body" as const,
+              bodyId: a.bodyId,
+              localPoint: localPoint(
+                s.bodies.find((b) => key(b.id) === key(a.bodyId))!,
+                point,
+              ),
+            };
+      c[side] = at(reference);
+      if (c.type === "hinge") c[other] = at(c[other]);
+      const a = anchorPosition(s, c.anchorA),
+        b = anchorPosition(s, c.anchorB),
+        distance = Math.hypot(a.x - b.x, a.y - b.y);
+      if (c.type === "rod") c.length = distance;
+      if (c.type === "rope") c.maxLength = distance;
+    },
+    false,
+  );
+}
+export function moveJoint(
+  scene: SceneDocument,
+  id: string,
+  a: { x: number; y: number },
+  b: { x: number; y: number },
+) {
+  if (!scene.constraints.some((c) => c.id === id))
+    return { ok: false as const, message: "Select an existing joint." };
+  return editScene(
+    scene,
+    (s) => {
+      const c = s.constraints.find((c) => c.id === id)!;
+      for (const [side, p] of [
+        ["anchorA", a],
+        ["anchorB", b],
+      ] as const) {
+        const anchor = c[side];
+        c[side] =
+          anchor.type === "world"
+            ? { type: "world", point: { ...p } }
+            : {
+                type: "body",
+                bodyId: anchor.bodyId,
+                localPoint: localPoint(
+                  s.bodies.find((body) => key(body.id) === key(anchor.bodyId))!,
+                  p,
+                ),
+              };
+      }
+      if (c.type === "rod") c.length = Math.hypot(a.x - b.x, a.y - b.y);
+      // Whole-joint translation preserves rope slack and spring rest length.
+    },
+    false,
+  );
+}

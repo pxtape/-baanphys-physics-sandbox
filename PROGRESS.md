@@ -2,6 +2,20 @@
 
 Updated: 2026-11-20.
 
+## Canvas-first connector editing
+
+Hinge/rod/rope/spring are independently selectable above bodies and at the top of
+the object list. Drag pivots/endpoints/middle directly; mounting edits preserve
+body poses and UUIDs. End drops reconnect to another body, empty drops retain the
+attachment. Rod/rope endpoint movement sets length; spring rest length remains
+explicit. One gesture = one Undo; Delete removes only the connector. Optional
+precise fields are collapsed. Preview allows selection but requires Reset to edit.
+Existing Scene v1 validation, physics settings and experimental labels unchanged.
+Typecheck/generated consistency, lint and build passed. Chromium production review
+covered all four types, body-pose/ID preservation, Undo/Redo, delete/restore, native
+Step, reconnection, middle movement, keyboard nudge and zoomed touch dragging.
+Tablet viewport reviewed; actual iPad/Safari remains untested. No suites added.
+
 ## MVP1–3 reference gap fill
 
 Revisited the supplied product page and official Web documentation. Added direct
