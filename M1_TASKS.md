@@ -1,5 +1,10 @@
 # M1 implementation backlog and acceptance
 
+Active direction (2026-11-20): restart MVP1 using the existing application. The
+user removed old automated suites; their historical acceptance entries below are
+not current CI gates. Follow ROADMAP.md: core teacher create/edit/play first,
+with typecheck/lint/build and practical browser review.
+
 Current priority: visible experimental collision sandbox; feature PR pending.
 M1-03E remains BLOCKED; public/certified initialization remains disabled.
 

@@ -63,42 +63,26 @@ with fresh IDs (not joints). Ctrl/⌘ Z, Ctrl/⌘ D and Delete work outside fiel
 Fixed-pivot drag sets hinge/rod poses around anchors and permits slack rope starts.
 Zoom/Pan/Home and velocity vectors affect only the view; arrow lengths are display-scaled.
 
-`npm run test:collisions` checks visible rebound, body collisions, sliding and
-material/rotation controls against the dev server.
-`npm run test:editor` runs Chromium integration checks against the running dev
-server (override `EDITOR_TEST_URL` / `BAANPHYS_CHROMIUM_PATH` if needed). Install
-Playwright Chromium with `npx playwright install chromium` and point the latter
-variable to that executable if `/usr/bin/chromium` is absent. Screenshots are in
-[docs/preview](docs/preview). Tablet touch emulation is not real Safari/iPad testing.
+## MVP1 restart — lightweight checks
 
-## Check and build
+The previous automated test suites and test-only dependencies were removed at
+user request. Keep the working application and develop the core sandbox from
+this baseline. CI runs Node 24/npm ci, typecheck, lint and production build only.
 
 ```sh
 npm run typecheck
 npm run lint
-npm test
 npm run build
 npm run preview
 ```
 
-The production preview is **http://localhost:4173/-baanphys-physics-sandbox/**. `build` typechecks before
-Vite emits `dist/`. `npm run test:watch` runs Vitest in watch mode. The root test
-suite is intentionally distinct from the archived PoC; it checks application
-architecture boundaries, including type-only/dynamic imports.
-
-Existing regression checks remain available without changing their thresholds:
-
-```sh
-python -m pip install 'jsonschema>=4,<5'  # only if absent in your Python environment
-npm run test:m0
-npm --prefix poc/engine-comparison ci --ignore-scripts
-npm run test:poc
-```
-
-The PoC has its own exact dependencies and lockfile. `test:poc` verifies its
-recorded evidence; it does not regenerate trajectories or turn failed physics
-cases into passes. See [BENCHMARKS.md](BENCHMARKS.md) for those failures and
-[the PoC README](poc/engine-comparison/README.md) for numerical rerun commands.
+Production preview: **http://localhost:4173/-baanphys-physics-sandbox/**.
+For teacher physics, run `npm run dev`, opt in, add bodies/floor and try
+Play/Pause/Reset/Step, property edits, collisions and forces. Review new behavior
+in the browser; do not recreate the old test matrix unless requested.
+Historical benchmark data and limitations remain available. Removing tests does
+not qualify physics: teacher execution stays experimental and public playback off.
+Screenshots: [docs/preview](docs/preview).
 
 ## Manual review of this task
 
@@ -135,17 +119,15 @@ See [M1_TASKS.md](M1_TASKS.md), [PROGRESS.md](PROGRESS.md) and
 ## GitHub Pages deployment (M1-01.5)
 
 `.github/workflows/deploy.yml` checks every push and PR with Node **24**, `npm ci`,
-typecheck, lint, application tests, existing M0/physics verification, build and
-`npm run test:pages`. Only successful **main** runs deploy the verified `dist/`
+typecheck, lint and build. Only successful **main** runs deploy the built `dist/`
 artifact; feature branches and PRs run checks only. No custom deployment secret
 is needed: deployment uses GitHub's Pages/OIDC permissions. Use development
 branches and PRs for subsequent work.
 
 Vite's base is `/-baanphys-physics-sandbox/` in local and deployed previews. The
-local URLs above include that path. After building, `npm run test:pages` checks
-that the project index, JavaScript, CSS and index refresh work (temporary local
-port 4175). Future history-based player routes need a separate Pages routing
-decision; this task does not add a router.
+local URLs above include that path. After deployment, open the public page and
+refresh it to check the UI and assets. Future player routes need a separate
+Pages routing decision; this task does not add a router.
 
 **Live preview:** https://pxtape.github.io/-baanphys-physics-sandbox/
 

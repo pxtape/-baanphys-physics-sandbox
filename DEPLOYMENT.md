@@ -57,40 +57,19 @@ HTTPS link does not require local development services or sign-in and can be
 opened from an iPad; **physical iPad/Safari testing has not been performed**.
 This remains a foundation preview, with no scene editing or simulation controls.
 
-## Local and future deployment commands
+## Current MVP1 deployment commands
 
-Use Node 24+ in this checkout:
+Node 24+, with the old automated suites removed by user request:
 
 ```sh
 npm ci
 npm run typecheck
 npm run lint
-npm test
-npm run test:m0
-npm --prefix poc/engine-comparison ci --ignore-scripts
-npm run test:poc
 npm run build
-npm run test:pages
 npm run preview
 ```
 
-The preview is http://localhost:4173/-baanphys-physics-sandbox/. Vite's base is
-`/-baanphys-physics-sandbox/` in development and production. The smoke check
-starts a temporary production preview on loopback port 4175 and checks the index
-twice plus JavaScript/CSS paths, status and MIME types.
-
-For later work use a feature branch, run checks and open a PR into main. Prefer
-requiring **Checks and build** in branch rules where available. Only merging or
-pushing main publishes; never force-push. The workflow can also be dispatched
-manually on main. To inspect a run:
-
-```sh
-gh run list --repo pxtape/-baanphys-physics-sandbox --workflow deploy.yml
-gh run watch RUN_ID --repo pxtape/-baanphys-physics-sandbox --exit-status
-gh api repos/pxtape/-baanphys-physics-sandbox/pages --jq .html_url
-```
-
-Pages does not provide arbitrary SPA history fallbacks. Refresh verification
-currently covers the project index; future `/player/...` routes need an explicit
-routing solution before that feature is published. No router, domain/scene model,
-production physics adapter or timestep change was introduced by this task.
+Preview: http://localhost:4173/-baanphys-physics-sandbox/.
+Green main builds deploy through GitHub Pages. Open/refresh the live page and
+check asset loading after deployment. Public experimental execution stays off.
+Earlier deployment records above are historical evidence, not current test gates.

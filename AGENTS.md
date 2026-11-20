@@ -1,6 +1,6 @@
 # Project-wide development rules
 
-These rules apply to all project files beneath this directory. Follow explicit user instructions when they differ. Current stage is M0 documentation only: do not implement the application or begin M1 until instructed.
+These rules apply to all project files beneath this directory. Follow explicit user instructions when they differ. Current stage is MVP1 restarted from the existing working app. The user explicitly requested removal of the old automated test suites. Prioritize visible core sandbox behavior; do not rebuild the app from scratch.
 
 ## Sources of truth
 
@@ -27,7 +27,7 @@ Read SPEC.md, ARCHITECTURE.md, ROADMAP.md, TEST_PLAN.md and SCENE_FORMAT.md befo
 ## Change and verification discipline
 
 - Inspect existing files/instructions and preserve unrelated user changes. Prefer small reviewable modules and pure functions over speculative frameworks. Do not deploy or publish without authorization.
-- Add meaningful tests for numerical behavior, reference integrity, migrations, transactional saving and isolation. Test behavior independently of implementation; never widen tolerance to make a regression pass silently.
-- Use TEST_PLAN.md case definitions, fixed settings and horizons; report raw errors and environment. Test unsupported models as blocked capabilities, not passing skipped physics.
-- Once tooling exists, run the relevant tests, typecheck and build. Run browser tests for UI/embed changes. Report what ran, failures and untested limitations; do not invent commands or results.
+- Do not recreate automated suites or broad test matrices unless requested. Keep runtime scene validation and experimental/public execution restrictions intact.
+- TEST_PLAN.md and prior numerical results are historical references. Do not weaken numerical thresholds or relabel failed/unqualified physics as passed.
+- Run typecheck, lint and build; review changed user flows in a browser. Report actual checks briefly. No automated test gate is required for MVP1.
 - Performance work must preserve declared physics settings. Profile before moving to Canvas/Workers. Provide keyboard/touch alternatives and accessible object descriptions.

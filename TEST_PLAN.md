@@ -1,5 +1,9 @@
 # Test plan and physics qualification
 
+Historical reference only: automated suites were removed on 2026-11-20 at user
+request. This document does not impose MVP1 per-feature test gates. Numerical
+thresholds and previous failures remain recorded; physics is still unqualified.
+
 Status: proposed tests, not measured results. Only the JSON Schema/document checks described in the final M0 delivery are executed now. A solver must pass a case at frozen settings before that capability is advertised.
 
 ## Harness and error policy
