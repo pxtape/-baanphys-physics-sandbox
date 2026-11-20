@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { physicalProperties } from "../physics/physical-properties";
 import { anchorPosition, localPoint } from "../domain/anchors";
+import { connectAnchors, targetSide } from "../editor/mechanisms";
+import type { ConnectionTool, JointKind } from "../editor/mechanisms";
 import { SceneHistory } from "../editor/history";
 import type { SceneV1 } from "../domain/scene-v1.generated";
 import type { PhysicsRuntime, SimulationSnapshot } from "../physics";
@@ -15,8 +17,10 @@ import {
   setBodyMotion,
   setMassMode,
   moveWorldPivot,
+  translateMechanism,
+  SCENE_PRESETS,
 } from "../editor/scene-commands";
-import type { ObjectKind } from "../editor/scene-commands";
+import type { ObjectKind, ScenePreset } from "../editor/scene-commands";
 import { SceneCanvas } from "../renderer/SceneCanvas";
 
 function NumberField({
@@ -87,6 +91,8 @@ export function App() {
   const [showVelocity, setShowVelocity] = useState(false);
   const [fixedPivots, setFixedPivots] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [moveAssembly, setMoveAssembly] = useState(true);
+  const [connection, setConnection] = useState<ConnectionTool | null>(null);
   const sceneRef = useRef(scene);
   const inspectorRef = useRef<HTMLElement>(null);
   const [frame, setFrame] = useState<SimulationSnapshot | null>(null),
@@ -101,6 +107,14 @@ export function App() {
   useEffect(() => {
     inspectorRef.current?.scrollTo({ top: 0 });
   }, [selected, locked]);
+  useEffect(() => {
+    if (
+      locked ||
+      (connection?.start &&
+        !scene.bodies.some((b) => b.id === connection.start!.bodyId))
+    )
+      setConnection(null);
+  }, [locked, scene, connection]);
   const body = scene.bodies.find((b) => b.id === selected),
     live = frame?.bodies.find((b) => b.id === selected);
   const poses = useMemo(
@@ -242,6 +256,14 @@ export function App() {
       )
         return;
       if (locked) return;
+      if (connection) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          setConnection(null);
+          setNotice("");
+        }
+        return;
+      }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
         e.preventDefault();
         restoreHistory(e.shiftKey);
@@ -258,7 +280,48 @@ export function App() {
     };
     document.addEventListener("keydown", key);
     return () => document.removeEventListener("keydown", key);
-  }, [scene, selected, locked]);
+  }, [scene, selected, locked, connection]);
+  function connectAt(id: string | null, point: { x: number; y: number }) {
+    if (!connection || locked) return;
+    const target = sceneRef.current.bodies.find((b) => b.id === id);
+    if (!connection.start) {
+      if (!target || target.motionType !== "dynamic") {
+        setNotice("Choose a movable body first.");
+        return;
+      }
+      setSelected(target.id);
+      setConnection({
+        type: connection.type,
+        start: {
+          type: "body",
+          bodyId: target.id,
+          localPoint: localPoint(target, point),
+        },
+      });
+      setNotice("");
+      return;
+    }
+    const endpoint = target
+      ? {
+          type: "body" as const,
+          bodyId: target.id,
+          localPoint: localPoint(target, point),
+        }
+      : { type: "world" as const, point };
+    if (
+      acceptScene(
+        connectAnchors(
+          sceneRef.current,
+          connection.type,
+          connection.start,
+          endpoint,
+        ),
+      )
+    ) {
+      setConnection(null);
+      setCollisionMode(true);
+    }
+  }
   function addJoint(type: "hinge" | "rod" | "rope") {
     if (!body || body.motionType !== "dynamic") return;
     change((s) => {
@@ -314,11 +377,18 @@ export function App() {
     }
     return changeJoint(id, (c, s) => {
       if (c.type !== "rod" && c.type !== "rope") return;
-      const a = anchorPosition(s, c.anchorA),
-        b = anchorPosition(s, c.anchorB),
+      const side = targetSide(c, body!.id),
+        own = side === "anchorA" ? "anchorB" : "anchorA",
+        owner = c[own];
+      const a = anchorPosition(s, owner),
+        b = anchorPosition(s, c[side]),
         d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (c.anchorA.type === "body" && (c.type === "rod" || length < d)) {
-        const target = c.anchorA.bodyId,
+      if (
+        owner.type === "body" &&
+        (c.type === "rod" || length < d) &&
+        d > 1e-12
+      ) {
+        const target = owner.bodyId,
           body = s.bodies.find((b) => b.id === target)!;
         body.position.x += (a.x - b.x) * (length / d - 1);
         body.position.y += (a.y - b.y) * (length / d - 1);
@@ -328,27 +398,30 @@ export function App() {
     });
   }
   function jointWorldPoint(id: string, axis: "x" | "y", value: number) {
-    return changeJoint(id, (c, s) => {
-      if (c.anchorB.type !== "world" || c.anchorA.type !== "body") return;
-      const delta = value - c.anchorB.point[axis];
-      c.anchorB.point[axis] = value;
-      const target = c.anchorA.bodyId;
-      s.bodies.find((b) => b.id === target)!.position[axis] += delta;
-    });
+    if (locked || !body) return false;
+    const c = sceneRef.current.constraints.find((c) => c.id === id)!;
+    const anchor = c[targetSide(c, body.id)];
+    if (anchor.type !== "world") return false;
+    return acceptScene(
+      moveWorldPivot(sceneRef.current, id, { ...anchor.point, [axis]: value }),
+    );
   }
   function connectJoint(id: string, target: string) {
+    if (!body) return;
     changeJoint(id, (c, s) => {
-      const p = anchorPosition(s, c.anchorA),
-        old = anchorPosition(s, c.anchorB),
+      const side = targetSide(c, body.id),
+        own = side === "anchorA" ? "anchorB" : "anchorA";
+      const p = anchorPosition(s, c[own]),
+        old = anchorPosition(s, c[side]),
         b = s.bodies.find((b) => b.id === target);
-      c.anchorB = b
+      c[side] = b
         ? {
             type: "body",
             bodyId: b.id,
             localPoint: c.type === "hinge" ? localPoint(b, p) : { x: 0, y: 0 },
           }
         : { type: "world", point: c.type === "hinge" ? p : old };
-      const q = anchorPosition(s, c.anchorB),
+      const q = anchorPosition(s, c[side]),
         length = Math.hypot(p.x - q.x, p.y - q.y);
       if (c.type === "rod") c.length = length;
       if (c.type === "rope") c.maxLength = length;
@@ -397,6 +470,7 @@ export function App() {
     if (change((s) => s.bodies.push(added))) setSelected(added.id);
   }
   function reset() {
+    setConnection(null);
     runtime.current?.dispose();
     runtime.current = null;
     setFrame(null);
@@ -404,6 +478,7 @@ export function App() {
     setNotice("");
   }
   function start(single = false) {
+    setConnection(null);
     if (!teacherEnabled || !optIn || studentSurface) {
       setNotice(
         "Enable the experimental teacher preview first. Public and student execution remain blocked.",
@@ -426,19 +501,11 @@ export function App() {
     setMode(single ? "paused" : "running");
     if (single) stepOnce();
   }
-  function preset(
-    name:
-      | "free-fall"
-      | "projectile"
-      | "collision"
-      | "sliding"
-      | "forces"
-      | "pendulum"
-      | "rope"
-      | "incline",
-  ) {
+  function preset(name: ScenePreset) {
     if (locked) return;
+    setConnection(null);
     const s = newScene(name);
+    if (s.constraints.length) setCollisionMode(true);
     history.record(sceneRef.current, s);
     sceneRef.current = s;
     setScene(s);
@@ -479,44 +546,16 @@ export function App() {
             aria-label="Scene example"
             disabled={locked}
             value={
-              scene.title === "Inclined plane"
-                ? "incline"
-                : scene.title === "Projectile motion"
-                  ? "projectile"
-                  : scene.title === "Body collision"
-                    ? "collision"
-                    : scene.title === "Hinged pendulum"
-                      ? "pendulum"
-                      : scene.title === "Rope pendulum"
-                        ? "rope"
-                        : scene.title === "Force and torque"
-                          ? "forces"
-                          : scene.title === "Sliding block"
-                            ? "sliding"
-                            : "free-fall"
+              SCENE_PRESETS.find((p) => p.title === scene.title)?.id ??
+              "free-fall"
             }
-            onChange={(e) =>
-              preset(
-                e.target.value as
-                  | "free-fall"
-                  | "projectile"
-                  | "collision"
-                  | "sliding"
-                  | "forces"
-                  | "pendulum"
-                  | "rope"
-                  | "incline",
-              )
-            }
+            onChange={(e) => preset(e.target.value as ScenePreset)}
           >
-            <option value="free-fall">Free fall</option>
-            <option value="projectile">Projectile motion</option>
-            <option value="collision">Body collision</option>
-            <option value="sliding">Sliding block</option>
-            <option value="incline">Inclined plane</option>
-            <option value="forces">Force and torque</option>
-            <option value="pendulum">Hinged pendulum</option>
-            <option value="rope">Rope pendulum</option>
+            {SCENE_PRESETS.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.title}
+              </option>
+            ))}
           </select>
         </label>
       </div>
@@ -546,7 +585,10 @@ export function App() {
         <button
           disabled={locked}
           aria-pressed={fixedPivots}
-          onClick={() => setFixedPivots((v) => !v)}
+          onClick={() => {
+            setFixedPivots((v) => !v);
+            if (!fixedPivots) setMoveAssembly(false);
+          }}
           title="Drag hinge/rod bodies around fixed anchors; ropes can start slack"
         >
           Fixed-pivot drag
@@ -570,6 +612,52 @@ export function App() {
         <span>
           Ctrl/⌘ Z · Ctrl/⌘ D · arrows · vectors display-scaled/capped
         </span>
+      </div>
+      <div className="mechanism-toolbar" aria-label="Mechanism tools">
+        <strong>Connect on canvas</strong>
+        {(["hinge", "rod", "rope"] as JointKind[]).map((type) => (
+          <button
+            key={type}
+            disabled={locked}
+            aria-pressed={connection?.type === type}
+            onClick={() => {
+              setConnection({ type, start: null });
+              setNotice("");
+            }}
+          >
+            {type[0]!.toUpperCase() + type.slice(1)} tool
+          </button>
+        ))}
+        <button
+          disabled={locked}
+          aria-pressed={moveAssembly}
+          onClick={() => {
+            setMoveAssembly((v) => !v);
+            if (!moveAssembly) setFixedPivots(false);
+          }}
+          title="Drag all connected bodies and their world pivots together"
+        >
+          Move whole mechanism
+        </button>
+        {connection && (
+          <>
+            <span role="status">
+              {!connection.start
+                ? "1. Click a movable body."
+                : connection.type === "hinge"
+                  ? "2. Click the shared pivot on another body or empty space."
+                  : "2. Click another body's anchor or empty space."}
+            </span>
+            <button
+              onClick={() => {
+                setConnection(null);
+                setNotice("");
+              }}
+            >
+              Cancel connection
+            </button>
+          </>
+        )}
       </div>
       <main className="workspace" id="main-content">
         <aside className="tools-panel">
@@ -679,6 +767,8 @@ export function App() {
           </div>
           <SceneCanvas
             scene={scene}
+            connection={connection}
+            onConnect={connectAt}
             selected={selected}
             poses={poses}
             locked={locked}
@@ -708,18 +798,16 @@ export function App() {
               });
             }}
             onMove={(id, x, y) => {
-              if (!locked)
-                acceptScene(
-                  positionBody(
-                    sceneRef.current,
-                    id,
-                    {
-                      x: Math.round(x * 100) / 100,
-                      y: Math.round(y * 100) / 100,
-                    },
-                    fixedPivots,
-                  ),
-                );
+              if (locked) return;
+              const target = {
+                x: Math.round(x * 100) / 100,
+                y: Math.round(y * 100) / 100,
+              };
+              acceptScene(
+                moveAssembly && !fixedPivots
+                  ? translateMechanism(sceneRef.current, id, target)
+                  : positionBody(sceneRef.current, id, target, fixedPivots),
+              );
             }}
           />
           <div className="playbar">
@@ -1237,17 +1325,32 @@ export function App() {
                     ))}
                 </section>
               )}
-              {body.motionType === "dynamic" && (
+              {(body.motionType === "dynamic" ||
+                scene.constraints.some(
+                  (c) =>
+                    (c.anchorA.type === "body" &&
+                      c.anchorA.bodyId === body.id) ||
+                    (c.anchorB.type === "body" && c.anchorB.bodyId === body.id),
+                )) && (
                 <section className="joint-controls">
                   <h3>Experimental mechanisms</h3>
                   <div className="force-buttons">
-                    <button disabled={locked} onClick={() => addJoint("hinge")}>
+                    <button
+                      disabled={locked || body.motionType !== "dynamic"}
+                      onClick={() => addJoint("hinge")}
+                    >
                       Add hinge
                     </button>
-                    <button disabled={locked} onClick={() => addJoint("rod")}>
+                    <button
+                      disabled={locked || body.motionType !== "dynamic"}
+                      onClick={() => addJoint("rod")}
+                    >
                       Add rod
                     </button>
-                    <button disabled={locked} onClick={() => addJoint("rope")}>
+                    <button
+                      disabled={locked || body.motionType !== "dynamic"}
+                      onClick={() => addJoint("rope")}
+                    >
                       Add rope
                     </button>
                   </div>
@@ -1260,84 +1363,116 @@ export function App() {
                   {scene.constraints
                     .filter(
                       (c) =>
-                        c.anchorA.type === "body" &&
-                        c.anchorA.bodyId === body.id,
+                        (c.anchorA.type === "body" &&
+                          c.anchorA.bodyId === body.id) ||
+                        (c.anchorB.type === "body" &&
+                          c.anchorB.bodyId === body.id),
                     )
-                    .map((c, i) => (
-                      <div className="force-card" key={c.id}>
-                        <strong>{c.name}</strong>
-                        <label className="joint-target">
-                          Connect to
-                          <select
-                            aria-label={`Joint ${i + 1} target`}
+                    .map((c, i) => {
+                      const endpoint = c[targetSide(c, body.id)];
+                      return (
+                        <div className="force-card" key={c.id}>
+                          <strong>{c.name}</strong>
+                          <label className="joint-target">
+                            Connect to
+                            <select
+                              aria-label={`Joint ${i + 1} target`}
+                              disabled={locked}
+                              value={
+                                endpoint.type === "world"
+                                  ? "world"
+                                  : endpoint.bodyId
+                              }
+                              onChange={(e) =>
+                                connectJoint(c.id, e.target.value)
+                              }
+                            >
+                              <option
+                                value="world"
+                                disabled={body.motionType !== "dynamic"}
+                              >
+                                World anchor
+                              </option>
+                              {scene.bodies
+                                .filter(
+                                  (b) =>
+                                    b.id !== body.id &&
+                                    (body.motionType === "dynamic" ||
+                                      b.motionType === "dynamic"),
+                                )
+                                .map((b) => (
+                                  <option key={b.id} value={b.id}>
+                                    {b.name}
+                                  </option>
+                                ))}
+                            </select>
+                          </label>
+                          {endpoint.type === "world" && (
+                            <div className="field-pair">
+                              <NumberField
+                                label={`Joint ${i + 1} anchor x`}
+                                unit="m"
+                                value={endpoint.point.x}
+                                disabled={locked}
+                                onCommit={(x) => jointWorldPoint(c.id, "x", x)}
+                              />
+                              <NumberField
+                                label={`Joint ${i + 1} anchor y`}
+                                unit="m"
+                                value={endpoint.point.y}
+                                disabled={locked}
+                                onCommit={(y) => jointWorldPoint(c.id, "y", y)}
+                              />
+                            </div>
+                          )}
+                          {c.type === "rod" && (
+                            <NumberField
+                              label={`Joint ${i + 1} length`}
+                              unit="m"
+                              value={c.length}
+                              disabled={locked}
+                              onCommit={(n) => jointLength(c.id, n)}
+                            />
+                          )}
+                          {c.type === "rope" && (
+                            <NumberField
+                              label={`Joint ${i + 1} max length`}
+                              unit="m"
+                              value={c.maxLength}
+                              disabled={locked}
+                              onCommit={(n) => jointLength(c.id, n)}
+                            />
+                          )}
+                          <label className="joint-contact">
+                            <input
+                              type="checkbox"
+                              aria-label={`Joint ${i + 1} collide connected`}
+                              checked={c.collideConnected}
+                              disabled={locked}
+                              onChange={(e) => {
+                                const value = e.target.checked;
+                                changeJoint(c.id, (j) => {
+                                  j.collideConnected = value;
+                                });
+                              }}
+                            />{" "}
+                            Allow contact between linked bodies
+                          </label>
+                          <button
                             disabled={locked}
-                            value={
-                              c.anchorB.type === "world"
-                                ? "world"
-                                : c.anchorB.bodyId
+                            onClick={() =>
+                              change((s) => {
+                                s.constraints = s.constraints.filter(
+                                  (q) => q.id !== c.id,
+                                );
+                              })
                             }
-                            onChange={(e) => connectJoint(c.id, e.target.value)}
                           >
-                            <option value="world">World anchor</option>
-                            {scene.bodies
-                              .filter((b) => b.id !== body.id)
-                              .map((b) => (
-                                <option key={b.id} value={b.id}>
-                                  {b.name}
-                                </option>
-                              ))}
-                          </select>
-                        </label>
-                        {c.anchorB.type === "world" && (
-                          <div className="field-pair">
-                            <NumberField
-                              label={`Joint ${i + 1} anchor x`}
-                              unit="m"
-                              value={c.anchorB.point.x}
-                              disabled={locked}
-                              onCommit={(x) => jointWorldPoint(c.id, "x", x)}
-                            />
-                            <NumberField
-                              label={`Joint ${i + 1} anchor y`}
-                              unit="m"
-                              value={c.anchorB.point.y}
-                              disabled={locked}
-                              onCommit={(y) => jointWorldPoint(c.id, "y", y)}
-                            />
-                          </div>
-                        )}
-                        {c.type === "rod" && (
-                          <NumberField
-                            label={`Joint ${i + 1} length`}
-                            unit="m"
-                            value={c.length}
-                            disabled={locked}
-                            onCommit={(n) => jointLength(c.id, n)}
-                          />
-                        )}
-                        {c.type === "rope" && (
-                          <NumberField
-                            label={`Joint ${i + 1} max length`}
-                            unit="m"
-                            value={c.maxLength}
-                            disabled={locked}
-                            onCommit={(n) => jointLength(c.id, n)}
-                          />
-                        )}
-                        <button
-                          disabled={locked}
-                          onClick={() =>
-                            change((s) => {
-                              s.constraints = s.constraints.filter(
-                                (q) => q.id !== c.id,
-                              );
-                            })
-                          }
-                        >
-                          Remove joint {i + 1}
-                        </button>
-                      </div>
-                    ))}
+                            Remove joint {i + 1}
+                          </button>
+                        </div>
+                      );
+                    })}
                 </section>
               )}
               <h3>Contact material</h3>

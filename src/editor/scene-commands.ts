@@ -95,27 +95,23 @@ export function validateDraft(
   }
   return { ok: true, scene: v.scene };
 }
-export function newScene(
-  preset:
-    | "free-fall"
-    | "projectile"
-    | "collision"
-    | "sliding"
-    | "forces"
-    | "pendulum"
-    | "rope"
-    | "incline" = "free-fall",
-): SceneDocument {
+export const SCENE_PRESETS = [
+  { id: "free-fall", title: "Free fall" },
+  { id: "projectile", title: "Projectile motion" },
+  { id: "collision", title: "Body collision" },
+  { id: "sliding", title: "Sliding block" },
+  { id: "incline", title: "Inclined plane" },
+  { id: "forces", title: "Force and torque" },
+  { id: "pendulum", title: "Hinged pendulum" },
+  { id: "rope", title: "Rope pendulum" },
+  { id: "double-pendulum", title: "Double pendulum" },
+  { id: "rope-chain", title: "Linked ropes" },
+] as const;
+export type ScenePreset = (typeof SCENE_PRESETS)[number]["id"];
+export function newScene(preset: ScenePreset = "free-fall"): SceneDocument {
   const s = structuredClone(example) as SceneV1;
   s.identity = { state: "draft" };
-  s.title =
-    preset === "projectile"
-      ? "Projectile motion"
-      : preset === "collision"
-        ? "Body collision"
-        : preset === "sliding"
-          ? "Sliding block"
-          : "Free fall";
+  s.title = SCENE_PRESETS.find((p) => p.id === preset)!.title;
   s.description =
     "Teacher-authored initial conditions. Experimental teacher simulation; collision accuracy is not certified.";
   s.simulation = {
@@ -224,6 +220,98 @@ export function newScene(
     };
     s.bodies = [block, ramp, makeBody("floor")];
     s.title = "Inclined plane";
+    s.world.gravity = { x: 0, y: -9.81 };
+  }
+  if (preset === "double-pendulum") {
+    const first = makeBody("rectangle"),
+      second = makeBody("rectangle"),
+      a = 0.65,
+      b = -0.3,
+      half = 0.8,
+      pivot = { x: 0, y: 6 };
+    first.name = "Upper link";
+    second.name = "Lower link";
+    first.shape = { type: "rectangle", width: 0.22, height: 1.6 };
+    second.shape = { ...first.shape };
+    first.angle = a;
+    second.angle = b;
+    first.position = {
+      x: pivot.x + half * Math.sin(a),
+      y: pivot.y - half * Math.cos(a),
+    };
+    const elbow = {
+      x: first.position.x + half * Math.sin(a),
+      y: first.position.y - half * Math.cos(a),
+    };
+    second.position = {
+      x: elbow.x + half * Math.sin(b),
+      y: elbow.y - half * Math.cos(b),
+    };
+    s.bodies = [first, second, makeBody("floor")];
+    s.world.gravity = { x: 0, y: -9.81 };
+    s.constraints = [
+      {
+        id: objectId(),
+        name: "Fixed pivot",
+        type: "hinge",
+        anchorA: {
+          type: "body",
+          bodyId: first.id,
+          localPoint: { x: 0, y: half },
+        },
+        anchorB: { type: "world", point: pivot },
+        collideConnected: false,
+      },
+      {
+        id: objectId(),
+        name: "Elbow",
+        type: "hinge",
+        anchorA: {
+          type: "body",
+          bodyId: first.id,
+          localPoint: { x: 0, y: -half },
+        },
+        anchorB: {
+          type: "body",
+          bodyId: second.id,
+          localPoint: { x: 0, y: half },
+        },
+        collideConnected: false,
+      },
+    ];
+  }
+  if (preset === "rope-chain") {
+    const links = [makeBody("circle"), makeBody("circle"), makeBody("circle")],
+      length = 1.1;
+    let previous = { x: -2, y: 6 };
+    s.constraints = [];
+    links.forEach((body, i) => {
+      const angle = [0.65, 0.3, -0.2][i]!;
+      body.name = `Rope mass ${i + 1}`;
+      body.shape = { type: "circle", radius: 0.22 };
+      body.position = {
+        x: previous.x + length * Math.sin(angle),
+        y: previous.y - length * Math.cos(angle),
+      };
+      s.constraints.push({
+        id: objectId(),
+        name: `Rope ${i + 1}`,
+        type: "rope",
+        maxLength: length,
+        anchorA: { type: "body", bodyId: body.id, localPoint: { x: 0, y: 0 } },
+        anchorB:
+          i === 0
+            ? { type: "world", point: { ...previous } }
+            : {
+                type: "body",
+                bodyId: links[i - 1]!.id,
+                localPoint: { x: 0, y: 0 },
+              },
+        collideConnected: false,
+      });
+      previous = body.position;
+    });
+    s.bodies = [...links, makeBody("floor")];
     s.world.gravity = { x: 0, y: -9.81 };
   }
   s.measurements = [];
@@ -440,24 +528,86 @@ export function moveWorldPivot(
 ) {
   if (!scene.constraints.some((c) => c.id === id))
     return { ok: false as const, message: "Select an existing joint." };
-  return editScene(scene, (s) => {
-    const c = s.constraints.find((c) => c.id === id)!;
-    const a =
-        c.anchorA.type === "world"
-          ? c.anchorA
-          : c.anchorB.type === "world"
-            ? c.anchorB
-            : null,
-      b =
-        c.anchorA.type === "body"
-          ? c.anchorA
-          : c.anchorB.type === "body"
-            ? c.anchorB
-            : null;
-    if (!a || !b) return;
-    const body = s.bodies.find((q) => q.id === b.bodyId)!;
-    body.position.x += point.x - a.point.x;
-    body.position.y += point.y - a.point.y;
-    a.point = { ...point };
+  const joint = scene.constraints.find((c) => c.id === id)!;
+  const world =
+      joint.anchorA.type === "world"
+        ? joint.anchorA
+        : joint.anchorB.type === "world"
+          ? joint.anchorB
+          : null,
+    attached =
+      joint.anchorA.type === "body"
+        ? joint.anchorA
+        : joint.anchorB.type === "body"
+          ? joint.anchorB
+          : null;
+  if (!world || !attached)
+    return {
+      ok: false as const,
+      message: "This joint has no fixed world pivot.",
+    };
+  const body = scene.bodies.find(
+    (b) => b.id.toLowerCase() === attached.bodyId.toLowerCase(),
+  )!;
+  return translateMechanism(scene, body.id, {
+    x: body.position.x + point.x - world.point.x,
+    y: body.position.y + point.y - world.point.y,
   });
+}
+
+/** Translation is an authoring operation on the connected component, not runtime repair. */
+export function translateMechanism(
+  scene: SceneDocument,
+  id: string,
+  target: { x: number; y: number },
+) {
+  const key = (id: string) => id.toLowerCase();
+  const source = scene.bodies.find((b) => key(b.id) === key(id));
+  if (!source)
+    return { ok: false as const, message: "Select an existing body." };
+  const component = new Set([key(source.id)]);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const c of scene.constraints) {
+      if (c.anchorA.type !== "body" || c.anchorB.type !== "body") continue;
+      const a = key(c.anchorA.bodyId),
+        b = key(c.anchorB.bodyId);
+      if (component.has(a) === component.has(b)) continue;
+      component.add(a);
+      component.add(b);
+      changed = true;
+    }
+  }
+  const dx = target.x - source.position.x,
+    dy = target.y - source.position.y;
+  return editScene(
+    scene,
+    (s) => {
+      for (const b of s.bodies)
+        if (component.has(key(b.id))) {
+          b.position.x += dx;
+          b.position.y += dy;
+        }
+      for (const c of s.constraints) {
+        const world =
+            c.anchorA.type === "world"
+              ? c.anchorA
+              : c.anchorB.type === "world"
+                ? c.anchorB
+                : null,
+          body =
+            c.anchorA.type === "body"
+              ? c.anchorA
+              : c.anchorB.type === "body"
+                ? c.anchorB
+                : null;
+        if (world && body && component.has(key(body.bodyId))) {
+          world.point.x += dx;
+          world.point.y += dy;
+        }
+      }
+    },
+    false,
+  );
 }

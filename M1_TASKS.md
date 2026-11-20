@@ -1,5 +1,8 @@
 # M1 implementation backlog and acceptance
 
+MVP2 is authorized: native experimental mechanism authoring and connected-body
+editing on the accepted MVP1 app. No new automated suites or qualification claims.
+
 Active direction (2026-11-20): restart MVP1 using the existing application. The
 user removed old automated suites; their historical acceptance entries below are
 not current CI gates. Follow ROADMAP.md: core teacher create/edit/play first,
