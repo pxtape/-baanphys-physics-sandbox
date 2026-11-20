@@ -198,3 +198,7 @@ Quick + Hinge / + Rod / + Rope buttons attach the selected dynamic body to a
 world anchor. Drag its blue crosshair to move the anchor and body together;
 Fixed-pivot drag instead moves a body around the anchor. Numeric joint fields
 remain available. All these mechanisms are experimental, not numerically certified.
+
+Fit scene brings bodies and fixed anchors into view. During preview, Follow
+preview centres the selected body's actual solver position. Pan/Home/Fit stop
+following; camera movement never changes authored data or physics.

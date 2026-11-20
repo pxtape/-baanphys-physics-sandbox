@@ -989,3 +989,8 @@ h3 {
     top: 12px;
   }
 }
+
+.viewport-tools {
+  flex-wrap: wrap;
+  max-width: calc(100% - 16px);
+}

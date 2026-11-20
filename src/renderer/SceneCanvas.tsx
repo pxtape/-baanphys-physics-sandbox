@@ -8,21 +8,8 @@ import type { Body } from "../domain/scene-v1.generated";
 import { anchorPosition } from "../domain/anchors";
 import { useRef, useState } from "react";
 import type { SceneDocument } from "../domain/scene";
-export const CAMERA = {
-  width: 1000,
-  height: 600,
-  scale: 64,
-  originX: 500,
-  originY: 492,
-};
-export const toScreen = (p: { x: number; y: number }) => ({
-  x: CAMERA.originX + p.x * CAMERA.scale,
-  y: CAMERA.originY - p.y * CAMERA.scale,
-});
-export const toWorld = (p: { x: number; y: number }) => ({
-  x: (p.x - CAMERA.originX) / CAMERA.scale,
-  y: (CAMERA.originY - p.y) / CAMERA.scale,
-});
+import { toScreen, toWorld, fitSceneView } from "./camera";
+export { CAMERA, toScreen, toWorld } from "./camera";
 interface Pose {
   position: { readonly x: number; readonly y: number };
   readonly angle: number;
@@ -61,6 +48,13 @@ export function SceneCanvas({
 }: Props) {
   const [view, setView] = useState({ zoom: 1, x: 0, y: 0 }),
     [panMode, setPanMode] = useState(false);
+  const [follow, setFollow] = useState(false);
+  const followed = follow && locked && selected ? poses.get(selected) : null,
+    centre = followed ? toScreen(followed.position) : null,
+    cameraX = centre ? centre.x - 500 : view.x,
+    cameraY = centre ? centre.y - 300 : view.y,
+    left = 500 + cameraX - 500 / view.zoom,
+    top = 300 + cameraY - 300 / view.zoom;
   const pan = useRef<{
     inverse: DOMMatrix;
     start: DOMPoint;
@@ -124,9 +118,31 @@ export function SceneCanvas({
         </button>
         <button
           aria-label="Reset view"
-          onClick={() => setView({ zoom: 1, x: 0, y: 0 })}
+          onClick={() => {
+            setFollow(false);
+            setView({ zoom: 1, x: 0, y: 0 });
+          }}
         >
           Home
+        </button>
+        <button
+          aria-label="Fit scene in view"
+          onClick={() => {
+            setFollow(false);
+            setView(fitSceneView(scene, poses));
+          }}
+        >
+          Fit scene
+        </button>
+        <button
+          aria-pressed={follow}
+          disabled={!locked || !selected}
+          onClick={() => {
+            if (follow) setView((v) => ({ ...v, x: cameraX, y: cameraY }));
+            setFollow((v) => !v);
+          }}
+        >
+          Follow preview
         </button>
         <button aria-pressed={panMode} onClick={() => setPanMode((p) => !p)}>
           Pan view
@@ -135,7 +151,7 @@ export function SceneCanvas({
       </div>
       <svg
         className="scene-canvas"
-        viewBox={`${500 + view.x - 500 / view.zoom} ${300 + view.y - 300 / view.zoom} ${1000 / view.zoom} ${600 / view.zoom}`}
+        viewBox={`${left} ${top} ${1000 / view.zoom} ${600 / view.zoom}`}
         aria-label="Physics scene canvas"
         role="group"
         onPointerDown={(e) => {
@@ -152,11 +168,13 @@ export function SceneCanvas({
             const point = new DOMPoint(e.clientX, e.clientY).matrixTransform(
               inverse,
             );
+            setFollow(false);
+            setView((v) => ({ ...v, x: cameraX, y: cameraY }));
             pan.current = {
               inverse,
               start: point,
-              x: view.x,
-              y: view.y,
+              x: cameraX,
+              y: cameraY,
               pointer: e.pointerId,
             };
             e.currentTarget.setPointerCapture(e.pointerId);
@@ -370,9 +388,27 @@ export function SceneCanvas({
             <path d="M-2 10L10-2M8 12L12 8" stroke="#8b9ba6" strokeWidth="1" />
           </pattern>
         </defs>
-        <rect width="1000" height="600" fill="url(#grid)" />
-        <line x1="0" x2="1000" y1="492" y2="492" stroke="#aebec6" />
-        <line x1="500" x2="500" y1="0" y2="600" stroke="#aebec6" />
+        <rect
+          x={left}
+          y={top}
+          width={1000 / view.zoom}
+          height={600 / view.zoom}
+          fill="url(#grid)"
+        />
+        <line
+          x1={left}
+          x2={left + 1000 / view.zoom}
+          y1="492"
+          y2="492"
+          stroke="#aebec6"
+        />
+        <line
+          x1="500"
+          x2="500"
+          y1={top}
+          y2={top + 600 / view.zoom}
+          stroke="#aebec6"
+        />
         {[-6, -4, -2, 0, 2, 4, 6].map((x) => (
           <text key={x} x={500 + x * 64 + 6} y="510" className="axis-label">
             {x} m
